@@ -40,5 +40,4 @@ Tab Styles provided by Hubert Florin and Steve Krueger
 TODO
 -------------------------------------------------------------------------------
 
-+ fix preview display of tab styles
 + add the ability to add/remove tabs from a quick tabs block when editing
