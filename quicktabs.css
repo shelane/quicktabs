@@ -1,10 +1,10 @@
 iframe.quicktabs-preview {
   border: none;
   width: 200px;
-  height: 40px;
+  height: 50px;
 }
 
-iframe body {
+iframe.quicktabs-preview body {
   background: none;
   background-color: #FFFFFF;
 }
@@ -16,3 +16,28 @@ ul.quicktabs_tabs li {
   padding: 2px;
 }
 
+#quicktabs-settings .form-radios .form-item{
+	width:200px;
+	float:left;
+	margin:0 10px 10px 0;
+	border:1px solid #ccc;
+	background-color:#fff;
+}
+
+#quicktabs-settings .form-radios .form-item .option{
+	display:block;
+	background-color:#bfe3ff;
+	font-weight:bold;
+	color:#0a5793;
+}
+
+#quicktabs-settings .form-radios .form-item .option:hover{
+	background-color:#aadaff;
+	cursor:pointer;
+	color:#003863;
+}
+
+#quicktabs-settings .form-radios .form-item .option .form-radio{
+	margin-right:5px;
+	float:left;
+}
