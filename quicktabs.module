@@ -532,7 +532,7 @@ function quicktabs_add_css($tabstyle_css = NULL) {
     $tabstyle_css = variable_get('quicktabs_tabstyle', 'default');
   }
 
-  if ($tabstyles_css != 'default') {
+  if ($tabstyle_css != 'default') {
     drupal_add_css($tabstyle_css, 'module');
   }
 }
