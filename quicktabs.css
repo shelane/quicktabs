@@ -27,7 +27,7 @@ ul.quicktabs_tabs li {
 #quicktabs-settings .form-radios .form-item .option{
 	display:block;
 	background-color:#bfe3ff;
-	font-weight:bold;
+	font:bold 12px/18px verdana;
 	color:#0a5793;
 }
 

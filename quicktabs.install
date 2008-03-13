@@ -28,9 +28,10 @@ function quicktabs_install() {
         drupal_set_message(t('Unsupported database'));
   }
   
-  if($success) {
+  if ($success) {
     drupal_set_message(t('Module tables installed successfully'));
-  } else {
+  }
+  else {
     drupal_set_message(t('Module installation was unsuccessful'), 'error');
   }
 }
