@@ -1,8 +1,8 @@
 .quicktabs_main{
-	clear:left;
+	clear:both;
 }
 .quicktabs_wrapper ul.quicktabs_tabs{
-	margin:0;
+	margin:0 0 10px 0;
 	font-size:11px;
   list-style: none;
 	padding:3px 0 23px 0;
@@ -15,12 +15,12 @@
   background:transparent url(images/bullets.png) no-repeat 0 -80px;
 }
 ul.quicktabs_tabs li a{
+	font:bold 12px/170% Verdana;
   margin: 0;
 	display:block;
   padding:0px 17px 0px 7px;
-  font-weight:bold;
   text-decoration:none;
-  color: #777;
+  color: #777 !important;
   background:transparent url(images/bullets.png) no-repeat right -100px ;
 }
 ul.quicktabs_tabs li:hover a{
@@ -31,7 +31,7 @@ ul.quicktabs_tabs li:hover a{
 }
 ul.quicktabs_tabs li.active a,
 ul.quicktabs_tabs li.active a:hover{
-  color: #0372d9;
+  color: #0372d9 !important;
   background-position:right -20px;
 }
 .quicktabs_wrapper ul.quicktabs_tabs li.active{

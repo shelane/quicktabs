@@ -1,29 +1,31 @@
 .quicktabs_main{
-	clear:left;
+	clear:both;
 }
 
 ul.quicktabs_tabs {
 	background: #bcd6eb url('images/bg.gif') repeat-x bottom;
+	font:bold 12px/20px Verdana;
 	padding: 3px 0px 3px;
 	height: 20px;
-	margin-bottom: 1px;
+	margin:0 0 10px 0;
 }     
 
 .sidebar ul.quicktabs_tabs {
-	padding-bottom: 3px;
+	padding:0 0 3px 0;
 }
 
 ul.quicktabs_tabs li {
-  margin: 0px;
+  margin:0;
+	padding:0;
   display: block;
   float: left;
   padding: 2px 0 1px !important;
   list-style-type: none;
   background: none;
-} 
+}
 
 .sidebar ul.quicktabs_tabs li {
-  margin: 0px;
+  margin:0;
   display: block;
   float: left;
   padding: 2px 0 1px;
@@ -34,7 +36,9 @@ ul.quicktabs_tabs li {
 ul.quicktabs_tabs li a:link,
 ul.quicktabs_tabs li a:visited {
   color: #fff;
-  padding: 8px 12px 3px 11px;
+  padding: 8px 12px 4px 11px;
+	margin:0;
+	font:bold 12px/20px Verdana;
 }  
 
 ul.quicktabs_tabs li.active a {
@@ -58,26 +62,6 @@ ul.quicktabs_tabs li.active {
 * html .sidebar ul.quicktabs_tabs {
 	padding-bottom: 0px;
 }
-* html ul.quicktabs_tabs li a:link,
-* html ul.quicktabs_tabs li a:visited {
-	padding-bottom: 2px;
-}
-* html .sidebar ul.quicktabs_tabs li a:link,
-* html .sidebar ul.quicktabs_tabs li a:visited {
-	padding-bottom: 3px;
-}
 
 /* IE 7 Debug */
-*+html ul.quicktabs_tabs li a:link { padding-bottom: 4px; }
 *+html .sidebar ul.quicktabs_tabs li a:link { padding-bottom: 4px; }
-*+html ul.quicktabs_tabs li { padding-bottom: 1px;}
-/* Safari Debug */          
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-	.sidebar ul.quicktabs_tabs li a:link {
-		padding-bottom: 4px;
-	}
-	ul.quicktabs_tabs li {
-		padding: 3px 0px 0px;
-	}
-
-}

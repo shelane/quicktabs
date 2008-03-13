@@ -1,8 +1,9 @@
 .quicktabs_main{
-	clear:left;
+	clear:both;
 }
 ul.quicktabs_tabs{
 	padding:0 10px;
+	margin-bottom:10px;
 	height:31px;
 	padding:0;
 	font-size:12px;
@@ -16,18 +17,20 @@ ul.quicktabs_tabs li{
 	background:transparent url(images/metal.gif) no-repeat right -120px;
 }
 ul.quicktabs_tabs li a{
+	font:bold 12px/170% Verdana;
 	display:block;
-	color:#777	;
+	color:#777 !important;
 	padding:3px 10px 16px;
 	margin-right:2px;
 	text-decoration:none;
 }
 ul.quicktabs_tabs li a:hover{
-	color:#fff;
+	text-decoration:none;
+	color:#fff !important;
 	background:transparent url(images/metal.gif) no-repeat 0 0;
 }
 ul.quicktabs_tabs li.active a,
 ul.quicktabs_tabs li.active a:hover{
-	color:#333;
+	color:#333 !important;
 	background:transparent url(images/metal.gif) no-repeat center -41px;
 }

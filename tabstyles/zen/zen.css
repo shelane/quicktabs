@@ -3,10 +3,11 @@
 */
 
 .quicktabs_main{
-	clear:left;
+	clear:both;
 }
 ul.quicktabs_tabs{
-	margin:0;
+	margin:0 0 10px 0;
+	padding:0 0 3px;
 	font-size:1em;
   list-style: none;
 	height:21px;
@@ -22,13 +23,14 @@ ul.quicktabs_tabs li{
   background:transparent url(images/tab-left-ie6.png) no-repeat left -38px;
 }
 ul.quicktabs_tabs li a{
+	font:bold 12px/170% Verdana;
+	font-size-adjust:none;
   display: block;
   margin: 0;
   padding:4px 17px 0px 12px;
   border-width: 0;
   font-weight:bold;
   text-decoration:none;
-  color: #777;
   background: transparent url(images/tab-right-ie6.png) no-repeat right -38px;
 }
 ul.quicktabs_tabs li:hover a{
@@ -40,8 +42,8 @@ ul.quicktabs_tabs li:hover{
 }
 ul.quicktabs_tabs li.active a,
 ul.quicktabs_tabs li.active a:hover{
+  text-decoration:none;
   border-width: 0;
-  color: #000;
   background:transparent url(images/tab-right-ie6.png) no-repeat right 0;
 }
 ul.quicktabs_tabs li.active{
