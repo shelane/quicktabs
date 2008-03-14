@@ -11,7 +11,8 @@ function quicktabs_help($section) {
       return t('<p>The Quick Tabs module allows you to create blocks of tabbed content. You can create a block on your site containing up to six tabs with corresponding content. Clicking on the tabs makes the corresponding content display instantly (it uses jQuery). The content for each tabbed section can be either a view or an existing block. It is an ideal way to do something like the Most Popular / Most Emailed stories tabs you see on many news websites.</p>
 <p>Once created, the Quick Tabs blocks show up in your block listing, ready to be configured and enabled like other blocks.</p>
 <p>Multiple Quick Tabs blocks can be placed on a single page.</p>
-<p>Click on the "New QT block" tab below to get started.</p>');
+<p>Visit the <a href="@configuration">Quick Tabs configuration page</a> to choose a style for your Quick Tabs blocks.</p>
+<p>Click on the "New QT block" tab below to get started.</p>', array('@configuration' => url('admin/settings/quicktabs')));
     case 'admin/build/quicktabs/add':
       return '<p>'. t('Here you can create a new Quick Tabs block. Once you have created this block you will be taken to the <a href="@overview">blocks</a> page to configure and enable it.', array('@overview' => url('admin/build/block'))) .'</p>';
   }
