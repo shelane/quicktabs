@@ -417,6 +417,8 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
             $blockmodule = substr($tab['bvid'], 0, $pos);
             $blockdelta = substr($tab['bvid'], $pos+7);
             $block = (object) module_invoke($blockmodule, 'block', 'view', $blockdelta);
+            $block->module = $blockmodule;
+            $block->delta = $blockdelta;
             $output .= $block->content ? theme('block', $block) : '';
           }
           $output .= '</div>';  
