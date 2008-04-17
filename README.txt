@@ -19,12 +19,12 @@ Installation & Use:
 1.  Enable module in module list located at administer > build > modules.
 2.  Go to admin/settings/quicktabs to select a style for your tabs
 3.  Go to admin/build/quicktabs and click on the "New QT block" local task tab.
-4.  Add a title for your block and select the desired number of tabs
-5.  For each tab, enter a title. Select either 'block' or 'view' from the Type drop
-    down and then select the required block/view.
-6.  Once you have defined all the tabs, click 'Next'.
-7.  You will be taken to the admin/build/block screen where you should see yor new tabbed block listed.
-8.  Configure & enable it as required.
+4.  Add a title for your block and start entering information for your tabs
+5.  Use the Add another tab button to add more tabs.
+6.  Use the drag handles on the left to re-arrange tabs.
+7.  Once you have defined all the tabs, click 'Next'.
+8.  You will be taken to the admin/build/block screen where you should see yor new tabbed block listed.
+9.  Configure & enable it as required.
 
 
 
@@ -40,4 +40,4 @@ Tab Styles provided by Hubert Florin and Steve Krueger
 TODO
 -------------------------------------------------------------------------------
 
-+ add the ability to add/remove tabs from a quick tabs block when editing
++ add the ability to remove tabs from a quick tabs block when editing
