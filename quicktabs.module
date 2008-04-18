@@ -147,7 +147,7 @@ function quicktabs_get_blocks() {
   return $blocksarray;
 }
 
-function quicktabs_form(&$form = NULL, $form_state = NULL) {
+function quicktabs_form(&$form, $form_state = NULL) {
 
   $form = array(
     '#cache' => TRUE,
