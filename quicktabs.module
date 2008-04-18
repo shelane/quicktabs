@@ -572,7 +572,15 @@ function quicktabs_settings() {
     '#description' => t('Choose a tab style for your Quick Tabs blocks.'),
     '#attributes' => array('class' => 'quicktabs-tabstyles clear-block'),
   );
+  $form['submit'] = array(
+  '#type' => 'submit',
+  '#value' => t('Submit'),
+  ); 		
   return $form;
+}
+
+function quicktabs_settings_submit($form, $form_state) {
+  variable_set('quicktabs_tabstyle', $form_state['values']['quicktabs_tabstyle']);
 }
 
 function theme_quicktabs_settings($form) {
