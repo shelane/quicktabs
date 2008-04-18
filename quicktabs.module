@@ -29,6 +29,9 @@ function quicktabs_theme() {
     'qt_tabs' => array(
       'arguments' => array('form' => NULL),
     ),
+    'quicktabs_block' => array(
+      'arguments' => array('block', 'title' => TRUE),
+    ),
   );
 }
 
@@ -503,7 +506,11 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
             $block = (object) module_invoke($blockmodule, 'block', 'view', $blockdelta);
             $block->module = $blockmodule;
             $block->delta = $blockdelta;
-            $output .= $block->content ? theme('block', $block) : '';
+            if (variable_get('quicktabs_blocktitles', 1) == 1) {
+              $output .= $block->content ? theme('quicktabs_block', $block, TRUE) : '';
+            } else {
+              $output .= $block->content ? theme('quicktabs_block', $block, FALSE) : '';
+            }
           //}
           $output .= '</div>';  
         }
@@ -513,6 +520,16 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
       return $mainblock;
     break;
   }
+}
+
+function theme_quicktabs_block($block, $title = TRUE) {
+  $output  = "<div class=\"block block-$block->module\" id=\"block-$block->module-$block->delta\">\n";
+  if ($title) {
+    $output .= " <h2 class=\"title\">$block->subject</h2>\n";
+  }
+  $output .= " <div class=\"content\">$block->content</div>\n";
+  $output .= "</div>\n";
+  return $output;
 }
 
 function quicktabs_block_get_name($qtid) {
@@ -572,6 +589,17 @@ function quicktabs_settings() {
     '#description' => t('Choose a tab style for your Quick Tabs blocks.'),
     '#attributes' => array('class' => 'quicktabs-tabstyles clear-block'),
   );
+  $form['quicktabs_blocktitles'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show block titles within Quick Tabs blocks'),
+    '#default_value' => variable_get('quicktabs_blocktitles', 1),
+  );
+  //$form['quicktabs_viewbuild'] = array(
+  //  '#type' => 'radios',
+  //  '#title' => t('Choose how your views should be built within Quick Tabs blocks'),
+  //  '#options' => array('embed' => 'Embed', 'block' => 'Block', 'page' => 'Page'),
+  //  '#default_value' => variable_get('quicktabs_viewbuild', 'embed'),
+  //);
   $form['submit'] = array(
   '#type' => 'submit',
   '#value' => t('Submit'),
@@ -581,6 +609,8 @@ function quicktabs_settings() {
 
 function quicktabs_settings_submit($form, $form_state) {
   variable_set('quicktabs_tabstyle', $form_state['values']['quicktabs_tabstyle']);
+  variable_set('quicktabs_blocktitles', $form_state['values']['quicktabs_blocktitles']);
+  //variable_set('quicktabs_viewbuild', $form_state['values']['quicktabs_viewbuild']);
 }
 
 function theme_quicktabs_settings($form) {
