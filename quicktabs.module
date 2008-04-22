@@ -18,6 +18,13 @@ function quicktabs_help($section) {
   }
 }
 
+
+/** 
+ * Implementation of hook_init(). 
+ */
+function quicktabs_init() {
+  quicktabs_set_js();
+}
 /** 
  * Implementation of hook_menu(). 
  */ 
@@ -167,7 +174,13 @@ function quicktabs_form($views, $blocks, $form_values=NULL) {
       '3' => 3,
       '4' => 4,
       '5' => 5,
-      '6' => 6
+      '6' => 6,
+      '7' => 7,
+      '8' => 8,
+      '9' => 9,
+      '10' => 10,
+      '11' => 11,
+      '12' => 12,
       )
       );
       $form['indicator']['num_tabs'] = array(
@@ -365,6 +378,13 @@ function quicktabs_updateblock($qtid, $fullcontent) {
   return; 
 }
 
+function quicktabs_set_js() {
+  $effect = variable_get('quicktabs_effect', 'none');
+  $quicktabs_settings = array(
+    'effect' => $effect, 
+  );
+  drupal_add_js(array('quicktabs' => $quicktabs_settings), 'setting');
+}
 /**
  * Implementation of hook_block
  */
@@ -519,6 +539,12 @@ function quicktabs_settings() {
     '#title' => t('Choose how your views should be built within Quick Tabs blocks'),
     '#options' => array('embed' => 'Embed', 'block' => 'Block', 'page' => 'Page'),
     '#default_value' => variable_get('quicktabs_viewbuild', 'embed'),
+  );
+  $form['quicktabs_effect'] = array(
+    '#type' => 'radios',
+    '#title' => t('Choose an effect for your tabs'),
+    '#options' => array('none' => 'None', 'slide' => 'Slide', 'fade' => 'Fade'),
+    '#default_value' => variable_get('quicktabs_effect', 'none'),
   );
   return system_settings_form($form);
 }
