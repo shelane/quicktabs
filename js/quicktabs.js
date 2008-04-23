@@ -1,21 +1,24 @@
-$(document).ready(function(){
-  $('div.quicktabs').hide();
-  $('div.quicktabs:first-child').show();
-  $('ul.quicktabs_tabs li:first-child').addClass('active');
-  
-  var clickFunction = function() {      
-    var tabIndex = this.myTabIndex;
-    $(this).parent().parent().parent().find('div.quicktabs').hide();
-    $(this).parent().siblings().removeClass('active');
-    $(this).parent().addClass('active');
-    $(this).parent().parent().parent().find('div.quicktabs:eq('+tabIndex+')').show();
-    return false;
-  };
-  $('ul.quicktabs_tabs').each(function(){
+Drupal.behaviors.quicktabs = function (context) {
+  $('.quicktabs_wrapper:not(.quicktabs-processed)', context).addClass('quicktabs-processed').each(function () {
     var i = 0;
-    $(this).find('li a').each(function() {
+    $(this).find('div.quicktabs').hide()
+    .end()
+    .find('div.quicktabs:first-child').show()
+    .end()
+    .find('ul.quicktabs_tabs li:first-child').addClass('active')
+    .end()
+    .find('ul.quicktabs_tabs li a').each(function(){
       this.myTabIndex = i++;
+      $(this).bind('click', quicktabsClick);
     });
   });
-  $('ul.quicktabs_tabs li a').bind('click', clickFunction);
-});
+};
+
+var quicktabsClick = function() {
+  var tabIndex = this.myTabIndex;
+  $(this).parents('.quicktabs_wrapper').find('div.quicktabs').hide();
+  $(this).parents('li').siblings().removeClass('active');
+  $(this).parents('li').addClass('active');
+  $(this).parents('.quicktabs_wrapper').find('div.quicktabs:eq('+tabIndex+')').show();
+  return false;
+}
