@@ -10,34 +10,25 @@ function quicktabs_schema() {
         'description' => t('The primary identifier for a qt block.'),
         'type' => 'serial',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'size' => 'big',
+        'not null' => TRUE,
+        'disp-width' => '10'),
       'title' => array(
         'description' => t('The title of this quicktabs block.'),
         'type' => 'varchar',
         'length' => 255,
-        'not null' => TRUE,
-        'default' => ''),
+        'not null' => TRUE),
       'tabs' => array(
         'description' => t('A serialized array of the contents of this qt block.'),
         'type' => 'text',
         'size' => 'medium',
-        'not null' => TRUE,
-        'default' => ''),
+        'not null' => TRUE),
       ),
     'primary key' => array('qtid'),
   );
   return $schema;
 }
 
-function mymodule_install() {
-  // Create my tables.
-  drupal_install_schema('quicktabs');
-}
-
-function mymodule_uninstall() {
-  // Drop my tables.
-  drupal_uninstall_schema('quicktabs');
-}
 
 function quicktabs_install() {
   drupal_install_schema('quicktabs');
