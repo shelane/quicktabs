@@ -367,14 +367,14 @@ function quicktabs_createblock($fullcontent) {
   $qtid = db_next_id('quicktabs');
   $title = $fullcontent['blocktitle'];
   $tabs = serialize($fullcontent['blockcontent']);
-  db_query('INSERT INTO {quicktabs} (qtid, title, tabs) VALUES(%d, "%s", "%s")', $qtid, $title, $tabs);
+  db_query("INSERT INTO {quicktabs} (qtid, title, tabs) VALUES(%d, '%s', '%s')", $qtid, $title, $tabs);
   return; 
 }
 
 function quicktabs_updateblock($qtid, $fullcontent) {
   $title = $fullcontent['blocktitle'];
   $tabs = serialize($fullcontent['blockcontent']);
-  db_query('UPDATE {quicktabs} SET title="%s", tabs="%s" WHERE qtid=%d', $title, $tabs, $qtid);
+  db_query("UPDATE {quicktabs} SET title='%s', tabs='%s' WHERE qtid=%d", $title, $tabs, $qtid);
   return; 
 }
 

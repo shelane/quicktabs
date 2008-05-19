@@ -17,11 +17,12 @@ function quicktabs_install() {
 
     case 'pgsql':
       db_query("CREATE TABLE {quicktabs} (
-        qtid int(10) unsigned NOT NULL default '0',
+        qtid int_unsigned NOT NULL default '0',
         title varchar(255) NOT NULL default '',
-        tabs mediumtext NOT NULL,
+        tabs text NOT NULL,
         PRIMARY KEY (qtid) 
         )");
+      db_query('CREATE SEQUENCE {quicktabs}_seq');
       $success = TRUE;
       break;
     default:
