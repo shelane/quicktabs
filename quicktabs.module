@@ -251,7 +251,7 @@ function quicktabs_form($form_values = NULL) {
 
 function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid = 0, $vid = 0, $args = NULL, $limit = NULL) {
   //$admin = user_access('administer quicktabs blocks');
-
+  global $base_url;
   $form = array(
     '#tree' => TRUE,
   );
@@ -331,10 +331,11 @@ function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid
   '#parents' => array('tabs', $delta, 'bid'),
   );
   $form['remove'] = array(
-    '#type' => 'button',
+    '#type' => 'submit',
     '#value' => 'remove_'. $delta,
+    '#attributes' => array('class' => 'delete-tab'),
+    '#parents' => array('tabs', $delta, 'remove'),
   );
-
   return $form;
 }
 
@@ -349,7 +350,7 @@ function theme_qt_tabs($form) {
     t('Weight'),
     module_exists('views') ? t('Tab type') : '',
     t('Content'),
-    t('Remove Tab')
+    t('Remove')
   );
 
   foreach (element_children($form) as $key) {
@@ -481,14 +482,15 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
         drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
         $mainblock['subject'] = $jqueryblock->title;
         $tabs = unserialize($jqueryblock->tabs);
-        foreach ($tabs as $key => $tab) {
-          $weight[$key]  = $tab['weight'];
+        if ($tabs[0]['weight']) {
+          foreach ($tabs as $key => $tab) {
+            $weight[$key]  = $tab['weight'];
+          }
+          array_multisort($weight, SORT_ASC, $tabs);
         }
-        array_multisort($weight, SORT_ASC, $tabs);
-        
         $output = '<div class="quicktabs_wrapper">';
         $output .= '<ul class="quicktabs_tabs">';
-        foreach ($tabs as $i => $tab) {
+        foreach ($tabs as $i => $tab) {  
           $output .= '<li><a href="#">'. $tab['title'] .'</a></li>';
         }
         $output .= '</ul>';			
