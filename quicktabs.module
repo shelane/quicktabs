@@ -250,8 +250,6 @@ function quicktabs_form($form_values = NULL) {
 
 
 function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid = 0, $vid = 0, $args = NULL, $limit = NULL) {
-  //$admin = user_access('administer quicktabs blocks');
-  global $base_url;
   $form = array(
     '#tree' => TRUE,
   );
@@ -340,9 +338,6 @@ function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid
 }
 
 function theme_qt_tabs($form) {
-  // Change the button title to reflect the behavior when using JavaScript.
-  //drupal_add_tabledrag('qt-tablist-table', 'order', 'sibling', 'qt-tabs-weight');
-  //drupal_add_js('if (Drupal.jsEnabled) { $(document).ready(function() { $("#edit-tabs-more").val("'. t('Add another tab') .'"); }); }', 'inline');
 
   $rows = array();
   $headers = array(
@@ -356,7 +351,7 @@ function theme_qt_tabs($form) {
   foreach (element_children($form) as $key) {
     // No need to print the field title every time.
     unset($form[$key]['tabtext']['#title'], $form[$key]['tabtype']['#title'], $form[$key]['bvid']['#title']);
-    //$form[$key]['tabweight']['#attributes']['class'] = 'qt-tabs-weight';
+
     // Build the table row.
     $row = array(
       'data' => array(
