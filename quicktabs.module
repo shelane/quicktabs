@@ -144,7 +144,6 @@ function quicktabs_form($form_values = NULL) {
   '#default_value' => isset($form_values['title']) ? $form_values['title'] : '',
   '#weight' => -5
   );
-  
   $formtype = $form_values['formtype'] ? $form_values['formtype'] : 'new';
   $form['formtype'] = array( 
   '#type' => 'hidden', 
@@ -209,7 +208,9 @@ function quicktabs_form($form_values = NULL) {
     $vid = isset($tabcontent[$delta]['bvid']) ? $tabcontent[$delta]['bvid'] : NULL;
     $args = isset($tabcontent[$delta]['args']) ? $tabcontent[$delta]['args'] : NULL;
     $limit = isset($tabcontent[$delta]['limit']) ? $tabcontent[$delta]['limit'] : NULL;
-    $form['qt_wrapper']['tabs'][$delta] = _quicktabs_form($delta, $weight, $title, $type, $bid, $vid, $args, $limit);
+    $build = isset($tabcontent[$delta]['build']) ? $tabcontent[$delta]['build'] : variable_get('quicktabs_viewbuild', 'embed');
+
+    $form['qt_wrapper']['tabs'][$delta] = _quicktabs_form($delta, $weight, $title, $type, $bid, $vid, $args, $limit, $build);
   }
 
   $form['qt_wrapper']['new_tabs'] = array(
@@ -249,7 +250,7 @@ function quicktabs_form($form_values = NULL) {
 
 
 
-function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid = 0, $vid = 0, $args = NULL, $limit = NULL) {
+function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid = 0, $vid = 0, $args = NULL, $limit = NULL, $build = 'embed') {
   $form = array(
     '#tree' => TRUE,
   );
@@ -313,6 +314,14 @@ function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid
     '#description' => t('Limit the number of results'),
     '#parents' => array('tabs', $delta, 'limit')
     );
+    $form['build'] = array(
+    '#type' => 'select',
+    '#title' => 'build type',
+    '#options' => array('embed' => 'embed', 'block' => 'block', 'page' => 'page'),
+    '#default_value' => $build,
+    '#description' => t('Choose how to build this view. If unsure, leave as "embed".'),
+    '#parents' => array('tabs', $delta, 'build')
+    );
   } else {
     $form['tabtype'] = array(
       '#type' => 'hidden',
@@ -358,7 +367,7 @@ function theme_qt_tabs($form) {
         array('data' => drupal_render($form[$key]['tabtext']), 'class' => 'qt-tab-title'),
         array('data' => drupal_render($form[$key]['tabweight']), 'class' => 'qt-tab-weight'),
         module_exists('views') ? array('data' => drupal_render($form[$key]['tabtype']), 'class' => 'qt-tab-type') : array('data' => '', 'class' => 'qt-tabtype-hidden'),
-        array('data' => drupal_render($form[$key]['bid']) . drupal_render($form[$key]['vid']) . drupal_render($form[$key]['args']) . drupal_render($form[$key]['limit']), 'class' => 'qt-tab-bvid'),
+        array('data' => drupal_render($form[$key]['bid']) . drupal_render($form[$key]['vid']) . drupal_render($form[$key]['args']) . drupal_render($form[$key]['limit']) . drupal_render($form[$key]['build']), 'class' => 'qt-tab-bvid'),
         array('data' => drupal_render($form[$key]['remove']), 'class' => 'qt-tab-remove')
       )
     );
@@ -407,9 +416,10 @@ function quicktabs_form_submit($form_id, $form_values) {
       'title' => $tab['tabtext'],
       'type' => $tab['tabtype'],
       'weight' => $tab['tabweight'],
-      'bvid' => ($tab['tabtype']=='block' ? $tab['bid'] : $tab['vid']),
-      'args' => ($tab['tabtype']=='block' ? '' : $tab['args']),
-      'limit' => ($tab['tabtype']=='block' ? '0' : $tab['limit'])
+      'bvid' => ($tab['tabtype'] == 'block' ? $tab['bid'] : $tab['vid']),
+      'args' => ($tab['tabtype'] == 'block' ? '' : $tab['args']),
+      'limit' => ($tab['tabtype'] == 'block' ? '0' : $tab['limit']),
+      'build' => ($tab['tabtype'] == 'block' ? '' : $tab['build'])
       );					
     }
     $fullcontent = array(
@@ -501,7 +511,7 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
                 $args = array();
               }	    	    	    
               $view = views_get_view($tab['bvid']);
-              $viewbuild = variable_get('quicktabs_viewbuild', 'embed');
+              $viewbuild = $tab['build'] ? $tab['build'] : variable_get('quicktabs_viewbuild', 'embed');
               $output .= views_build_view($viewbuild, $view, $args, false, $tab['limit']);
             }
             else {

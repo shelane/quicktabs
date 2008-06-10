@@ -7,7 +7,9 @@ $(document).ready(function(){
       $(this).parents('tr')
       .find('div.form-item :input[@name*="args"]').parent().hide();
       $(this).parents('tr')
-      .find('div.form-item :input[@name*="limit"]').parent().hide();      
+      .find('div.form-item :input[@name*="limit"]').parent().hide();
+      $(this).parents('tr')
+      .find('div.form-item :input[@name*="build"]').parent().hide(); 
     } else {
       $(this).parents('tr')
       .find('div.form-item :input[@name*="bid"]').parent().hide();       
@@ -23,6 +25,8 @@ $(document).ready(function(){
       $(this).parents('tr')
       .find('div.form-item :input[@name*="limit"]').parent().hide();
       $(this).parents('tr')
+      .find('div.form-item :input[@name*="build"]').parent().hide();  
+      $(this).parents('tr')
       .find('div.form-item :input[@name*="bid"]').parent().show();    
    } else {
       $(this).parents('tr')
@@ -33,6 +37,9 @@ $(document).ready(function(){
       .find('div.form-item :input[@name*="args"]').parent().show();
       $(this).parents('tr')
       .find('div.form-item :input[@name*="limit"]').parent().show();  
+      $(this).parents('tr')
+      .find('div.form-item :input[@name*="build"]').parent().show();  
+
    }
   };
   
