@@ -94,6 +94,7 @@ function quicktabs_list() {
 
 function quicktabs_new() {
   drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
+  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
   return drupal_get_form('quicktabs_form');
 } 
 
@@ -134,6 +135,7 @@ function quicktabs_form($form_values = NULL) {
   if(stristr($_POST['op'], 'remove_')) {
     $tab_to_remove = intval(substr($_POST['op'], 7));
   }
+  $changed = FALSE;
   $form = array(
     '#cache' => TRUE,
   );  
@@ -162,6 +164,7 @@ function quicktabs_form($form_values = NULL) {
       $tabcontent = array_values($tabcontent);
       unset($_POST);
       unset($tab_to_remove);
+      $changed = TRUE;
     }
 
   }
@@ -210,7 +213,7 @@ function quicktabs_form($form_values = NULL) {
     $limit = isset($tabcontent[$delta]['limit']) ? $tabcontent[$delta]['limit'] : NULL;
     $build = isset($tabcontent[$delta]['build']) ? $tabcontent[$delta]['build'] : variable_get('quicktabs_viewbuild', 'embed');
 
-    $form['qt_wrapper']['tabs'][$delta] = _quicktabs_form($delta, $weight, $title, $type, $bid, $vid, $args, $limit, $build);
+    $form['qt_wrapper']['tabs'][$delta] = _quicktabs_form($delta, $weight, $title, $type, $bid, $vid, $args, $limit, $build, $changed);
   }
 
   $form['qt_wrapper']['new_tabs'] = array(
@@ -239,7 +242,11 @@ function quicktabs_form($form_values = NULL) {
     '#id' => 'tabs_add_more_button',
     '#weight' => 1,
   );
-
+  if ($changed) {
+    $form['please_save'] = array(
+      '#value' => '<div class="qt_warning">Changes will not be saved until you click submit. You can only remove one pre-existing tab from a QT block before re-saving.</div>'
+    );
+  }
   $form['submit'] = array(
   '#type' => 'submit',
   '#value' => t('Submit'),
@@ -250,7 +257,7 @@ function quicktabs_form($form_values = NULL) {
 
 
 
-function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid = 0, $vid = 0, $args = NULL, $limit = NULL, $build = 'embed') {
+function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid = 0, $vid = 0, $args = NULL, $limit = NULL, $build = 'embed', $changed = FALSE) {
   $form = array(
     '#tree' => TRUE,
   );
@@ -340,7 +347,7 @@ function _quicktabs_form($delta, $weight = -10, $title = '', $type='block', $bid
   $form['remove'] = array(
     '#type' => 'submit',
     '#value' => 'remove_'. $delta,
-    '#attributes' => array('class' => 'delete-tab'),
+    '#attributes' => array('class' => $changed ? 'delete-tab-disabled' : 'delete-tab'),
     '#parents' => array('tabs', $delta, 'remove'),
   );
   return $form;
@@ -575,14 +582,8 @@ function quicktabs_block_edit($qtid) {
       'formtype' => 'edit',
     );
     drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
+    drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
     $output = '';
-    if (module_exists('views')) {
-      $views = quicktabs_get_views();
-    }
-    else {
-      $views = NULL;
-    }
-    $blocks = quicktabs_get_blocks();
     $output .= drupal_get_form('quicktabs_form', $form_values);
     return $output; 
   }

@@ -44,5 +44,5 @@ $(document).ready(function(){
   };
   
   $('#quicktabs-form div.form-item :input[@name*="tabtype"]').bind('click', showhide);
-  
+  $('input.delete-tab-disabled').attr('disabled', 'disabled');
 });
