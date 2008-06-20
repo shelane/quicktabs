@@ -22,6 +22,8 @@ ul.quicktabs_tabs li {
 	margin:0 10px 10px 0;
 	border:1px solid #ccc;
 	background-color:#fff;
+
+
 }
 
 #quicktabs-settings .quicktabs-tabstyles .form-item .option{
@@ -39,7 +41,9 @@ ul.quicktabs_tabs li {
 
 #quicktabs-settings .quicktabs-tabstyles .form-item .option .form-radio{
 	margin-right:5px;
-	float:left;
+	float:left;	
+	height:15px;
+	margin-top:2px;
 }
 
 table#qt-tablist-table tr {
