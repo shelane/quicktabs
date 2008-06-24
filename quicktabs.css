@@ -16,6 +16,10 @@ ul.quicktabs_tabs li {
   padding: 2px;
 }
 
+ul.quicktabs_tabs li a {
+  outline: 0;
+}
+
 #quicktabs-settings .quicktabs-tabstyles .form-item{
 	width:200px;
 	float:left;
