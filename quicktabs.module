@@ -497,12 +497,12 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
           }
           array_multisort($weight, SORT_ASC, $tabs);
         }
-        $output = '<div class="quicktabs_wrapper">';
-        $output .= '<ul class="quicktabs_tabs">';
-        foreach ($tabs as $i => $tab) {  
-          $output .= '<li><a href="#">'. $tab['title'] .'</a></li>';
+        $tabtitles = array();
+        foreach ($tabs as $tab) {
+          $tabtitles[] = $tab['title'];
         }
-        $output .= '</ul>';			
+        $output = '<div class="quicktabs_wrapper">';
+        $output .= theme('quicktabs_tabs', $tabtitles);			
         $output .= '<div class="quicktabs_main">';
         foreach ($tabs as $j => $tab) {
           $output .= '<div class="quicktabs">';
@@ -552,6 +552,20 @@ function theme_quicktabs_block($block, $title = TRUE) {
   }
   $output .= " <div class=\"content\">$block->content</div>\n";
   $output .= "</div>\n";
+  return $output;
+}
+
+/**
+ * Theme function for output of the tabs. Use this to ADD extra classes.
+ * The general structure 'ul.quicktabs_tabs li a' needs to be maintained
+ * for the jQuery to work.
+ */
+function theme_quicktabs_tabs($tabs) {
+  $output .= '<ul class="quicktabs_tabs">';
+  foreach ($tabs as $i => $tab) {
+    $output .= '<li><a href="#">'. $tab .'</a></li>';
+  }
+  $output .= '</ul>';
   return $output;
 }
 
