@@ -214,12 +214,41 @@ function quicktabs_get_views() {
 }
 
 function quicktabs_get_blocks() {
-  $blocks = _block_rehash();
-  $blocksarray = array();
-  foreach ($blocks as $i => $block) {
-    if ($block['module'] != 'quicktabs') {
-      $key = $block['module'] .'_delta_'. $block['delta'];
-      $blocksarray[$key] = $block['info'];
+  static $blocksarray;
+  if (empty($blocksarray)) {
+    global $theme_key;
+    init_theme();
+    $result = db_query("SELECT * FROM {blocks} WHERE theme = '%s'", $theme_key);
+    $old_blocks = array();
+    while ($old_block = db_fetch_array($result)) {
+      $old_blocks[$old_block['module']][$old_block['delta']] = $old_block;
+    }
+    $blocks = array();
+    foreach (module_list() as $module) {
+      $module_blocks = module_invoke($module, 'block', 'list');
+      if ($module_blocks) {
+        foreach ($module_blocks as $delta => $block) {
+          if (empty($old_blocks[$module][$delta])) {
+            // If it's a new block, add identifiers.
+            $block['module'] = $module;
+            $block['delta']  = $delta;
+            $block['theme']  = $theme_key;
+            $blocks[] = $block;
+          }
+          else {
+            $old_blocks[$module][$delta]['info'] = $block['info'];
+            // Add this block to the list of blocks we return.
+            $blocks[] = $old_blocks[$module][$delta];
+          }
+        }
+      }
+    }
+    $blocksarray = array();
+    foreach ($blocks as $i => $block) {
+      if ($block['module'] != 'quicktabs') {
+        $key = $block['module'] .'_delta_'. $block['delta'];
+        $blocksarray[$key] = $block['info'];
+      }
     }
   }
   return $blocksarray;
