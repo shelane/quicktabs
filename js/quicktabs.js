@@ -1,3 +1,5 @@
+Drupal.settings.views = Drupal.settings.views || {'ajax_path': 'views/ajax'};
+
 Drupal.behaviors.quicktabs = function (context) {
   $('.quicktabs_wrapper:not(.quicktabs-processed)', context).addClass('quicktabs-processed').each(function () {
     var i = 0;
@@ -25,16 +27,43 @@ var quicktabsClick = function() {
         $container.html(result['data']);
       });
     } else {
+      var target;
+      target = $('div#quicktabs_ajax_container_' + viewDetails[1] + ' > div');
+      var ajax_path = Drupal.settings.views.ajax_path;
+       //If there are multiple views this might've ended up showing up multiple times.
+      if (ajax_path.constructor.toString().indexOf("Array") != -1) {
+        ajax_path = ajax_path[0];
+      }
       var args;
       if (viewDetails.length == 6) {
-        args = '/' + viewDetails[5];
+        args = viewDetails[5].replace(/\|/g, '/');
       } else {
         args = '';
       }
-      $.get(Drupal.settings.basePath + 'quicktabs/ajax/views/' + viewDetails[3] + '/' + viewDetails[4] + args, null, function(data){
-        var result = Drupal.parseJson(data);
-        $container.html(result['data']);
+      var viewData = {
+      'view_name': viewDetails[3],
+      'view_display_id': viewDetails[4],
+      'view_args': args
+      }
+      $.ajax({
+        url: ajax_path,
+        type: 'GET',
+        data: viewData,
+        success: function(response) {
+          // Call all callbacks.
+          if (response.__callbacks) {
+            $.each(response.__callbacks, function(i, callback) {
+              eval(callback)(target, response);
+            });
+          }
+        },
+        error: function() { alert(Drupal.t("An error occurred at ") + ajax_path); },
+        dataType: 'json'
       });
+      //$.get(Drupal.settings.basePath + 'quicktabs/ajax/views/' + viewDetails[3] + '/' + viewDetails[4] + args, null, function(data){
+      //  var result = Drupal.parseJson(data);
+      //  $container.html(result['data']);
+      //});
     }
   } else {
     $(this).parents('.quicktabs_wrapper').find('div.quicktabs').hide();

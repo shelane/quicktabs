@@ -11,7 +11,7 @@ Drupal.quicktabsShowHide = function() {
     $(this).parents('tr')
     .find('div.form-item :input[name*="hide_title"]').parent().show();
     $(this).parents('tr')
-    .find('div.form-item :input[name*="nid"]').parent().show();  
+    .find('div.form-item :input[name*="nid"]').parent().show(); 
  } else {
     $(this).parents('tr')
     .find('div.form-item :input[name*="nid"]').parent().hide(); 
@@ -25,19 +25,8 @@ Drupal.quicktabsShowHide = function() {
     .find('div.form-item :input[name*="args"]').parent().show(); 
     $(this).parents('tr')
     .find('div.form-item :input[name*="display"]').parent().show();  
+
  }
-};
-    
-Drupal.quicktabsGetDisplays = function() {
-  var ajax_path = Drupal.settings.quicktabsForm.ajax_path;
-  var viewName = this.value;
-  var viewDisplaySelect = $(this).parent().parent().find(':input[name*="display"]');
-  var queryString = $('#quicktabs-form').formSerialize();
-  var ddIndex = $('#quicktabs-form tbody tr').index($(this).parents('tr')[0]);
-  $.post(ajax_path + '/' + viewName+ '/' + ddIndex, queryString, function(response){
-    var result = Drupal.parseJson(response);
-    viewDisplaySelect.parent().empty().append(result.data);
-  });
 };
 
 Drupal.behaviors.quicktabsform = function(context) {
@@ -48,15 +37,12 @@ Drupal.behaviors.quicktabsform = function(context) {
         currentRow.find('div.form-item :input[name*="vid"]').parent().hide();
         currentRow.find('div.form-item :input[name*="args"]').parent().hide();
         currentRow.find('div.form-item :input[name*="display"]').parent().hide(); 
-      }
-      else {
+      } else {
         currentRow.find('div.form-item :input[name*="bid"]').parent().hide();
         currentRow.find('div.form-item :input[name*="hide_title"]').parent().hide();
         currentRow.find('div.form-item :input[name*="nid"]').parent().hide();
       }
     });
-    
     currentRow.find('div.form-item :input[name*="tabtype"]').bind('click', Drupal.quicktabsShowHide);
-    currentRow.find('div.form-item :input[name*="vid"]').bind('change', Drupal.quicktabsGetDisplays);
   })
 };
