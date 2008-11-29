@@ -762,60 +762,18 @@ function quicktabs_quicktabs_tabstyles() {
  * Helper function to get all views.
  */
 function quicktabs_get_views() {
-  $result = db_query("SELECT v.name, v.description FROM {views_view} v");
-  $views = array();
-  while ($view = db_fetch_object($result)) {
-    $views[$view->name] = $view->name;
-  }
-  $status = variable_get('views_defaults', array());
-  foreach (_quicktabs_get_default_views_names() as $view) {
-    // Determine if default view is enabled or disabled.
-    if (isset($status[$view['name']])) {
-      $view['disabled'] = $status[$view['name']];
-    }
-    if (empty($views[$view['name']]) && $view['disabled'] != 1) {
-      $views[$view['name']] = $view['name'];
-    }
-  }
-  return $views;
-}
+  $enabled_views = array();
+  $views = views_get_all_views();
 
-function _quicktabs_get_default_views() {
-  views_include('view');
-  views_include_default_views();
-  $defaults = module_invoke_all('views_default_views');
-  $views = array();
-  foreach ($defaults as $name => $view) {
-    // Only views with a sufficiently high api version are eligible.
-    if (isset($view->api_version) && $view->api_version >= 2) {
-      $views[$name] = $view;
+  foreach ($views as $view) {
+    // Skip disabled views.
+    if (!empty($views[$view->name]->disabled)) {
+      continue;
     }
+    $enabled_views[$view->name] = $view->name;
   }
-  return $views;
-}
-
-function _quicktabs_get_default_views_names() {
-  $views = array();
-  foreach (_quicktabs_get_default_views() as $name => $view) {
-    $views[] = array(
-      'name' => $name,
-    );
-  }
-  return $views;
-}
-
-function _quicktabs_get_default_view_displays($selected_view) {
-  $displays = array();
-  foreach (_quicktabs_get_default_views() as $name => $view) {
-    if ($name == $selected_view) {
-      $display_array = $view->display;
-      foreach ($display_array as $key => $display) {
-        $displays[$key] = $key;
-      }
-      break;
-    }
-  }
-  return $displays;
+  ksort($enabled_views);
+  return $enabled_views;
 }
 
 /**
@@ -865,14 +823,23 @@ function quicktabs_get_blocks() {
 /**
  * Helper function to get all view displays.
  */
-function _quicktabs_get_views_displays($view) {
+function _quicktabs_get_views_displays($view_name) {
   $displays = array();
-  $result = db_query("SELECT d.id FROM {views_view} v INNER JOIN {views_display} d ON v.vid = d.vid WHERE v.name = '%s' ORDER BY position ASC", $view);
-  while ($row = db_fetch_object($result)) {
-    $displays[$row->id] = $row->id;
+  if (empty($view_name)) {
+    // No view.
+    return $displays;
   }
-  if (empty($displays)) {
-    $displays = _quicktabs_get_default_view_displays($view);
+
+  $views = views_get_all_views();
+  $view = $views[$view_name];
+
+  if (empty($view->display)) {
+    // This view is broken.
+    return $displays;
+  }
+
+  foreach ($view->display as $id => $display) {
+    $displays[$id] = $id .': '. $display->display_title;
   }
   return $displays;
 }
