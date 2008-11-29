@@ -1,16 +1,21 @@
 <?php
+// $Id$
 
 /**
  * Page callback for quicktabs admin landing page.
  */
 function quicktabs_list() {
-  $result = db_query('SELECT * FROM {quicktabs}');
-  $header = array(t('Quick Tabs Block Name'), t('Delete'));
+  $result = db_query('SELECT qtid, title FROM {quicktabs} ORDER BY title');
+  $header = array(
+    array('data' => t('Quick Tabs Block Name')),
+    array('data' => t('Operations'), 'colspan' => 2),
+  );
   $rows = array();
   while ($row = db_fetch_object($result)) {
     $tablerow = array(
-    array('data' => $row->title .' ('. l('edit', 'admin/build/quicktabs/edit/'. $row->qtid) .')'),
-    array('data' => l(t('Delete'), 'admin/build/quicktabs/delete/'. $row->qtid)),
+      array('data' => $row->title),
+      array('data' => l('Edit', 'admin/build/quicktabs/edit/'. $row->qtid)),
+      array('data' => l('Delete', 'admin/build/quicktabs/delete/'. $row->qtid)),
     );
     $rows[] = $tablerow;
   }
