@@ -289,9 +289,21 @@ function quicktabs_ajax_node($nid) {
  * @ingroup themeable
  */
 function theme_quicktabs_tabs($tabs, $ajax = FALSE, $path = NULL, $delta = 0, $active_tab = 0) {
+  $output = '';
+  $tabs_count = count($tabs);
+  if ($tabs_count <= 0) {
+    return $output;
+  }
+
+  $index = 1;
   $output .= '<ul class="quicktabs_tabs">';
   foreach ($tabs as $i => $tab) {
-    $class = ($i == $active_tab ? 'active' : '');
+    $class = 'qtab-'. $i;
+    // Add first, last and active classes to the list of tabs to help out themers.
+    $class .= ($i == $active_tab ? ' active' : '');
+    $class .= ($index == 1 ? ' first' : '');
+    $class .= ($index == $tabs_count ? ' last': '');
+
     if ($ajax) {
       $qtpath = 'quicktabs_'. $delta . '='. $i;
       if ($tab['type'] == 'view') {
@@ -302,16 +314,15 @@ function theme_quicktabs_tabs($tabs, $ajax = FALSE, $path = NULL, $delta = 0, $a
             $argstring = '';
           }
           $id = 'view-'. $delta .'-'. $i .'-'. $tab['bnid'] .'-'. $tab['display'] . $argstring;
-        } else {
-          $output .= 'Views module not enabled, cannot display tab content';
         }
       } else {
         $id = 'node-'. $delta .'-'. $i .'-'. $tab['bnid'];
       }
-      $output .= '<li class="'. $class .'"><a href="'. $path . $qtpath .'" class="qt_ajax_tabs" id="'. $id .'">'. $tab['title'] .'</a></li>';
+      $output .= '<li'. drupal_attributes(array('class' => $class)) .'"><a href="'. $path . $qtpath .'" class="qt_ajax_tabs" id="'. $id .'">'. $tab['title'] .'</a></li>';
     } else {
-      $output .= '<li class="'. $class .'"><a href="#">'. $tab .'</a></li>';
+      $output .= '<li'. drupal_attributes(array('class' => $class)) .'"><a href="#">'. $tab .'</a></li>';
     }
+    $index++;
   }
   $output .= '</ul>';
   return $output;
@@ -323,7 +334,7 @@ function theme_quicktabs_tabs($tabs, $ajax = FALSE, $path = NULL, $delta = 0, $a
  * @ingroup themeable
  */
 function theme_quicktabs_block($block, $title = TRUE) {
-  $output  = "<div class=\"block block-$block->module\" id=\"block-$block->module-$block->delta\">\n";
+  $output = "<div class=\"block block-$block->module\" id=\"block-$block->module-$block->delta\">\n";
   if ($title) {
     $output .= " <h2 class=\"title\">$block->subject</h2>\n";
   }
