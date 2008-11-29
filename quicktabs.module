@@ -94,6 +94,7 @@ function quicktabs_menu() {
       'access arguments'   => array('administer site configuration'),
     );
     $items['quicktabs/preview'] = array(
+      'file' => 'includes/admin.inc',
       'page callback' => 'quicktabs_preview_page',
       'type'     => MENU_CALLBACK,
       'access arguments'   => array('administer site configuration'),
