@@ -1,40 +1,42 @@
+/* $Id */
+
 /* Edit QT section */
 
 #qt-tablist-table label{
-	float:left;
-	clear:left;
-	width:120px;
+  float:left;
+  clear:left;
+  width:120px;
 }
 #qt-tablist-table .form-item{
-	margin-bottom:5px;
+  margin-bottom:5px;
 }
 #qt-tablist-table .form-item .description{
-	margin-top:3px;
+  margin-top:3px;
 }
 #qt-tablist-table .qt-tab-title{
-	padding-right:35px;
+  padding-right:35px;
 }
 #qt-tablist-table .qt-tab-title, #qt-tablist-table .qt-tab-type{
-	width:100px;
+  width:100px;
 }
 #qt-tablist-table .qt-tab-type label.option{
-	width:auto;
+  width:auto;
 }
 #qt-tablist-table .qt-tab-bvid .form-item .form-text{
-	width:150px;
+  width:150px;
 }
 #qt-tablist-table .qt-tab-title .form-item .form-text{
-	width:80px;
+  width:80px;
 }
 
 #quicktabs-form #delete-tabs-button label,
 #quicktabs-form #add-more-tabs-button label, #quicktabs-aj-form #delete-tabs-button label, #quicktabs-aj-form #add-more-tabs-button label{
-	font-weight:bold;
+  font-weight:bold;
 }
 #quicktabs-form #delete-tabs-button,
 #quicktabs-form #add-more-tabs-button, #quicktabs-aj-form #delete-tabs-button, #quicktabs-aj-form #add-more-tabs-button {
-	padding:20px;
-	float:left;
+  padding:20px;
+  float:left;
 }
 
 #quicktabs-form .add-tab,
@@ -86,42 +88,42 @@ ul.quicktabs_tabs li {
   padding: 2px;
 }
 
-#quicktabs-settings .quicktabs-tabstyles .form-item{
-	width:200px;
-	float:left;
-	margin:0 10px 10px 0;
-	border:1px solid #ccc;
-	background-color:#fff;
+#quicktabs-settings .quicktabs-tabstyles .form-item {
+  width:200px;
+  float:left;
+  margin:0 10px 10px 0;
+  border:1px solid #ccc;
+  background-color:#fff;
 }
 
-#quicktabs-settings .quicktabs-tabstyles .form-item .option{
-	display:block;
-	background-color:#bfe3ff;
-	font:bold 12px/18px verdana;
-	color:#0a5793;
+#quicktabs-settings .quicktabs-tabstyles .form-item .option {
+  display:block;
+  background-color:#bfe3ff;
+  font:bold 12px/18px verdana;
+  color:#0a5793;
 }
 
-#quicktabs-settings .quicktabs-tabstyles .form-item .option:hover{
-	background-color:#aadaff;
-	cursor:pointer;
-	color:#003863;
+#quicktabs-settings .quicktabs-tabstyles .form-item .option:hover {
+  background-color:#aadaff;
+  cursor:pointer;
+  color:#003863;
 }
 
-#quicktabs-settings .quicktabs-tabstyles .form-item .option .form-radio{
-	margin-right:5px;
-	float:left;
-	height:15px;
-	margin-top:2px;
+#quicktabs-settings .quicktabs-tabstyles .form-item .option .form-radio {
+  margin-right:5px;
+  float:left;
+  height:15px;
+  margin-top:2px;
 }
 
 /* Misc */
 
 td.qt-tab-bvid input.form-submit {
-	display: none;
+  display: none;
 }
 
 td.qt-tab-bvid div.form-item {
-	clear: both;
+  clear: both;
 }
 
 body.quicktabs_iframe ul#simplemenu {

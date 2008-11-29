@@ -1,45 +1,56 @@
 <?php
 // $Id$
 
-
+/**
+ * Implementation of hook_schema().
+ */
 function quicktabs_schema() {
   $schema['quicktabs'] = array(
-    'description' => t('The quicktabs table.'),
+    'description' => 'The quicktabs table.',
     'fields' => array(
       'qtid' => array(
-        'description' => t('The primary identifier for a qt block.'),
+        'description' => 'The primary identifier for a qt block.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'size' => 'big',
         'not null' => TRUE,
-        'disp-width' => '10'),
+        'disp-width' => '10',
+      ),
       'ajax' => array(
-        'description' => t('Whether this is an ajax views block'),
+        'description' => 'Whether this is an ajax views block.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
-        'default' => 0),
+        'default' => 0,
+      ),
       'title' => array(
-        'description' => t('The title of this quicktabs block.'),
+        'description' => 'The title of this quicktabs block.',
         'type' => 'varchar',
         'length' => 255,
-        'not null' => TRUE),
+        'not null' => TRUE,
+      ),
       'tabs' => array(
-        'description' => t('A serialized array of the contents of this qt block.'),
+        'description' => 'A serialized array of the contents of this qt block.',
         'type' => 'text',
         'size' => 'medium',
-        'not null' => TRUE),
+        'not null' => TRUE,
       ),
+    ),
     'primary key' => array('qtid'),
   );
   return $schema;
 }
 
-
+ /**
+ * Implementation of hook_install().
+ */
 function quicktabs_install() {
   drupal_install_schema('quicktabs');
 }
 
+ /**
+ * Implementation of hook_uninstall().
+ */
 function quicktabs_uninstall() {
   drupal_uninstall_schema('quicktabs');
   // Delete any variables that have been set.
