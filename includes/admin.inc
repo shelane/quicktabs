@@ -201,7 +201,7 @@ function _qt_admin_main_form($form_state = NULL, &$quicktabs = NULL, $ajax = FAL
     ),
   );
 
-  $form['submit'] = array(
+  $form['submit_form'] = array(
     '#type' => 'submit',
     '#weight' => 10,
     '#value' => t('Save'),
@@ -454,12 +454,15 @@ function quicktabs_ahah() {
  * Validation handler for quicktabs admin page.
  */
 function quicktabs_form_validate($form, &$form_state) {
-  // we don't want it to validate when we're just adding or removing tabs
-  if ($form_state['values']['op'] == t('Save')) {
+  // We don't want it to validate when we're just adding or removing tabs.
+  if ($form_state['clicked_button']['#id'] == 'edit-submit-form') {
     if (empty($form_state['values']['title'])) {
       form_set_error('title', t('You must give your Quick Tabs block a title.'));
     }
     else {
+      if (!isset($form_state['values']['tabs'])) {
+        form_set_error('', t('At least one tab should be created.'));
+      }
       foreach ($form_state['values']['tabs'] as $j => $tab) {
         if (empty($tab['tabtext'])) {
           form_set_error('tabs]['. $j .'][tabtext', t('You must give each tab a title.'));
@@ -472,9 +475,9 @@ function quicktabs_form_validate($form, &$form_state) {
 /**
  * Submit handler for quicktabs admin page.
  */
-function quicktabs_form_submit($form, $form_state) {
-  // we don't want it to submit when we're just adding or removing tabs
-  if ($form_state['values']['op'] == t('Save')) {
+function quicktabs_form_submit($form, &$form_state) {
+  // We don't want it to submit when we're just adding or removing tabs.
+  if ($form_state['clicked_button']['#id'] == 'edit-submit-form') {
     $formvalues_tabs = array();
     foreach ($form_state['values']['tabs'] as $j => $tab) {
       $formvalues_tabs[] = array(
