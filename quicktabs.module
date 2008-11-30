@@ -24,12 +24,15 @@ function quicktabs_theme() {
   return array(
     'quicktabs_settings' => array(
       'arguments' => array('form' => NULL),
+      'file' => 'includes/admin.inc',
     ),
     'quicktabs_preview_page' => array(
       'arguments' => array(),
+      'file' => 'includes/admin.inc',
     ),
     'qt_tabs' => array(
       'arguments' => array('form' => NULL),
+      'file' => 'includes/admin.inc',
     ),
     'quicktabs_block' => array(
       'arguments' => array('block', 'title' => TRUE),
@@ -49,20 +52,21 @@ function quicktabs_menu() {
     $items['admin/build/quicktabs'] = array(
       'title' => 'Quick Tabs',
       'file' => 'includes/admin.inc',
-      'description' => 'Create blocks of tabbed content - content for each tab can be a view or a block',
+      'description' => 'Create blocks of tabbed content - content for each tab can be a view or a block.',
       'page callback' => 'quicktabs_list',
       'access arguments' => array('administer quicktabs blocks'),
     );
     $items['admin/build/quicktabs/list'] = array(
       'title' => 'List',
-      'file' => 'includes/admin.inc',
-      'type' => MENU_DEFAULT_LOCAL_TASK, 'weight' => -10);
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+    );
     $items['admin/build/quicktabs/add'] = array(
       'title' => 'New QT block',
       'file' => 'includes/admin.inc',
       'access arguments' => array('create quicktabs block'),
       'page callback' => 'quicktabs_new',
-      'type' => MENU_LOCAL_TASK);
+      'type' => MENU_LOCAL_TASK,
+    );
     $items['admin/build/quicktabs/ajax/add'] = array(
       'title' => 'New QT AJAX block',
       'file' => 'includes/admin.inc',
@@ -70,24 +74,27 @@ function quicktabs_menu() {
       'page callback' => 'quicktabs_new',
       'page arguments' => array(TRUE),
       'weight' => 1,
-      'type' => MENU_LOCAL_TASK);
+      'type' => MENU_LOCAL_TASK,
+    );
     $items['admin/build/quicktabs/delete'] = array(
       'title' => 'Delete QT block',
       'file' => 'includes/admin.inc',
       'access arguments' => array('administer blocks'),
       'page callback' => 'drupal_get_form',
       'page arguments' => array('quicktabs_block_delete'),
-      'type' => MENU_CALLBACK);
+      'type' => MENU_CALLBACK,
+    );
     $items['admin/build/quicktabs/edit'] = array(
       'title' => 'Edit QT block',
       'file' => 'includes/admin.inc',
       'access arguments' => array('administer blocks'),
       'page callback' => 'quicktabs_block_edit',
-      'type' => MENU_CALLBACK);
+      'type' => MENU_CALLBACK,
+    );
     $items['admin/settings/quicktabs'] = array(
-      'title'    => 'Quick Tabs',
+      'title' => 'Quick Tabs',
       'file' => 'includes/admin.inc',
-      'description' => 'Select a style for your Quick Tabs blocks',
+      'description' => 'Select a style for your Quick Tabs blocks.',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('quicktabs_settings'),
       'type'     => MENU_NORMAL_ITEM,
@@ -96,8 +103,8 @@ function quicktabs_menu() {
     $items['quicktabs/preview'] = array(
       'file' => 'includes/admin.inc',
       'page callback' => 'quicktabs_preview_page',
-      'type'     => MENU_CALLBACK,
-      'access arguments'   => array('administer site configuration'),
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('administer site configuration'),
     );
     $items['quicktabs/ahah'] = array(
       'page callback' => 'quicktabs_ahah',
