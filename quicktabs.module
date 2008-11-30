@@ -367,3 +367,25 @@ function quicktabs_add_css($tabstyle_css = NULL) {
     drupal_add_css($tabstyle_css, 'module');
   }
 }
+
+/**
+ * Implementation of hook_quicktabs_tabstyles().
+ *
+ * This hook allows other modules to create additional tab styles for
+ * the quicktabs module.
+ *
+ * @return array
+ *   An array of key => value pairs suitable for inclusion as the #options in a
+ *   select or radios form element. Each key must be the location of a css
+ *   file for a quick tabs style. Each value should be the name of the style.
+ */
+function quicktabs_quicktabs_tabstyles() {
+  $tabstyles_directory = drupal_get_path('module', 'quicktabs') .'/tabstyles';
+  $files = file_scan_directory($tabstyles_directory, '\.css$');
+
+  $tabstyles = array();
+  foreach ($files as $file) {
+    $tabstyles[$file->filename] = drupal_ucfirst($file->name);
+  }
+  return $tabstyles;
+}
