@@ -76,19 +76,20 @@ function quicktabs_menu() {
       'weight' => 1,
       'type' => MENU_LOCAL_TASK,
     );
-    $items['admin/build/quicktabs/delete'] = array(
+    $items['admin/build/quicktabs/delete/%quicktabs'] = array(
       'title' => 'Delete QT block',
       'file' => 'includes/admin.inc',
       'access arguments' => array('administer blocks'),
       'page callback' => 'drupal_get_form',
-      'page arguments' => array('quicktabs_block_delete'),
+      'page arguments' => array('quicktabs_block_delete', 4),
       'type' => MENU_CALLBACK,
     );
-    $items['admin/build/quicktabs/edit'] = array(
+    $items['admin/build/quicktabs/edit/%quicktabs'] = array(
       'title' => 'Edit QT block',
       'file' => 'includes/admin.inc',
       'access arguments' => array('administer blocks'),
       'page callback' => 'quicktabs_block_edit',
+      'page arguments' => array(4),
       'type' => MENU_CALLBACK,
     );
     $items['admin/settings/quicktabs'] = array(
@@ -146,16 +147,12 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
       break;
 
     case 'view':
-      if ($qtblock = db_fetch_object(db_query('SELECT qtid, ajax, title, tabs FROM {quicktabs} WHERE qtid = %d', $delta))) {
+      if ($qtblock = quicktabs_load($delta)) {
         quicktabs_add_css();
         drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
-        if ($qtblock->ajax == 0) {
-          $mainblock['subject'] = $qtblock->title;
-          $tabs = unserialize($qtblock->tabs);
-          foreach ($tabs as $key => $tab) {
-            $weight[$key]  = $tab['weight'];
-          }
-          array_multisort($weight, SORT_ASC, $tabs);
+        if ($qtblock['ajax'] == 0) {
+          $mainblock['subject'] = $qtblock['title'];
+          $tabs = $qtblock['tabs'];
           $tabtitles = array();
           foreach ($tabs as $tab) {
             $tabtitles[] = $tab['title'];
@@ -199,10 +196,9 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
           $output .= '</div></div>';
           $mainblock['content'] = $output;
         } else {
-          $mainblock['subject'] = $qtblock->title;
-          $tabs = unserialize($qtblock->tabs);
+          $mainblock['subject'] = $qtblock['title'];
+          $tabs = $qtblock['tabs'];
           foreach ($tabs as $key => $tab) {
-            $weight[$key]  = $tab['weight'];
             if ($tab['type'] == 'view') {
              $args_array = explode(',', $tab['args']);
               foreach($args_array as $arg) {
@@ -226,8 +222,6 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
             drupal_add_js($settings, 'setting');
             views_add_js('ajax_view');
           }
-          // sort the tabs by weight
-          array_multisort($weight, SORT_ASC, $tabs);
 
           // need to construct a path for the tab links for when js is disabled
           $fullpath = explode('?', $_SERVER['REQUEST_URI']);
@@ -388,4 +382,29 @@ function quicktabs_quicktabs_tabstyles() {
     $tabstyles[$file->filename] = drupal_ucfirst($file->name);
   }
   return $tabstyles;
+}
+
+/**
+ * Load the quicktabs data.
+ */
+function quicktabs_load($qtid) {
+  $qtblock = db_fetch_object(db_query('SELECT title, tabs, ajax FROM {quicktabs} WHERE qtid = %d', $qtid));
+  if (!$qtblock) {
+    return FALSE;
+  }
+
+  $tabs = unserialize($qtblock->tabs);
+  foreach ($tabs as $key => $tab) {
+    $weight[$key] = $tab['weight'];
+  }
+  array_multisort($weight, SORT_ASC, $tabs);
+
+  $quicktabs = array(
+    'qtid' => $qtid,
+    'title' => $qtblock->title,
+    'tabs' => $tabs,
+    'ajax' => $qtblock->ajax,
+  );
+
+  return $quicktabs;
 }

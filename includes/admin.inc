@@ -582,60 +582,44 @@ function quicktabs_updateblock($qtid, $fullcontent) {
   return;
 }
 
-function quicktabs_block_edit($qtid) {
-  if ($qtblock = db_fetch_object(db_query('SELECT title, tabs, ajax FROM {quicktabs} WHERE qtid = %d', $qtid))) {
-    $tabs = unserialize($qtblock->tabs);
-    $formtabs = array();
-    foreach ($tabs as $key => $tab) {
-      $weight[$key]  = $tab['weight'];
+/**
+ * Edit Quick Tabs block.
+ */
+function quicktabs_block_edit(array $quicktabs) {
+    foreach ($quicktabs['tabs'] as $key => $tab) {
       $formtabs[] = array(
         'tabweight' => $tab['weight'],
         'tabtext' => $tab['title'],
         'tabtype' => $tab['type'],
-        'bid' => ($qtblock->ajax == 0 ? ($tab['type'] == 'block' ? $tab['bvid'] : NULL) : NULL),
-        'hide_title' => ($qtblock->ajax == 0 ? ($tab['type'] == 'block' ? $tab['hide_title'] : NULL) : NULL),
-        'nid' => ($qtblock->ajax == 1 ? ($tab['type'] == 'node' ? $tab['bnid'] : NULL) : NULL),
-        'vid' => $tab['type'] == 'view' ? ($qtblock->ajax == 0 ? $tab['bvid'] : $tab['bnid']) : NULL,
+        'bid' => ($quicktabs['ajax'] == 0 ? ($tab['type'] == 'block' ? $tab['bvid'] : NULL) : NULL),
+        'hide_title' => ($quicktabs['ajax'] == 0 ? ($tab['type'] == 'block' ? $tab['hide_title'] : NULL) : NULL),
+        'nid' => ($quicktabs['ajax'] == 1 ? ($tab['type'] == 'node' ? $tab['bnid'] : NULL) : NULL),
+        'vid' => $tab['type'] == 'view' ? ($quicktabs['ajax'] == 0 ? $tab['bvid'] : $tab['bnid']) : NULL,
         'args' => $tab['type'] == 'view' ? $tab['args'] : NULL,
         'display' => $tab['type'] == 'view' ? $tab['display'] : NULL,
       );
     }
-    array_multisort($weight, SORT_ASC, $formtabs);
 
-    $quicktabs = array(
-      'qtid' => $qtid,
-      'title' => $qtblock->title,
-      'tabs' => $formtabs,
-      'formtype' => 'edit',
-    );
+    $quicktabs['tabs'] = $formtabs;
+    $quicktabs['formtype'] = 'edit';
 
     drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
     drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
-    if ($qtblock->ajax == 0) {
+    if ($quicktabs['ajax'] == 0) {
       $output = drupal_get_form('quicktabs_form', $quicktabs);
     } else {
       $output = drupal_get_form('quicktabs_aj_form', $quicktabs);
     }
     return $output;
-  }
-  else {
-    drupal_goto('admin/build/quicktabs');
-  }
-}
-
-function quicktabs_block_get_name($qtid) {
-  $result = db_result(db_query('SELECT title FROM {quicktabs} WHERE qtid=%d', $qtid));
-  return $result;
 }
 
 /**
  * Deletion of Quick Tabs blocks.
  */
-function quicktabs_block_delete(&$form_state, $qtid = 0) {
-  $qt_name = quicktabs_block_get_name($qtid);
-  $form['qtid'] = array('#type' => 'hidden', '#value' => $qtid);
-  $form['qt_name'] = array('#type' => 'hidden', '#value' => $qt_name);
-  return confirm_form($form, t('Are you sure you want to delete the Quick Tabs block %name?', array('%name' => $qt_name)), 'admin/build/quicktabs', '', t('Delete'), t('Cancel'));
+function quicktabs_block_delete(&$form_state, array $quicktabs) {
+  $form['qtid'] = array('#type' => 'hidden', '#value' => $quicktabs['qtid']);
+  $form['qt_name'] = array('#type' => 'hidden', '#value' => $quicktabs['title']);
+  return confirm_form($form, t('Are you sure you want to delete the Quick Tabs block %name?', array('%name' => $quicktabs['title'])), 'admin/build/quicktabs', '', t('Delete'), t('Cancel'));
 }
 
 /**
