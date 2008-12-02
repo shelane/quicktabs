@@ -398,7 +398,12 @@ function qt_more_tabs_submit($form, &$form_state) {
   $form_state['quicktabs'] = $quicktabs;
   $form_state['rebuild'] = TRUE;
   if ($form_state['values']['tabs_more']) {
-    $form_state['qt_count'] = count($form_state['values']['tabs']) + 1;
+    if (isset($form_state['values']['tabs'])) {
+      $form_state['qt_count'] = count($form_state['values']['tabs']) + 1;
+    }
+    else {
+      $form_state['qt_count'] = 1;
+    }
   }
   return $quicktabs;
 }
@@ -413,8 +418,13 @@ function qt_remove_tab_submit($form, &$form_state) {
   $form_state['quicktabs'] = $quicktabs;
   $form_state['rebuild'] = TRUE;
   unset($form['qt_wrapper']['tabs'][0]);
-  $form_state['values']['tabs'] = array_values($form_state['values']['tabs']);
-  $form_state['qt_count'] = count($form_state['values']['tabs']) - 1;
+  if (isset($form_state['values']['tabs'])) {
+    $form_state['values']['tabs'] = array_values($form_state['values']['tabs']);
+    $form_state['qt_count'] = count($form_state['values']['tabs']) - 1;
+  }
+  else {
+    $form_state['qt_count'] = 0;
+  }
   return $quicktabs;
 }
 
