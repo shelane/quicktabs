@@ -147,133 +147,153 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
       break;
 
     case 'view':
+      $mainblock = array();
       if ($qtblock = quicktabs_load($delta)) {
-        quicktabs_add_css();
-        drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
         if ($qtblock['ajax'] == 0) {
           $mainblock['subject'] = $qtblock['title'];
-          $tabs = $qtblock['tabs'];
-          $tabtitles = array();
-          foreach ($tabs as $tab) {
-            $tabtitles[] = $tab['title'];
-          }
-          $output = '<div class="quicktabs_wrapper">';
-          $output .= theme('quicktabs_tabs', $tabtitles);
-          $output .= '<div class="quicktabs_main">';
-          foreach ($tabs as $j => $tab) {
-            $output .= '<div class="quicktabs">';
-            if ($tab['type'] == 'view') {
-              if (module_exists('views')) {
-                $args = array();
-                if ($tab['args'] != '') {
-                  $args_array = explode(',', $tab['args']);
-                  foreach($args_array as $arg) {
-                    $args[] = trim($arg);
-                  }
-                }
-                $func_args = array_merge(array($tab['bvid'], $tab['display']), $args);
-                $output .= call_user_func_array('views_embed_view', $func_args);
-              }
-              else {
-                $output .= 'Views module not enabled, cannot display tab content';
-              }
-            }
-            else {
-              $pos = strpos($tab['bvid'], '_delta_');
-              $blockmodule = substr($tab['bvid'], 0, $pos);
-              $blockdelta = substr($tab['bvid'], $pos+7);
-              $block = (object) module_invoke($blockmodule, 'block', 'view', $blockdelta);
-              $block->module = $blockmodule;
-              $block->delta = $blockdelta;
-              if ($tab['hide_title'] != 1) {
-                $output .= $block->content ? theme('quicktabs_block', $block, TRUE) : '';
-              } else {
-                $output .= $block->content ? theme('quicktabs_block', $block, FALSE) : '';
-              }
-            }
-            $output .= '</div>';
-          }
-          $output .= '</div></div>';
-          $mainblock['content'] = $output;
-        } else {
+          $mainblock['content'] = quicktabs_render($qtblock['tabs']);
+        }
+        else {
           $mainblock['subject'] = $qtblock['title'];
-          $tabs = $qtblock['tabs'];
-          foreach ($tabs as $key => $tab) {
-            if ($tab['type'] == 'view') {
-             $args_array = explode(',', $tab['args']);
-              foreach($args_array as $arg) {
-                $args[] = trim($arg);
-              }
-              // we need to pass view details to js in case there is ajax paging
-              $settings = array(
-                'views' => array(
-                  'ajax_path' => url('views/ajax'),
-                  'ajaxViews' => array(
-                    array(
-                      'view_name' => $tab['bnid'],
-                      'view_display_id' => $tab['display'],
-                      'view_args' => implode('/', $args),
-                      'view_path' => $_GET['q'],
-                    ),
-                  ),
-                ),
-              );
-            }
-            drupal_add_js($settings, 'setting');
-            views_add_js('ajax_view');
-          }
-
-          // need to construct a path for the tab links for when js is disabled
-          $fullpath = explode('?', $_SERVER['REQUEST_URI']);
-          $queries = $_GET;
-          unset($queries['quicktabs_'. $delta]);
-          unset($queries['q']);
-          unset($queries['page']);
-          $querystring = '';
-          if (!empty($queries)) {
-            $i = 0;
-            foreach ($queries as $key => $value) {
-              $querystring .= $i > 0 ? '&'. $key .'='. $value : $key .'='. $value;
-              $i++;
-            }
-            $querystring .= '&';
-          }
-          $path = $fullpath[0];
-          $path .= '?'. $querystring;
-          // find out which tab is active
-          $active_tab = $_GET['quicktabs_'. $delta] ? $_GET['quicktabs_'. $delta] : 0;
-
-          // begin output of Quick Tabs mark-up
-          $output = '<div class="quicktabs_wrapper">';
-          // theme the tabs
-          $output .= theme('quicktabs_tabs', $tabs, TRUE, $path, $delta, $active_tab);
-          // the main content area begins
-          $output .= '<div class="quicktabs_main">';
-          // each quick tabs container needs a unique id so that multiple instances work with ajax
-          $output .= '<div id="quicktabs_ajax_container_'. $delta .'">';
-          if ($tabs[$active_tab]['type'] == 'view') {
-            $args = array();
-            if ($tabs[$active_tab]['args'] != '') {
-              $args_array = explode(',', $tabs[$active_tab]['args']);
-              foreach($args_array as $arg) {
-                $args[] = trim($arg);
-              }
-            }
-            $func_args = array_merge(array($tabs[$active_tab]['bnid'], $tabs[$active_tab]['display']), $args);
-            $output .= call_user_func_array('views_embed_view', $func_args);
-          } else {
-            $node = node_load($tabs[$active_tab]['bnid']);
-            $output .= theme('node', $node);
-          }
-
-          $output .= '</div>';
-          $output .= '</div></div>';
-          $mainblock['content'] = $output;
+          $mainblock['content'] = quicktabs_ajax_render($qtblock['tabs'], $qtblock['qtid']);
         }
       }
       return $mainblock;
     break;
   }
+}
+
+/**
+ * Render quicktabs.
+ */
+function quicktabs_render($tabs) {
+  quicktabs_add_css();
+  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
+
+  $tabtitles = array();
+  foreach ($tabs as $tab) {
+    $tabtitles[] = $tab['title'];
+  }
+  $output = '<div class="quicktabs_wrapper">';
+  $output .= theme('quicktabs_tabs', $tabtitles);
+  $output .= '<div class="quicktabs_main">';
+  foreach ($tabs as $j => $tab) {
+    $output .= '<div class="quicktabs">';
+    if ($tab['type'] == 'view') {
+      if (module_exists('views')) {
+        $args = array();
+        if ($tab['args'] != '') {
+          $args_array = explode(',', $tab['args']);
+          foreach($args_array as $arg) {
+            $args[] = trim($arg);
+          }
+        }
+        $func_args = array_merge(array($tab['bvid'], $tab['display']), $args);
+        $output .= call_user_func_array('views_embed_view', $func_args);
+      }
+      else {
+        $output .= 'Views module not enabled, cannot display tab content';
+      }
+    }
+    else {
+      $pos = strpos($tab['bvid'], '_delta_');
+      $blockmodule = substr($tab['bvid'], 0, $pos);
+      $blockdelta = substr($tab['bvid'], $pos+7);
+      $block = (object) module_invoke($blockmodule, 'block', 'view', $blockdelta);
+      $block->module = $blockmodule;
+      $block->delta = $blockdelta;
+      if ($tab['hide_title'] != 1) {
+        $output .= $block->content ? theme('quicktabs_block', $block, TRUE) : '';
+      } else {
+        $output .= $block->content ? theme('quicktabs_block', $block, FALSE) : '';
+      }
+    }
+    $output .= '</div>';
+  }
+  $output .= '</div></div>';
+
+  return $output;
+}
+
+/**
+ * Render ajax quicktabs.
+ */
+function quicktabs_ajax_render($tabs, $delta) {
+  quicktabs_add_css();
+  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
+
+  foreach ($tabs as $key => $tab) {
+    if ($tab['type'] == 'view') {
+     $args_array = explode(',', $tab['args']);
+      foreach($args_array as $arg) {
+        $args[] = trim($arg);
+      }
+      // we need to pass view details to js in case there is ajax paging
+      $settings = array(
+        'views' => array(
+          'ajax_path' => url('views/ajax'),
+          'ajaxViews' => array(
+            array(
+              'view_name' => $tab['bnid'],
+              'view_display_id' => $tab['display'],
+              'view_args' => implode('/', $args),
+              'view_path' => $_GET['q'],
+            ),
+          ),
+        ),
+      );
+    }
+    drupal_add_js($settings, 'setting');
+    views_add_js('ajax_view');
+  }
+
+  // need to construct a path for the tab links for when js is disabled
+  $fullpath = explode('?', $_SERVER['REQUEST_URI']);
+  $queries = $_GET;
+  unset($queries['quicktabs_'. $delta]);
+  unset($queries['q']);
+  unset($queries['page']);
+  $querystring = '';
+  if (!empty($queries)) {
+    $i = 0;
+    foreach ($queries as $key => $value) {
+      $querystring .= $i > 0 ? '&'. $key .'='. $value : $key .'='. $value;
+      $i++;
+    }
+    $querystring .= '&';
+  }
+  $path = $fullpath[0];
+  $path .= '?'. $querystring;
+  // find out which tab is active
+  $active_tab = $_GET['quicktabs_'. $delta] ? $_GET['quicktabs_'. $delta] : 0;
+
+  // begin output of Quick Tabs mark-up
+  $output = '<div class="quicktabs_wrapper">';
+  // theme the tabs
+  $output .= theme('quicktabs_tabs', $tabs, TRUE, $path, $delta, $active_tab);
+  // the main content area begins
+  $output .= '<div class="quicktabs_main">';
+  // each quick tabs container needs a unique id so that multiple instances work with ajax
+  $output .= '<div id="quicktabs_ajax_container_'. $delta .'">';
+  if ($tabs[$active_tab]['type'] == 'view') {
+    $args = array();
+    if ($tabs[$active_tab]['args'] != '') {
+      $args_array = explode(',', $tabs[$active_tab]['args']);
+      foreach($args_array as $arg) {
+        $args[] = trim($arg);
+      }
+    }
+    $func_args = array_merge(array($tabs[$active_tab]['bnid'], $tabs[$active_tab]['display']), $args);
+    $output .= call_user_func_array('views_embed_view', $func_args);
+  } else {
+    $node = node_load($tabs[$active_tab]['bnid']);
+    $output .= theme('node', $node);
+  }
+
+  $output .= '</div>';
+  $output .= '</div></div>';
+
+  return $output;
 }
 
 function quicktabs_ajax_node($nid) {
