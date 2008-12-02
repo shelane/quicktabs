@@ -563,23 +563,23 @@ function quicktabs_aj_form_submit($form, $form_state) {
   }
 }
 
+/**
+ * Insert db record.
+ */
 function quicktabs_createblock($fullcontent, $ajax = FALSE) {
   $qtid = db_last_insert_id('quicktabs', 'qtid');
   $title = $fullcontent['blocktitle'];
   $tabs = serialize($fullcontent['blockcontent']);
-  if (!$ajax) {
-    db_query('INSERT INTO {quicktabs} (qtid, title, tabs) VALUES(%d, "%s", "%s")', $qtid, $title, $tabs);
-  } else {
-    db_query('INSERT INTO {quicktabs} (qtid, ajax, title, tabs) VALUES(%d, 1, "%s", "%s")', $qtid, $title, $tabs);
-  }
-  return;
+  db_query("INSERT INTO {quicktabs} (qtid, ajax, title, tabs) VALUES(%d, %d, '%s', '%s')", $qtid, $ajax, $title, $tabs);
 }
 
+/**
+ * Update db record.
+ */
 function quicktabs_updateblock($qtid, $fullcontent) {
   $title = $fullcontent['blocktitle'];
   $tabs = serialize($fullcontent['blockcontent']);
   db_query("UPDATE {quicktabs} SET title='%s', tabs='%s' WHERE qtid=%d", $title, $tabs, $qtid);
-  return;
 }
 
 /**
