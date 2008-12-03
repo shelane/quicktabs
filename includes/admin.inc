@@ -88,8 +88,8 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
     '#type' => 'radios',
     '#title' => t('Ajax'),
     '#options' => array(
-      TRUE => t('Yes') .': '. t('Tabpages will be loaded at tab click.'),
-      FALSE => t('No') .': '. t('Tabpages will be loaded at page load.'),
+      TRUE => t('Yes') .': '. t('Individual tabpages will be loaded at tab click.'),
+      FALSE => t('No') .': '. t('All tabpages will be loaded at page load.'),
     ),
     '#default_value' => isset($quicktabs['ajax']) ? $quicktabs['ajax'] : 0,
     '#description' => t('Choose how the tabpages shoud be loaded.'),
