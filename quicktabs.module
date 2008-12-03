@@ -234,7 +234,7 @@ function quicktabs_ajax_render($tabs, $delta) {
   $path = $fullpath[0];
   $path .= '?'. $querystring;
   // find out which tab is active
-  $active_tab = $_GET['quicktabs_'. $delta] ? $_GET['quicktabs_'. $delta] : 0;
+  $active_tab = isset($_GET['quicktabs_'. $delta]) ? $_GET['quicktabs_'. $delta] : 0;
 
   // begin output of Quick Tabs mark-up
   $output = '<div class="quicktabs_wrapper">';
@@ -448,6 +448,7 @@ function quicktabs_render_tabpage($tab) {
           $output = theme('quicktabs_block', $block, !$tab['hide_title']);
         }
       }
+      break;
 
     case 'node':
       if (isset($tab['nid'])) {
