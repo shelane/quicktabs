@@ -40,9 +40,7 @@ function quicktabs_form($form_state, $quicktabs) {
 
   $form = _qt_admin_main_form($form_state, $quicktabs);
 
-  $formtype = $quicktabs['formtype'];
-  if ($formtype == 'edit') {
-
+  if ($quicktabs['formtype'] == 'edit') {
     $form['qtid'] = array(
       '#type' => 'hidden',
       '#value' => isset($quicktabs['qtid']) ? $quicktabs['qtid'] : 0,
@@ -72,11 +70,6 @@ function quicktabs_form($form_state, $quicktabs) {
 
   return $form;
 }
-
-// @todo: remove this comment block. it is left only to make the patch readable.
-/**
- * build the Quick Tabs (ajax) creation and edit form
- */
 
 /*
  * The main section of admin page.
@@ -195,58 +188,58 @@ function _quicktabs_form(array $details) {
 
     $selected_view = (isset($details['vid']) ? $details['vid'] : (isset($views_keys[0]) ? $views_keys[0] : ''));
     $form['view']['vid'] = array(
-    '#type' => 'select',
-    '#options' => $views,
-    '#default_value' => $selected_view,
-    '#title' => t('Select a view'),
-    '#ahah' => array(
-      'path' => 'quicktabs/ahah/',
-      'wrapper' => 'quicktabs-tabs',
-      'method' => 'replace',
-      'event' => 'change',
+      '#type' => 'select',
+      '#options' => $views,
+      '#default_value' => $selected_view,
+      '#title' => t('Select a view'),
+      '#ahah' => array(
+        'path' => 'quicktabs/ahah/',
+        'wrapper' => 'quicktabs-tabs',
+        'method' => 'replace',
+        'event' => 'change',
       ),
     );
     $form['view']['args'] = array(
-    '#type' => 'textfield',
-    '#title' => 'arguments',
-    '#size' => '10',
-    '#required' => false,
-    '#default_value' => isset($details['args']) ? $details['args'] : '',
-    '#description' => t('Provide a comma separated list of arguments to pass to the view.'),
+      '#type' => 'textfield',
+      '#title' => 'arguments',
+      '#size' => '10',
+      '#required' => FALSE,
+      '#default_value' => isset($details['args']) ? $details['args'] : '',
+      '#description' => t('Provide a comma separated list of arguments to pass to the view.'),
     );
 
     $form['view']['display'] = array(
-    '#type' => 'select',
-    '#title' => 'display',
-    '#options' => _quicktabs_get_views_displays($selected_view),
-    '#default_value' => isset($details['display']) ? $details['display'] : '',
-    '#description' => t('Choose a display for your view.'),
+      '#type' => 'select',
+      '#title' => 'display',
+      '#options' => _quicktabs_get_views_displays($selected_view),
+      '#default_value' => isset($details['display']) ? $details['display'] : '',
+      '#description' => t('Choose a display for your view.'),
     );
     $form['view']['get_displays'] = array(
-    '#type' => 'submit',
-    '#value' => 'vdisp_'. $delta,
-    '#submit' => array('qt_get_displays_submit'),
+      '#type' => 'submit',
+      '#value' => 'vdisp_'. $delta,
+      '#submit' => array('qt_get_displays_submit'),
     );
   }
 
-    $form['block']['bid'] = array(
-      '#type' => 'select',
-      '#options' => quicktabs_get_blocks(),
-      '#default_value' => isset($details['bid']) ? $details['bid'] : '',
-      '#title' => t('Select a block'),
-    );
-    $form['block']['hide_title'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Hide the title of this block'),
-      '#default_value' => isset($details['hide_title']) ? $details['hide_title'] : '',
-    );
+  $form['block']['bid'] = array(
+    '#type' => 'select',
+    '#options' => quicktabs_get_blocks(),
+    '#default_value' => isset($details['bid']) ? $details['bid'] : '',
+    '#title' => t('Select a block'),
+  );
+  $form['block']['hide_title'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide the title of this block'),
+    '#default_value' => isset($details['hide_title']) ? $details['hide_title'] : '',
+  );
 
-    $form['node']['nid'] = array(
-      '#type' => 'select',
-      '#options' => quicktabs_get_nodes(),
-      '#default_value' => isset($details['nid']) ? $details['nid'] : '',
-      '#title' => t('Select a node'),
-    );
+  $form['node']['nid'] = array(
+    '#type' => 'select',
+    '#options' => quicktabs_get_nodes(),
+    '#default_value' => isset($details['nid']) ? $details['nid'] : '',
+    '#title' => t('Select a node'),
+  );
 
   $form['type'] = array(
     '#type' => 'radios',
@@ -446,12 +439,12 @@ function quicktabs_updateblock($quicktabs) {
  * Edit Quick Tabs block.
  */
 function quicktabs_block_edit(array $quicktabs) {
-    $quicktabs['formtype'] = 'edit';
+  $quicktabs['formtype'] = 'edit';
 
-    drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
-    drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
-      $output = drupal_get_form('quicktabs_form', $quicktabs);
-    return $output;
+  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
+  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
+  $output = drupal_get_form('quicktabs_form', $quicktabs);
+  return $output;
 }
 
 /**
@@ -466,7 +459,7 @@ function quicktabs_block_delete(&$form_state, array $quicktabs) {
 /**
  * Submit handler for Quick Tabs blocks deletion.
  */
-function quicktabs_block_delete_submit($form, $form_state) {
+function quicktabs_block_delete_submit($form, &$form_state) {
   db_query('DELETE FROM {quicktabs} WHERE qtid = %d', $form_state['values']['qtid']);
   drupal_set_message(t('The Quick Tabs block %name has been removed.', array('%name' => $form_state['values']['qt_name'])));
   cache_clear_all();
@@ -488,7 +481,7 @@ function quicktabs_settings() {
   );
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Submit'),
+    '#value' => t('Save'),
   );
   return $form;
 }
@@ -496,7 +489,7 @@ function quicktabs_settings() {
 /**
  * Submit handler for QuickTabs settings.
  */
-function quicktabs_settings_submit($form, $form_state) {
+function quicktabs_settings_submit($form, &$form_state) {
   variable_set('quicktabs_tabstyle', $form_state['values']['quicktabs_tabstyle']);
 }
 

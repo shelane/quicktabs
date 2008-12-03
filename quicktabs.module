@@ -47,73 +47,71 @@ function quicktabs_theme() {
  * Implementation of hook_menu().
  */
 function quicktabs_menu() {
-  $items = array();
-
-    $items['admin/build/quicktabs'] = array(
-      'title' => 'Quick Tabs',
-      'file' => 'includes/admin.inc',
-      'description' => 'Create blocks of tabbed content - content for each tab can be a view or a block.',
-      'page callback' => 'quicktabs_list',
-      'access arguments' => array('administer quicktabs blocks'),
-    );
-    $items['admin/build/quicktabs/list'] = array(
-      'title' => 'List',
-      'type' => MENU_DEFAULT_LOCAL_TASK,
-    );
-    $items['admin/build/quicktabs/add'] = array(
-      'title' => 'New QT block',
-      'file' => 'includes/admin.inc',
-      'access arguments' => array('create quicktabs block'),
-      'page callback' => 'quicktabs_new',
-      'type' => MENU_LOCAL_TASK,
-    );
-    $items['admin/build/quicktabs/delete/%quicktabs'] = array(
-      'title' => 'Delete QT block',
-      'file' => 'includes/admin.inc',
-      'access arguments' => array('administer blocks'),
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('quicktabs_block_delete', 4),
-      'type' => MENU_CALLBACK,
-    );
-    $items['admin/build/quicktabs/edit/%quicktabs'] = array(
-      'title' => 'Edit QT block',
-      'file' => 'includes/admin.inc',
-      'access arguments' => array('administer blocks'),
-      'page callback' => 'quicktabs_block_edit',
-      'page arguments' => array(4),
-      'type' => MENU_CALLBACK,
-    );
-    $items['admin/settings/quicktabs'] = array(
-      'title' => 'Quick Tabs',
-      'file' => 'includes/admin.inc',
-      'description' => 'Select a style for your Quick Tabs blocks.',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('quicktabs_settings'),
-      'type'     => MENU_NORMAL_ITEM,
-      'access arguments'   => array('administer site configuration'),
-    );
-    $items['quicktabs/preview'] = array(
-      'file' => 'includes/admin.inc',
-      'page callback' => 'quicktabs_preview_page',
-      'type' => MENU_CALLBACK,
-      'access arguments' => array('administer site configuration'),
-    );
-    $items['quicktabs/ahah'] = array(
-      'page callback' => 'quicktabs_ahah',
-      'file' => 'includes/admin.inc',
-      'type' => MENU_CALLBACK,
-      'access arguments' => array('administer site configuration'),
-    );
-    $items['quicktabs/ajax/node'] = array(
-      'page callback' => 'quicktabs_ajax_node',
-      'type' => MENU_CALLBACK,
-      'access arguments' => array('access content'),
-    );
-    $items['quicktabs/ajax/block'] = array(
-      'page callback' => 'quicktabs_ajax_block',
-      'type' => MENU_CALLBACK,
-      'access arguments' => array('access content'),
-     );
+  $items['admin/build/quicktabs'] = array(
+    'title' => 'Quick Tabs',
+    'file' => 'includes/admin.inc',
+    'description' => 'Create blocks of tabbed content - content for each tab can be a view or a block.',
+    'page callback' => 'quicktabs_list',
+    'access arguments' => array('administer quicktabs blocks'),
+  );
+  $items['admin/build/quicktabs/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  $items['admin/build/quicktabs/add'] = array(
+    'title' => 'New QT block',
+    'file' => 'includes/admin.inc',
+    'access arguments' => array('create quicktabs block'),
+    'page callback' => 'quicktabs_new',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/build/quicktabs/delete/%quicktabs'] = array(
+    'title' => 'Delete QT block',
+    'file' => 'includes/admin.inc',
+    'access arguments' => array('administer blocks'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('quicktabs_block_delete', 4),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/build/quicktabs/edit/%quicktabs'] = array(
+    'title' => 'Edit QT block',
+    'file' => 'includes/admin.inc',
+    'access arguments' => array('administer blocks'),
+    'page callback' => 'quicktabs_block_edit',
+    'page arguments' => array(4),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/settings/quicktabs'] = array(
+    'title' => 'Quick Tabs',
+    'file' => 'includes/admin.inc',
+    'description' => 'Select a style for your Quick Tabs blocks.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('quicktabs_settings'),
+    'type'     => MENU_NORMAL_ITEM,
+    'access arguments'   => array('administer site configuration'),
+  );
+  $items['quicktabs/preview'] = array(
+    'file' => 'includes/admin.inc',
+    'page callback' => 'quicktabs_preview_page',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['quicktabs/ahah'] = array(
+    'page callback' => 'quicktabs_ahah',
+    'file' => 'includes/admin.inc',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['quicktabs/ajax/node'] = array(
+    'page callback' => 'quicktabs_ajax_node',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+  $items['quicktabs/ajax/block'] = array(
+    'page callback' => 'quicktabs_ajax_block',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+   );
   return $items;
 }
 
@@ -146,17 +144,16 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
     case 'view':
       $mainblock = array();
       if ($qtblock = quicktabs_load($delta)) {
-        if ($qtblock['ajax'] == 0) {
-          $mainblock['subject'] = $qtblock['title'];
+        $mainblock['subject'] = $qtblock['title'];
+        if (!$qtblock['ajax']) {
           $mainblock['content'] = quicktabs_render($qtblock['tabs']);
         }
         else {
-          $mainblock['subject'] = $qtblock['title'];
           $mainblock['content'] = quicktabs_ajax_render($qtblock['tabs'], $qtblock['qtid']);
         }
       }
       return $mainblock;
-    break;
+      break;
   }
 }
 
@@ -174,7 +171,7 @@ function quicktabs_render($tabs) {
   $output = '<div class="quicktabs_wrapper">';
   $output .= theme('quicktabs_tabs', $tabtitles);
   $output .= '<div class="quicktabs_main">';
-  foreach ($tabs as $j => $tab) {
+  foreach ($tabs as $tab) {
     $output .= '<div class="quicktabs">';
     $output .= quicktabs_render_tabpage($tab);
     $output .= '</div>';
