@@ -200,7 +200,7 @@ function quicktabs_ajax_render($tabs, $delta) {
           'ajax_path' => url('views/ajax'),
           'ajaxViews' => array(
             array(
-              'view_name' => $tab['bnid'],
+              'view_name' => $tab['vid'],
               'view_display_id' => $tab['display'],
               'view_args' => implode('/', $args),
               'view_path' => $_GET['q'],
@@ -215,8 +215,8 @@ function quicktabs_ajax_render($tabs, $delta) {
     }
   }
 
-  // need to construct a path for the tab links for when js is disabled
-  $fullpath = explode('?', $_SERVER['REQUEST_URI']);
+  // Need to construct a path for the tab links for when js is disabled.
+  $fullpath = explode('?', request_uri());
   $queries = $_GET;
   unset($queries['quicktabs_'. $delta]);
   unset($queries['q']);
