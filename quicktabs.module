@@ -118,6 +118,11 @@ function quicktabs_menu() {
       'type' => MENU_CALLBACK,
       'access arguments' => array('access content'),
     );
+    $items['quicktabs/ajax/block'] = array(
+      'page callback' => 'quicktabs_ajax_block',
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),
+     );
   return $items;
 }
 
@@ -179,35 +184,7 @@ function quicktabs_render($tabs) {
   $output .= '<div class="quicktabs_main">';
   foreach ($tabs as $j => $tab) {
     $output .= '<div class="quicktabs">';
-    if ($tab['type'] == 'view') {
-      if (module_exists('views')) {
-        $args = array();
-        if ($tab['args'] != '') {
-          $args_array = explode(',', $tab['args']);
-          foreach($args_array as $arg) {
-            $args[] = trim($arg);
-          }
-        }
-        $func_args = array_merge(array($tab['bvid'], $tab['display']), $args);
-        $output .= call_user_func_array('views_embed_view', $func_args);
-      }
-      else {
-        $output .= 'Views module not enabled, cannot display tab content';
-      }
-    }
-    else {
-      $pos = strpos($tab['bvid'], '_delta_');
-      $blockmodule = substr($tab['bvid'], 0, $pos);
-      $blockdelta = substr($tab['bvid'], $pos+7);
-      $block = (object) module_invoke($blockmodule, 'block', 'view', $blockdelta);
-      $block->module = $blockmodule;
-      $block->delta = $blockdelta;
-      if ($tab['hide_title'] != 1) {
-        $output .= $block->content ? theme('quicktabs_block', $block, TRUE) : '';
-      } else {
-        $output .= $block->content ? theme('quicktabs_block', $block, FALSE) : '';
-      }
-    }
+    $output .= quicktabs_render_tabpage($tab);
     $output .= '</div>';
   }
   $output .= '</div></div>';
@@ -243,8 +220,10 @@ function quicktabs_ajax_render($tabs, $delta) {
         ),
       );
     }
-    drupal_add_js($settings, 'setting');
-    views_add_js('ajax_view');
+    if (module_exists('views')) {
+      drupal_add_js($settings, 'setting');
+      views_add_js('ajax_view');
+    }
   }
 
   // need to construct a path for the tab links for when js is disabled
@@ -275,30 +254,37 @@ function quicktabs_ajax_render($tabs, $delta) {
   $output .= '<div class="quicktabs_main">';
   // each quick tabs container needs a unique id so that multiple instances work with ajax
   $output .= '<div id="quicktabs_ajax_container_'. $delta .'">';
-  if ($tabs[$active_tab]['type'] == 'view') {
-    $args = array();
-    if ($tabs[$active_tab]['args'] != '') {
-      $args_array = explode(',', $tabs[$active_tab]['args']);
-      foreach($args_array as $arg) {
-        $args[] = trim($arg);
-      }
-    }
-    $func_args = array_merge(array($tabs[$active_tab]['bnid'], $tabs[$active_tab]['display']), $args);
-    $output .= call_user_func_array('views_embed_view', $func_args);
-  } else {
-    $node = node_load($tabs[$active_tab]['bnid']);
-    $output .= theme('node', $node);
-  }
-
+  // Render the active tabpgage.
+  $output .= quicktabs_render_tabpage($tabs[$active_tab]);
   $output .= '</div>';
   $output .= '</div></div>';
 
   return $output;
 }
 
+/**
+ * Ajax callback for node tabpage.
+ */
 function quicktabs_ajax_node($nid) {
-  $node = node_load($nid);
-  $output = theme('node', $node);
+  $tabpage = array(
+    'type' => 'node',
+    'bnid' => $nid,
+  );
+  $output = quicktabs_render_tabpage($tabpage);
+  print drupal_to_js(array('status' => TRUE, 'data' => $output));
+}
+
+/**
+ * Ajax callback for block tabpage.
+ */
+function quicktabs_ajax_block($bid, $hide_title) {
+  $tabpage = array(
+    'type' => 'block',
+    'bvid' => $bid,
+    'hide_title' => $hide_title,
+  );
+
+  $output = quicktabs_render_tabpage($tabpage);
   print drupal_to_js(array('status' => TRUE, 'data' => $output));
 }
 
@@ -427,4 +413,66 @@ function quicktabs_load($qtid) {
   );
 
   return $quicktabs;
+}
+
+/**
+ * Render quicktabs tabpage.
+ */
+function quicktabs_render_tabpage($tab) {
+  $output = '';
+  // the id key is different depending on the qt type
+  if (isset($tab['bvid'])) {
+    $id = 'bvid';
+  }
+  else {
+    $id = 'bnid';
+  }
+  switch ($tab['type']) {
+    case 'view':
+      if (isset($tab[$id])) {
+        if (module_exists('views')) {
+          $args = array();
+          if ($tab['args'] != '') {
+            $args_array = explode(',', $tab['args']);
+            foreach($args_array as $arg) {
+              $args[] = trim($arg);
+            }
+          }
+          $func_args = array_merge(array($tab[$id], $tab['display']), $args);
+          $output = call_user_func_array('views_embed_view', $func_args);
+        }
+        else {
+          $output = t('Views module not enabled, cannot display tab content.');
+        }
+      }
+      break;
+
+    case 'block':
+      if (isset($tab[$id])) {
+        $pos = strpos($tab['bvid'], '_delta_');
+        $blockmodule = substr($tab[$id], 0, $pos);
+        $blockdelta = substr($tab[$id], $pos + 7);
+        $block = (object) module_invoke($blockmodule, 'block', 'view', $blockdelta);
+        if (isset($block->content)) {
+          $block->module = $blockmodule;
+          $block->delta = $blockdelta;
+          $output = theme('quicktabs_block', $block, !$tab['hide_title']);
+        }
+      }
+
+    case 'node':
+      if (isset($tab[$id])) {
+        $node = node_load($tab[$id]);
+        if (!empty($node)) {
+          $output = theme('node', $node);
+        }
+      }
+      break;
+
+    case 'freetext':
+      $output = $tab['text'];
+      break;
+  }
+
+  return $output;
 }
