@@ -39,7 +39,7 @@ function quicktabs_new($ajax = FALSE) {
  */
 function quicktabs_form($form_state = NULL, $quicktabs = NULL) {
   // Add our JS file, which has some Drupal core JS overrides, and ensures ahah behaviours get re-attached
-  drupal_add_js(drupal_get_path('module', 'quicktabs') . '/js/quicktabs_ahah.js', 'footer');
+  drupal_add_js(drupal_get_path('module', 'quicktabs') . '/js/quicktabs_ahah.js', 'module', 'footer');
 
   $form = _qt_admin_main_form($form_state, $quicktabs, FALSE);
 
@@ -47,18 +47,23 @@ function quicktabs_form($form_state = NULL, $quicktabs = NULL) {
   if ($formtype == 'edit') {
 
     $form['qtid'] = array(
-    '#type' => 'hidden',
-    '#value' => $quicktabs['qtid']
+      '#type' => 'hidden',
+      '#value' => $quicktabs['qtid']
     );
   }
 
-  $tabcontent = $quicktabs['tabs'];
+  if (isset($quicktabs['tabs'])) {
+    $tabcontent = $quicktabs['tabs'];
+  }
+  else {
+    $tabcontent = array();
+  }
 
   if (isset($form_state['qt_count'])) {
     $qt_count = $form_state['qt_count'];
   }
   else {
-    $qt_count = max(2, empty($tabcontent) ? 2 : count($tabcontent));
+    $qt_count = empty($tabcontent) ? 2 : count($tabcontent);
   }
 
   // Add the current tabs to the form.
@@ -145,9 +150,8 @@ function quicktabs_aj_form($form_state = NULL, $quicktabs = NULL) {
  * The main section of admin page.
  */
 function _qt_admin_main_form($form_state = NULL, &$quicktabs = NULL, $ajax = FALSE) {
-  $form = array(
-    '#cache' => TRUE,
-  );
+  $form['#cache'] = TRUE;
+
   // the contents of $quicktabs will either come from the db or from $form_state
   if (isset($form_state['quicktabs'])) {
     $quicktabs = $form_state['quicktabs'] + (array)$quicktabs;
@@ -667,8 +671,6 @@ function quicktabs_settings() {
  */
 function quicktabs_settings_submit($form, $form_state) {
   variable_set('quicktabs_tabstyle', $form_state['values']['quicktabs_tabstyle']);
-  variable_set('quicktabs_blocktitles', $form_state['values']['quicktabs_blocktitles']);
-  //variable_set('quicktabs_viewbuild', $form_state['values']['quicktabs_viewbuild']);
 }
 
 /**
