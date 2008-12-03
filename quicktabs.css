@@ -118,12 +118,21 @@ ul.quicktabs_tabs li {
 
 /* Misc */
 
-td.qt-tab-bvid input.form-submit {
+td.qt-tab-view-content input.form-submit {
   display: none;
 }
 
-td.qt-tab-bvid div.form-item {
-  clear: both;
+td.qt-tab-title, td.qt-tab-type {
+  width: 150px;
+}
+
+td.qt-tab-block-content, td.qt-tab-view-content, td.qt-tab-node-content {
+  height: 120px;
+}
+
+td.qt-tab-view-content div.form-item {
+  padding-right: 15px;
+  float: left;
 }
 
 body.quicktabs_iframe ul#simplemenu {

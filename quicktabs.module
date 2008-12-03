@@ -67,15 +67,6 @@ function quicktabs_menu() {
       'page callback' => 'quicktabs_new',
       'type' => MENU_LOCAL_TASK,
     );
-    $items['admin/build/quicktabs/ajax/add'] = array(
-      'title' => 'New QT AJAX block',
-      'file' => 'includes/admin.inc',
-      'access arguments' => array('create quicktabs block'),
-      'page callback' => 'quicktabs_new',
-      'page arguments' => array(TRUE),
-      'weight' => 1,
-      'type' => MENU_LOCAL_TASK,
-    );
     $items['admin/build/quicktabs/delete/%quicktabs'] = array(
       'title' => 'Delete QT block',
       'file' => 'includes/admin.inc',
@@ -140,6 +131,7 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
 
   switch ($op) {
     case 'list':
+      $blocks = array();
       $jqueryblocks = array();
       $result = db_query('SELECT * FROM {quicktabs}');
       while ($row = db_fetch_object($result)) {
@@ -268,7 +260,7 @@ function quicktabs_ajax_render($tabs, $delta) {
 function quicktabs_ajax_node($nid) {
   $tabpage = array(
     'type' => 'node',
-    'bnid' => $nid,
+    'nid' => $nid,
   );
   $output = quicktabs_render_tabpage($tabpage);
   print drupal_to_js(array('status' => TRUE, 'data' => $output));
@@ -280,7 +272,7 @@ function quicktabs_ajax_node($nid) {
 function quicktabs_ajax_block($bid, $hide_title) {
   $tabpage = array(
     'type' => 'block',
-    'bvid' => $bid,
+    'bid' => $bid,
     'hide_title' => $hide_title,
   );
 
@@ -313,17 +305,23 @@ function theme_quicktabs_tabs($tabs, $ajax = FALSE, $path = NULL, $delta = 0, $a
 
     if ($ajax) {
       $qtpath = 'quicktabs_'. $delta . '='. $i;
-      if ($tab['type'] == 'view') {
+      switch ($tab['type']) {
+      case 'view':
         if (module_exists('views')) {
           if ($tab['args'] != '') {
             $argstring = '-'. str_replace(',', '|', $tab['args']);
           } else {
             $argstring = '';
           }
-          $id = 'view-'. $delta .'-'. $i .'-'. $tab['bnid'] .'-'. $tab['display'] . $argstring;
+          $id = 'view-'. $delta .'-'. $i .'-'. $tab['vid'] .'-'. $tab['display'] . $argstring;
         }
-      } else {
-        $id = 'node-'. $delta .'-'. $i .'-'. $tab['bnid'];
+        break;
+      case 'node':
+        $id = 'node-'. $delta .'-'. $i .'-'. $tab['nid'];
+        break;
+      case 'block':
+        $id = 'block-'. $delta .'-'. $i .'-'. $tab['bid'] .'-'. $tab['hide_title'];
+        break;
       }
       $output .= '<li'. drupal_attributes(array('class' => $class)) .'"><a href="'. $path . $qtpath .'" class="qt_ajax_tabs" id="'. $id .'">'. $tab['title'] .'</a></li>';
     } else {
@@ -420,16 +418,9 @@ function quicktabs_load($qtid) {
  */
 function quicktabs_render_tabpage($tab) {
   $output = '';
-  // the id key is different depending on the qt type
-  if (isset($tab['bvid'])) {
-    $id = 'bvid';
-  }
-  else {
-    $id = 'bnid';
-  }
   switch ($tab['type']) {
     case 'view':
-      if (isset($tab[$id])) {
+      if (isset($tab['vid'])) {
         if (module_exists('views')) {
           $args = array();
           if ($tab['args'] != '') {
@@ -438,7 +429,7 @@ function quicktabs_render_tabpage($tab) {
               $args[] = trim($arg);
             }
           }
-          $func_args = array_merge(array($tab[$id], $tab['display']), $args);
+          $func_args = array_merge(array($tab['vid'], $tab['display']), $args);
           $output = call_user_func_array('views_embed_view', $func_args);
         }
         else {
@@ -448,10 +439,10 @@ function quicktabs_render_tabpage($tab) {
       break;
 
     case 'block':
-      if (isset($tab[$id])) {
-        $pos = strpos($tab['bvid'], '_delta_');
-        $blockmodule = substr($tab[$id], 0, $pos);
-        $blockdelta = substr($tab[$id], $pos + 7);
+      if (isset($tab['bid'])) {
+        $pos = strpos($tab['bid'], '_delta_');
+        $blockmodule = substr($tab['bid'], 0, $pos);
+        $blockdelta = substr($tab['bid'], $pos + 7);
         $block = (object) module_invoke($blockmodule, 'block', 'view', $blockdelta);
         if (isset($block->content)) {
           $block->module = $blockmodule;
@@ -461,8 +452,8 @@ function quicktabs_render_tabpage($tab) {
       }
 
     case 'node':
-      if (isset($tab[$id])) {
-        $node = node_load($tab[$id]);
+      if (isset($tab['nid'])) {
+        $node = node_load($tab['nid']);
         if (!empty($node)) {
           $output = theme('node', $node);
         }

@@ -21,12 +21,14 @@ var quicktabsClick = function() {
   if ( $(this).hasClass('qt_ajax_tabs') ) {
     var viewDetails = this.id.split('-');
     var $container = $('div#quicktabs_ajax_container_' + viewDetails[1]);
-    if (viewDetails[0] == 'node') {
+    switch (viewDetails[0]) {
+    case 'node':
       $.get(Drupal.settings.basePath + 'quicktabs/ajax/node/' + viewDetails[3], null, function(data){
         var result = Drupal.parseJson(data);
         $container.html(result['data']);
       });
-    } else {
+      break;
+    case 'view':
       var target;
       target = $('div#quicktabs_ajax_container_' + viewDetails[1] + ' > div');
       var ajax_path = Drupal.settings.views.ajax_path;
@@ -64,6 +66,13 @@ var quicktabsClick = function() {
       //  var result = Drupal.parseJson(data);
       //  $container.html(result['data']);
       //});
+      break;
+    case 'block':
+      $.get(Drupal.settings.basePath + 'quicktabs/ajax/block/' + viewDetails[3] + '/' + viewDetails[4], null, function(data){
+        var result = Drupal.parseJson(data);
+        $container.html(result['data']);
+      });
+      break;
     }
   } else {
     $(this).parents('.quicktabs_wrapper').find('div.quicktabs').hide();
