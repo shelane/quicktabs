@@ -11,7 +11,7 @@ function quicktabs_help($path, $arg) {
 <p>Once created, the Quick Tabs blocks show up in your block listing, ready to be configured and enabled like other blocks.</p>
 <p>Multiple Quick Tabs blocks can be placed on a single page.</p>
 <p>Visit the <a href="@configuration">Quick Tabs configuration page</a> to choose a style for your Quick Tabs blocks.</p>
-<p>Click on the "New QT block" tab below to get started.</p>', array('@configuration' => url('admin/settings/quicktabs')));
+<p>Click on the "New QT block" tab to get started.</p>', array('@configuration' => url('admin/settings/quicktabs')));
     case 'admin/build/quicktabs/add':
       return '<p>'. t('Here you can create a new Quick Tabs block. Once you have created this block you will be taken to the <a href="@overview">blocks</a> page to configure and enable it.', array('@overview' => url('admin/build/block'))) .'</p>';
   }
@@ -322,9 +322,9 @@ function theme_quicktabs_tabs($tabs, $ajax = FALSE, $path = NULL, $delta = 0, $a
         $id = 'block--'. $delta .'--'. $i .'--'. $tab['bid'] .'--'. $tab['hide_title'];
         break;
       }
-      $output .= '<li'. drupal_attributes(array('class' => $class)) .'"><a href="'. $path . $qtpath .'" class="qt_ajax_tabs" id="'. $id .'">'. $tab['title'] .'</a></li>';
+      $output .= '<li'. drupal_attributes(array('class' => $class)) .'><a href="'. $path . $qtpath .'" class="qt_ajax_tabs" id="'. $id .'">'. $tab['title'] .'</a></li>';
     } else {
-      $output .= '<li'. drupal_attributes(array('class' => $class)) .'"><a href="#">'. $tab .'</a></li>';
+      $output .= '<li'. drupal_attributes(array('class' => $class)) .'><a href="#">'. $tab .'</a></li>';
     }
     $index++;
   }
