@@ -19,7 +19,7 @@ var quicktabsClick = function() {
   $(this).parents('li').siblings().removeClass('active');
   $(this).parents('li').addClass('active');
   if ( $(this).hasClass('qt_ajax_tabs') ) {
-    var viewDetails = this.id.split('-');
+    var viewDetails = this.id.split('--');
     var $container = $('div#quicktabs_ajax_container_' + viewDetails[1]);
     switch (viewDetails[0]) {
     case 'node':
