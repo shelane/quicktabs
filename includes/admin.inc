@@ -14,8 +14,8 @@ function quicktabs_list() {
   while ($row = db_fetch_object($result)) {
     $tablerow = array(
       array('data' => $row->title),
-      array('data' => l('Edit', 'admin/build/quicktabs/edit/'. $row->qtid)),
-      array('data' => l('Delete', 'admin/build/quicktabs/delete/'. $row->qtid)),
+      array('data' => l('Edit', 'admin/build/quicktabs/'. $row->qtid .'/edit')),
+      array('data' => l('Delete', 'admin/build/quicktabs/'. $row->qtid .'/delete')),
     );
     $rows[] = $tablerow;
   }
@@ -23,24 +23,18 @@ function quicktabs_list() {
   return $output;
 }
 
-
-function quicktabs_new() {
-  $quicktabs['formtype'] = 'new';
-  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
-  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
-  return drupal_get_form('quicktabs_form', $quicktabs);
-}
-
 /**
- * build the Quick Tabs (normal) creation and edit form
+ * Build the Quick Tabs (normal) creation and edit form.
  */
-function quicktabs_form($form_state, $quicktabs) {
+function quicktabs_form($form_state, $formtype, $quicktabs = array()) {
   // Add our JS file, which has some Drupal core JS overrides, and ensures ahah behaviours get re-attached
   drupal_add_js(drupal_get_path('module', 'quicktabs') . '/js/quicktabs_ahah.js', 'module', 'footer');
+  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
+  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
 
   $form = _qt_admin_main_form($form_state, $quicktabs);
 
-  if ($quicktabs['formtype'] == 'edit') {
+  if ($formtype == 'edit') {
     $form['qtid'] = array(
       '#type' => 'hidden',
       '#value' => isset($quicktabs['qtid']) ? $quicktabs['qtid'] : 0,
@@ -433,18 +427,6 @@ function quicktabs_createblock($quicktabs) {
 function quicktabs_updateblock($quicktabs) {
   $quicktabs['tabs'] = serialize($quicktabs['tabs']);
   db_query("UPDATE {quicktabs} SET ajax = %d, title = '%s', tabs = '%s' WHERE qtid = %d", $quicktabs['ajax'], $quicktabs['title'], $quicktabs['tabs'], $quicktabs['qtid']);
-}
-
-/**
- * Edit Quick Tabs block.
- */
-function quicktabs_block_edit(array $quicktabs) {
-  $quicktabs['formtype'] = 'edit';
-
-  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
-  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
-  $output = drupal_get_form('quicktabs_form', $quicktabs);
-  return $output;
 }
 
 /**

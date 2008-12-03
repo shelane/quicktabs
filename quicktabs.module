@@ -62,23 +62,24 @@ function quicktabs_menu() {
     'title' => 'New QT block',
     'file' => 'includes/admin.inc',
     'access arguments' => array('create quicktabs block'),
-    'page callback' => 'quicktabs_new',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('quicktabs_form', 'add'),
     'type' => MENU_LOCAL_TASK,
   );
-  $items['admin/build/quicktabs/delete/%quicktabs'] = array(
+  $items['admin/build/quicktabs/%quicktabs/delete'] = array(
     'title' => 'Delete QT block',
     'file' => 'includes/admin.inc',
     'access arguments' => array('administer blocks'),
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('quicktabs_block_delete', 4),
+    'page arguments' => array('quicktabs_block_delete', 3),
     'type' => MENU_CALLBACK,
   );
-  $items['admin/build/quicktabs/edit/%quicktabs'] = array(
+  $items['admin/build/quicktabs/%quicktabs/edit'] = array(
     'title' => 'Edit QT block',
     'file' => 'includes/admin.inc',
     'access arguments' => array('administer blocks'),
-    'page callback' => 'quicktabs_block_edit',
-    'page arguments' => array(4),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('quicktabs_form', 'edit', 3),
     'type' => MENU_CALLBACK,
   );
   $items['admin/settings/quicktabs'] = array(
