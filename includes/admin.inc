@@ -342,9 +342,7 @@ function qt_remove_tab_submit($form, &$form_state) {
   $quicktabs = _quicktabs_convert_form_to_quicktabs($form_state);
   $form_state['quicktabs'] = $quicktabs;
   $form_state['rebuild'] = TRUE;
-  unset($form['qt_wrapper']['tabs'][0]);
   if (isset($form_state['values']['tabs'])) {
-    $form_state['values']['tabs'] = array_values($form_state['values']['tabs']);
     $form_state['qt_count'] = count($form_state['values']['tabs']) - 1;
   }
   else {
@@ -422,13 +420,12 @@ function quicktabs_form_submit($form, &$form_state) {
 
     if ($quicktabs['qtid'] > 0) {
       quicktabs_updateblock($quicktabs);
-      $msg = t('Your Quick Tabs block has been updated.');
+      drupal_set_message(t('Your Quick Tabs block has been updated.'));
     }
     else {
       quicktabs_createblock($quicktabs);
-      $msg = t('Your Quick Tabs block has been created and can now be enabled.');
+      drupal_set_message(t('Your Quick Tabs block has been created and can now be enabled.'));
     }
-    drupal_set_message($msg);
     drupal_goto('admin/build/quicktabs');
   }
 }
@@ -465,14 +462,13 @@ function quicktabs_block_delete_submit($form, &$form_state) {
   db_query('DELETE FROM {quicktabs} WHERE qtid = %d', $form_state['values']['qtid']);
   drupal_set_message(t('The Quick Tabs block %name has been removed.', array('%name' => $form_state['values']['qt_name'])));
   cache_clear_all();
-  drupal_goto('admin/build/quicktabs');
+  $form_state['redirect'] = 'admin/build/quicktabs';
 };
 
 /**
  * Callback function for admin/settings/quicktabs. Display the settings form.
  */
 function quicktabs_settings() {
-  $form = array();
   $form['quicktabs_tabstyle'] = array(
     '#type' => 'radios',
     '#title' => t('Tab Style'),
