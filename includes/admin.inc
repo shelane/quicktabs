@@ -37,11 +37,6 @@ function quicktabs_clone($quicktabs) {
  * Build the Quick Tabs (normal) creation and edit form.
  */
 function quicktabs_form($form_state, $formtype, $quicktabs = array()) {
-  // Add our JS file, which has some Drupal core JS overrides, and ensures ahah behaviours get re-attached
-  drupal_add_js(drupal_get_path('module', 'quicktabs') . '/js/quicktabs_ahah.js', 'module', 'footer');
-  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
-  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
-
   $form = _qt_admin_main_form($form_state, $quicktabs);
 
   if ($formtype == 'edit') {
@@ -310,10 +305,13 @@ function theme_qt_tabs($form) {
 
   $output = theme('table', $headers, $rows, array('id' => 'qt-tablist-table'));
   $output .= drupal_render($form);
+
+  // Add our JS file, which has some Drupal core JS overrides, and ensures ahah behaviours get re-attached
+  drupal_add_js(drupal_get_path('module', 'quicktabs') . '/js/quicktabs_ahah.js', 'module', 'footer');
+  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
+  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
   return $output;
 }
-
-
 
 /**
  * Submit handler for the "Add Tab" button.
