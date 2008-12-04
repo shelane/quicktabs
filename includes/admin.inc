@@ -113,7 +113,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
     '#tree' => TRUE,
     '#prefix' => '<div id="quicktabs-tabs">',
     '#suffix' => '</div>',
-    '#theme' => 'qt_tabs',
+    '#theme' => 'quicktabs_admin_form_tabs',
   );
 
   $form['qt_wrapper']['tabs_more'] = array(
@@ -268,14 +268,14 @@ function _quicktabs_form($details) {
  *
  * @ingroup themeable
  */
-function theme_qt_tabs($form) {
+function theme_quicktabs_admin_form_tabs($form) {
   drupal_add_tabledrag('qt-tablist-table', 'order', 'sibling', 'qt-tabs-weight');
   $rows = array();
   $headers = array(
     t('Tab Title'),
-    t('Weight'),
+    t('Tab Weight'),
     t('Tab type'),
-    t('Content'),
+    t('Tab Content'),
   );
 
   foreach (element_children($form) as $key) {

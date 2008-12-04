@@ -30,7 +30,7 @@ function quicktabs_theme() {
       'arguments' => array(),
       'file' => 'includes/admin.inc',
     ),
-    'qt_tabs' => array(
+    'quicktabs_admin_form_tabs' => array(
       'arguments' => array('form' => NULL),
       'file' => 'includes/admin.inc',
     ),
