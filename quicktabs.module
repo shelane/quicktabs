@@ -82,6 +82,14 @@ function quicktabs_menu() {
     'page arguments' => array('quicktabs_form', 'edit', 3),
     'type' => MENU_CALLBACK,
   );
+  $items['admin/build/quicktabs/%quicktabs/clone'] = array(
+    'title' => 'Clone QT block',
+    'file' => 'includes/admin.inc',
+    'access arguments' => array('administer blocks'),
+    'page callback' => 'quicktabs_clone',
+    'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+  );
   $items['admin/settings/quicktabs'] = array(
     'title' => 'Quick Tabs',
     'file' => 'includes/admin.inc',

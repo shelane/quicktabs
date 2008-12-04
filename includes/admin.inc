@@ -8,19 +8,29 @@ function quicktabs_list() {
   $result = db_query('SELECT qtid, title FROM {quicktabs} ORDER BY title');
   $header = array(
     array('data' => t('Quick Tabs Block Name')),
-    array('data' => t('Operations'), 'colspan' => 2),
+    array('data' => t('Operations'), 'colspan' => 3),
   );
   $rows = array();
   while ($row = db_fetch_object($result)) {
     $tablerow = array(
       array('data' => $row->title),
       array('data' => l('Edit', 'admin/build/quicktabs/'. $row->qtid .'/edit')),
+      array('data' => l('Clone', 'admin/build/quicktabs/'. $row->qtid .'/clone')),
       array('data' => l('Delete', 'admin/build/quicktabs/'. $row->qtid .'/delete')),
     );
     $rows[] = $tablerow;
   }
   $output = theme('table', $header, $rows, array('id' => 'quicktabs'));
   return $output;
+}
+
+/**
+ * Clone QuickTabs.
+ */
+function quicktabs_clone($quicktabs) {
+  $quicktabs['qtid'] = 0;
+  $quicktabs['title'] = '';
+  return drupal_get_form('quicktabs_form', 'clone', $quicktabs);
 }
 
 /**
