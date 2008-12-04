@@ -207,6 +207,7 @@ function quicktabs_ajax_render($tabs, $qtid) {
 
   if (module_exists('views')) {
     views_add_js('ajax_view');
+    views_add_css('views');
     foreach ($tabs as $key => $tab) {
       if ($tab['type'] == 'view') {
        $args_array = explode(',', $tab['args']);
