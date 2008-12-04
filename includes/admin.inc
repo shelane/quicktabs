@@ -235,14 +235,26 @@ function _quicktabs_form($details) {
   $form['block']['hide_title'] = array(
     '#type' => 'checkbox',
     '#title' => t('Hide the title of this block'),
-    '#default_value' => isset($details['hide_title']) ? $details['hide_title'] : '',
+    '#default_value' => isset($details['hide_title']) ? $details['hide_title'] : 1,
   );
 
   $form['node']['nid'] = array(
-    '#type' => 'select',
-    '#options' => quicktabs_get_nodes(),
+    '#type' => 'textfield',
+    '#title' => t('Node'),
+    '#description' => t('Insert the node ID of the node.'),
+    '#maxlength' => 10,
+    '#size' => 20,
     '#default_value' => isset($details['nid']) ? $details['nid'] : '',
-    '#title' => t('Select a node'),
+  );
+  $form['node']['teaser'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Teaser view'),
+    '#default_value' => isset($details['teaser']) ? $details['teaser'] : 0,
+  );
+  $form['node']['hide_title'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide the title of this node'),
+    '#default_value' => isset($details['hide_title']) ? $details['hide_title'] : 1,
   );
 
   $form['type'] = array(
@@ -634,17 +646,6 @@ function _quicktabs_get_views_displays($view_name) {
     $displays[$id] = $id .': '. $display->display_title;
   }
   return $displays;
-}
-
-function quicktabs_get_nodes() {
-  $nodes = array();
-  // TODO: make the allowed node types an admin setting
-  $result = db_query('SELECT nid, title FROM {node} WHERE type in ("page", "story")');
-  while ($row = db_fetch_object($result)) {
-    $key = $row->nid;
-    $nodes[$key] = $row->title;
-  }
-  return $nodes;
 }
 
 /**

@@ -1,3 +1,5 @@
+// $Id$
+
 Drupal.settings.views = Drupal.settings.views || {'ajax_path': 'views/ajax'};
 
 Drupal.behaviors.quicktabs = function (context) {
@@ -23,7 +25,7 @@ var quicktabsClick = function() {
     var $container = $('div#quicktabs_ajax_container_' + viewDetails[1]);
     switch (viewDetails[0]) {
     case 'node':
-      $.get(Drupal.settings.basePath + 'quicktabs/ajax/node/' + viewDetails[3], null, function(data){
+      $.get(Drupal.settings.basePath + 'quicktabs/ajax/node/' + viewDetails[3] + '/' + viewDetails[4] + '/' + viewDetails[5], null, function(data){
         var result = Drupal.parseJson(data);
         $container.html(result['data']);
       });

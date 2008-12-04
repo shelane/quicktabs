@@ -263,10 +263,12 @@ function quicktabs_ajax_render($tabs, $delta) {
 /**
  * Ajax callback for node tabpage.
  */
-function quicktabs_ajax_node($nid) {
+function quicktabs_ajax_node($nid, $teaser, $hide_title) {
   $tabpage = array(
     'type' => 'node',
     'nid' => $nid,
+    'teaser' => $teaser,
+    'hide_title' => $hide_title,
   );
   $output = quicktabs_render_tabpage($tabpage);
   print drupal_to_js(array('status' => TRUE, 'data' => $output));
@@ -324,7 +326,7 @@ function theme_quicktabs_tabs($tabs, $ajax = FALSE, $path = NULL, $delta = 0, $a
         }
         break;
       case 'node':
-        $id = 'node--'. $delta .'--'. $i .'--'. $tab['nid'];
+        $id = 'node--'. $delta .'--'. $i .'--'. $tab['nid'] .'--'. $tab['teaser'] .'--'. $tab['hide_title'];
         break;
       case 'block':
         $id = 'block--'. $delta .'--'. $i .'--'. $tab['bid'] .'--'. $tab['hide_title'];
@@ -463,7 +465,10 @@ function quicktabs_render_tabpage($tab) {
       if (isset($tab['nid'])) {
         $node = node_load($tab['nid']);
         if (!empty($node)) {
-          $output = theme('node', $node);
+          if ($tab['hide_title']) {
+            $node->title = NULL;
+          }
+          $output = theme('node', $node, $tab['teaser']);
         }
       }
       break;
