@@ -164,7 +164,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
 /*
  * Build one row (one tabpage) on the QT admin form.
  */
-function _quicktabs_form(array $details) {
+function _quicktabs_form($details) {
   $form['#tree'] = TRUE;
   $delta = $details['delta'];
 
@@ -442,7 +442,7 @@ function quicktabs_updateblock($quicktabs) {
 /**
  * Deletion of Quick Tabs blocks.
  */
-function quicktabs_block_delete(&$form_state, array $quicktabs) {
+function quicktabs_block_delete(&$form_state, $quicktabs) {
   $form['qtid'] = array('#type' => 'hidden', '#value' => $quicktabs['qtid']);
   $form['qt_name'] = array('#type' => 'hidden', '#value' => $quicktabs['title']);
   return confirm_form($form, t('Are you sure you want to delete the Quick Tabs block %name?', array('%name' => $quicktabs['title'])), 'admin/build/quicktabs', '', t('Delete'), t('Cancel'));
