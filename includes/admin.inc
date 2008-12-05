@@ -199,21 +199,20 @@ function _quicktabs_form($details) {
         'event' => 'change',
       ),
     );
-    $form['view']['args'] = array(
-      '#type' => 'textfield',
-      '#title' => 'arguments',
-      '#size' => '10',
-      '#required' => FALSE,
-      '#default_value' => isset($details['args']) ? $details['args'] : '',
-      '#description' => t('Provide a comma separated list of arguments to pass to the view.'),
-    );
-
     $form['view']['display'] = array(
       '#type' => 'select',
       '#title' => 'display',
       '#options' => _quicktabs_get_views_displays($selected_view),
       '#default_value' => isset($details['display']) ? $details['display'] : '',
       '#description' => t('Choose a display for your view.'),
+    );
+    $form['view']['args'] = array(
+      '#type' => 'textfield',
+      '#title' => 'arguments',
+      '#size' => '40',
+      '#required' => FALSE,
+      '#default_value' => isset($details['args']) ? $details['args'] : '',
+      '#description' => t('Provide a comma separated list of arguments to pass to the view.'),
     );
     $form['view']['get_displays'] = array(
       '#type' => 'submit',
