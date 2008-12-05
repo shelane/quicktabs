@@ -1,0 +1,25 @@
+/* $Id$ */
+
+/* RTL support */
+#qt-tablist-table label {
+  float: right;
+  clear: right;
+}
+
+#qt-tablist-table .qt-tab-view-content .form-item {
+  padding-left: 15px;
+  float: right;
+}
+#quicktabs-form #delete-tabs-button,
+#quicktabs-form #add-more-tabs-button{
+  float: right;
+}
+
+#quicktabs-settings .quicktabs-tabstyles .form-item {
+  float: right;
+  margin: 0 0 10px 10px;
+}
+#quicktabs-settings .quicktabs-tabstyles .form-item .option .form-radio {
+  margin-leftt: 5px;
+  float: right;
+}
