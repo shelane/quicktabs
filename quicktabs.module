@@ -40,6 +40,9 @@ function quicktabs_theme() {
     'quicktabs_tabs' => array(
       'arguments' => array('tabs'),
     ),
+    'quicktabs' => array(
+      'arguments' => array('quicktabs'),
+    ),
   );
 }
 
@@ -160,14 +163,9 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
 
     case 'view':
       $mainblock = array();
-      if ($qtblock = quicktabs_load($delta)) {
-        $mainblock['subject'] = $qtblock['title'];
-        if (!$qtblock['ajax']) {
-          $mainblock['content'] = quicktabs_render($qtblock['tabs']);
-        }
-        else {
-          $mainblock['content'] = quicktabs_ajax_render($qtblock['tabs'], $qtblock['qtid']);
-        }
+      if ($quicktabs = quicktabs_load($delta)) {
+        $mainblock['subject'] = $quicktabs['title'];
+        $mainblock['content'] = theme('quicktabs', $quicktabs);
       }
       return $mainblock;
       break;
@@ -295,6 +293,21 @@ function quicktabs_ajax_block($bid, $hide_title) {
 
   $output = quicktabs_render_tabpage($tabpage);
   print drupal_to_js(array('status' => TRUE, 'data' => $output));
+}
+
+/**
+ * Theme function to output quicktabs.
+ *
+ * @ingroup themeable
+ */
+function theme_quicktabs($quicktabs) {
+  if (isset($quicktabs['qtid']) and $quicktabs['qtid'] > 0 and $quicktabs['ajax']) {
+    $output = quicktabs_ajax_render($quicktabs['tabs'], $quicktabs['qtid']);
+  }
+  else {
+    $output = quicktabs_render($quicktabs['tabs']);
+  }
+  return $output;
 }
 
 /**
