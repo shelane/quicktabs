@@ -7,6 +7,8 @@ Drupal.quicktabsShowHide = function() {
       .find('td.qt-tab-node-content').hide();
       $(this).parents('tr')
       .find('td.qt-tab-view-content').hide();
+      $(this).parents('tr')
+      .find('td.qt-tab-qtabs-content').hide();
       break;
 
     case 'node':
@@ -16,6 +18,8 @@ Drupal.quicktabsShowHide = function() {
       .find('td.qt-tab-node-content').show();
       $(this).parents('tr')
       .find('td.qt-tab-view-content').hide();
+      $(this).parents('tr')
+      .find('td.qt-tab-qtabs-content').hide();
       break;
 
     case 'view':
@@ -25,6 +29,19 @@ Drupal.quicktabsShowHide = function() {
       .find('td.qt-tab-node-content').hide();
       $(this).parents('tr')
       .find('td.qt-tab-view-content').show();
+      $(this).parents('tr')
+      .find('td.qt-tab-qtabs-content').hide();
+      break;
+
+    case 'qtabs':
+      $(this).parents('tr')
+      .find('td.qt-tab-block-content').hide();
+      $(this).parents('tr')
+      .find('td.qt-tab-node-content').hide();
+      $(this).parents('tr')
+      .find('td.qt-tab-view-content').hide();
+      $(this).parents('tr')
+      .find('td.qt-tab-qtabs-content').show();
       break;
   }
 };

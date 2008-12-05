@@ -132,6 +132,12 @@ function quicktabs_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
    );
+  $items['quicktabs/ajax/qtabs'] = array(
+    'page callback' => 'quicktabs_ajax_qtabs',
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+   );
   return $items;
 }
 
@@ -296,6 +302,19 @@ function quicktabs_ajax_block($bid, $hide_title) {
 }
 
 /**
+ * Ajax callback for qtabs tabpage.
+ */
+function quicktabs_ajax_qtabs($qtid) {
+  $tabpage = array(
+    'type' => 'qtabs',
+    'qtid' => $qtid,
+  );
+
+  $output = quicktabs_render_tabpage($tabpage);
+  print drupal_to_js(array('status' => TRUE, 'data' => $output));
+}
+
+/**
  * Theme function to output quicktabs.
  *
  * @ingroup themeable
@@ -336,6 +355,9 @@ function theme_quicktabs_tabs($tabs, $ajax = FALSE, $path = NULL, $qtid = 0, $ac
     if ($ajax) {
       $qtpath = 'quicktabs_'. $qtid . '='. $i;
       switch ($tab['type']) {
+      case 'qtabs':
+        $id = 'qtabs--'. $qtid .'--'. $i .'--'. $tab['qtid'];
+        break;
       case 'view':
         if (module_exists('views')) {
           if ($tab['args'] != '') {
@@ -450,6 +472,12 @@ function quicktabs_load($qtid) {
 function quicktabs_render_tabpage($tab) {
   $output = '';
   switch ($tab['type']) {
+    case 'qtabs':
+      if (isset($tab['qtid'])) {
+        if ($quicktabs = quicktabs_load($tab['qtid'])) {
+          $output = theme('quicktabs', $quicktabs);
+        }
+      }
     case 'view':
       if (isset($tab['vid'])) {
         if (module_exists('views')) {

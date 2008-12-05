@@ -178,6 +178,7 @@ function _quicktabs_form($details) {
   $tabtypes = array(
     'block' => t('Block'),
     'node' => t('Node'),
+    'qtabs' => t('QTabs'),
    );
 
   if (module_exists('views')) {
@@ -252,6 +253,15 @@ function _quicktabs_form($details) {
     '#default_value' => isset($details['hide_title']) ? $details['hide_title'] : 1,
   );
 
+  $form['qtabs']['qtid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Quick Tabs'),
+    '#description' => t('Insert the Quick Tabs ID. Do not put ajax quick tabs inside ajax quick tabs, because that does not work.'),
+    '#maxlength' => 10,
+    '#size' => 20,
+    '#default_value' => isset($details['qtid']) ? $details['qtid'] : '',
+  );
+
   $form['type'] = array(
     '#type' => 'radios',
     '#options' => $tabtypes,
@@ -292,6 +302,7 @@ function theme_quicktabs_admin_form_tabs($form) {
         array('data' => drupal_render($form[$key]['block']), 'class' => 'qt-tab-block-content'),
         array('data' => (module_exists('views') ? drupal_render($form[$key]['view']) : ''), 'class' => 'qt-tab-view-content'),
         array('data' => drupal_render($form[$key]['node']), 'class' => 'qt-tab-node-content'),
+        array('data' => drupal_render($form[$key]['qtabs']), 'class' => 'qt-tab-qtabs-content'),
       ),
       'class' => 'draggable',
     );
