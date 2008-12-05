@@ -319,7 +319,7 @@ function theme_quicktabs_admin_form_tabs($form) {
   // Add our JS file, which has some Drupal core JS overrides, and ensures ahah behaviours get re-attached
   drupal_add_js(drupal_get_path('module', 'quicktabs') . '/js/quicktabs_ahah.js', 'module', 'footer');
   drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
-  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
+  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs-admin.css');
   return $output;
 }
 
@@ -507,7 +507,7 @@ function quicktabs_settings_submit($form, &$form_state) {
  * @ingroup themeable
  */
 function theme_quicktabs_settings($form) {
-  quicktabs_add_css();
+  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs-admin.css');
   drupal_set_title(t('Quick Tabs Settings'));
 
   // Default preview.

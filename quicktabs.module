@@ -407,7 +407,7 @@ function theme_quicktabs_block($block, $title = TRUE) {
  */
 function quicktabs_add_css($tabstyle_css = NULL) {
   // Add quicktabs CSS.
-  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/quicktabs.css');
+  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs.css');
 
   // Add specific CSS.
   if (!isset($tabstyle_css)) {
