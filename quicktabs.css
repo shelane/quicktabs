@@ -126,7 +126,7 @@ td.qt-tab-title, td.qt-tab-type {
   width: 150px;
 }
 
-td.qt-tab-block-content, td.qt-tab-view-content, td.qt-tab-node-content {
+td.qt-tab-block-content, td.qt-tab-view-content, td.qt-tab-node-content, td.qt-tab-qtabs-content {
   height: 120px;
 }
 
