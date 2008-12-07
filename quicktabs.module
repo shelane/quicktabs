@@ -34,9 +34,6 @@ function quicktabs_theme() {
       'arguments' => array('form' => NULL),
       'file' => 'includes/admin.inc',
     ),
-    'quicktabs_block' => array(
-      'arguments' => array('block', 'title' => TRUE),
-    ),
     'quicktabs_tabs' => array(
       'arguments' => array('tabs', 'style'),
     ),
@@ -387,22 +384,6 @@ function theme_quicktabs_tabs($tabs, $style, $ajax = FALSE, $path = NULL, $qtid 
 }
 
 /**
- * Theme function for the overall final quicktabs block.
- *
- * @ingroup themeable
- */
-function theme_quicktabs_block($block, $title = TRUE) {
-  $output = "<div class=\"block block-$block->module\" id=\"block-$block->module-$block->delta\">\n";
-  if ($title and isset($block->subject)) {
-    $output .= " <h2 class=\"title\">$block->subject</h2>\n";
-  }
-  $output .= " <div class=\"content\">$block->content</div>\n";
-  $output .= "</div>\n";
-  return $output;
-}
-
-
-/**
  * Fetch the necessary CSS files for the tab styles.
  */
 function quicktabs_add_css(&$style = 'default') {
@@ -532,7 +513,11 @@ function quicktabs_render_tabpage($tab) {
         if (isset($block->content)) {
           $block->module = $blockmodule;
           $block->delta = $blockdelta;
-          $output = theme('quicktabs_block', $block, !$tab['hide_title']);
+          $block->region = 'quicktabs';
+          if ($tab['hide_title'] or !isset($block->subject)) {
+            $block->subject = FALSE;
+          }
+          $output = theme('block', $block);
         }
       }
       break;
