@@ -35,6 +35,12 @@ function quicktabs_schema() {
         'size' => 'medium',
         'not null' => TRUE,
       ),
+      'style' => array(
+        'description' => 'The tab style.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
     ),
     'primary key' => array('qtid'),
   );
@@ -128,3 +134,11 @@ function quicktabs_update_6002() {
   return $ret;
 }
 
+/**
+ * Add style column.
+ */
+function quicktabs_update_6003() {
+  $ret = array();
+  db_add_field($ret, 'quicktabs', 'style', array('description' => 'The tab style.', 'type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'initial' => 'default'));
+  return $ret;
+}

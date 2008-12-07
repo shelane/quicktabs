@@ -38,10 +38,10 @@ function quicktabs_theme() {
       'arguments' => array('block', 'title' => TRUE),
     ),
     'quicktabs_tabs' => array(
-      'arguments' => array('tabs'),
+      'arguments' => array('tabs', 'style'),
     ),
     'quicktabs' => array(
-      'arguments' => array('quicktabs', 'style' => 'default'),
+      'arguments' => array('quicktabs'),
     ),
   );
 }
@@ -189,9 +189,9 @@ function quicktabs_render($tabs, $style = 'default') {
   foreach ($tabs as $tab) {
     $tabtitles[] = $tab['title'];
   }
-  $output = '<div class="quicktabs_wrapper">';
-  $output .= theme('quicktabs_tabs', $tabtitles);
-  $output .= '<div class="quicktabs_main">';
+  $output = '<div class="quicktabs_wrapper quicktabs-style-'. drupal_strtolower($style) .'">';
+  $output .= theme('quicktabs_tabs', $tabtitles, $style);
+  $output .= '<div class="quicktabs_main quicktabs-style-'. drupal_strtolower($style) .'">';
   foreach ($tabs as $tab) {
     $output .= '<div class="quicktabs">';
     $output .= quicktabs_render_tabpage($tab);
@@ -258,11 +258,11 @@ function quicktabs_ajax_render($tabs, $qtid, $style = 'default') {
   $active_tab = isset($_GET['quicktabs_'. $qtid]) ? $_GET['quicktabs_'. $qtid] : 0;
 
   // begin output of Quick Tabs mark-up
-  $output = '<div class="quicktabs_wrapper">';
+  $output = '<div class="quicktabs_wrapper quicktabs-style-'. drupal_strtolower($style) .'">';
   // theme the tabs
-  $output .= theme('quicktabs_tabs', $tabs, TRUE, $path, $qtid, $active_tab);
+  $output .= theme('quicktabs_tabs', $tabs, $style, TRUE, $path, $qtid, $active_tab);
   // the main content area begins
-  $output .= '<div class="quicktabs_main">';
+  $output .= '<div class="quicktabs_main quicktabs-style-'. drupal_strtolower($style) .'">';
   // each quick tabs container needs a unique id so that multiple instances work with ajax
   $output .= '<div id="quicktabs_ajax_container_'. $qtid .'">';
   // Render the active tabpgage.
@@ -319,12 +319,12 @@ function quicktabs_ajax_qtabs($qtid) {
  *
  * @ingroup themeable
  */
-function theme_quicktabs($quicktabs, $style = 'default') {
+function theme_quicktabs($quicktabs) {
   if (isset($quicktabs['qtid']) and $quicktabs['qtid'] > 0 and $quicktabs['ajax']) {
-    $output = quicktabs_ajax_render($quicktabs['tabs'], $quicktabs['qtid'], $style);
+    $output = quicktabs_ajax_render($quicktabs['tabs'], $quicktabs['qtid'], $quicktabs['style']);
   }
   else {
-    $output = quicktabs_render($quicktabs['tabs'], $style);
+    $output = quicktabs_render($quicktabs['tabs'], $quicktabs['style']);
   }
   return $output;
 }
@@ -336,7 +336,7 @@ function theme_quicktabs($quicktabs, $style = 'default') {
  *
  * @ingroup themeable
  */
-function theme_quicktabs_tabs($tabs, $ajax = FALSE, $path = NULL, $qtid = 0, $active_tab = 0) {
+function theme_quicktabs_tabs($tabs, $style, $ajax = FALSE, $path = NULL, $qtid = 0, $active_tab = 0) {
   $output = '';
   $tabs_count = count($tabs);
   if ($tabs_count <= 0) {
@@ -344,7 +344,7 @@ function theme_quicktabs_tabs($tabs, $ajax = FALSE, $path = NULL, $qtid = 0, $ac
   }
 
   $index = 1;
-  $output .= '<ul class="quicktabs_tabs">';
+  $output .= '<ul class="quicktabs_tabs quicktabs-style-'. drupal_strtolower($style) .'">';
   foreach ($tabs as $i => $tab) {
     $class = 'qtab-'. $i;
     // Add first, last and active classes to the list of tabs to help out themers.
@@ -405,7 +405,7 @@ function theme_quicktabs_block($block, $title = TRUE) {
 /**
  * Fetch the necessary CSS files for the tab styles.
  */
-function quicktabs_add_css($style = 'default') {
+function quicktabs_add_css(&$style = 'default') {
   // Add quicktabs CSS.
   drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs.css');
 
@@ -470,7 +470,7 @@ function quicktabs_quicktabs_tabstyles() {
  * Load the quicktabs data.
  */
 function quicktabs_load($qtid) {
-  $qtblock = db_fetch_object(db_query('SELECT title, tabs, ajax FROM {quicktabs} WHERE qtid = %d', $qtid));
+  $qtblock = db_fetch_object(db_query('SELECT title, tabs, ajax, style FROM {quicktabs} WHERE qtid = %d', $qtid));
   if (!$qtblock) {
     return FALSE;
   }
@@ -486,6 +486,7 @@ function quicktabs_load($qtid) {
     'title' => $qtblock->title,
     'tabs' => $tabs,
     'ajax' => $qtblock->ajax,
+    'style' => $qtblock->style,
   );
 
   return $quicktabs;

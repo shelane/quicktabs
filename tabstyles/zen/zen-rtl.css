@@ -2,6 +2,6 @@
 
 /* RTL support */
 
-ul.quicktabs_tabs li{
+ul.quicktabs_tabs.quicktabs-style-zen li{
   float: right;
 }

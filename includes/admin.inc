@@ -84,9 +84,24 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
   $form['title'] = array(
   '#title' => t('Block Title'),
   '#type' => 'textfield',
-  '#description' => t('The title of the whole block'),
+  '#description' => t('The title of the whole block.'),
   '#default_value' => (isset($quicktabs['title']) ? $quicktabs['title'] : ''),
-  '#weight' => -6
+  '#weight' => -7
+  );
+
+  $styles = module_invoke_all('quicktabs_tabstyles');
+  // The keys used for options must be valid html id-s.
+  foreach ($styles as $style) {
+    $style_options[$style] = $style;
+  }
+  ksort($style_options);
+  $form['style'] = array(
+    '#type' => 'select',
+    '#title' => t('Tab Style'),
+    '#options' => array('nostyle' => t('No style')) + array('default' => t('Default style')) + $style_options,
+    '#default_value' => isset($quicktabs['style']) ? $quicktabs['style'] : 'default',
+    '#description' => t('Choose the tab style for your Quick Tabs.'),
+    '#weight' => -6,
   );
 
   $form['ajax'] = array(
@@ -445,7 +460,7 @@ function quicktabs_form_submit($form, &$form_state) {
  */
 function quicktabs_createblock($quicktabs) {
   $quicktabs['tabs'] = serialize($quicktabs['tabs']);
-  db_query("INSERT INTO {quicktabs} (ajax, title, tabs) VALUES(%d, '%s', '%s')", $quicktabs['ajax'], $quicktabs['title'], $quicktabs['tabs']);
+  db_query("INSERT INTO {quicktabs} (ajax, title, tabs, style) VALUES(%d, '%s', '%s', '%s')", $quicktabs['ajax'], $quicktabs['title'], $quicktabs['tabs'], $quicktabs['style']);
 }
 
 /**
@@ -453,7 +468,7 @@ function quicktabs_createblock($quicktabs) {
  */
 function quicktabs_updateblock($quicktabs) {
   $quicktabs['tabs'] = serialize($quicktabs['tabs']);
-  db_query("UPDATE {quicktabs} SET ajax = %d, title = '%s', tabs = '%s' WHERE qtid = %d", $quicktabs['ajax'], $quicktabs['title'], $quicktabs['tabs'], $quicktabs['qtid']);
+  db_query("UPDATE {quicktabs} SET ajax = %d, title = '%s', tabs = '%s', style = '%s' WHERE qtid = %d", $quicktabs['ajax'], $quicktabs['title'], $quicktabs['tabs'], $quicktabs['style'], $quicktabs['qtid']);
 }
 
 /**
@@ -662,6 +677,7 @@ function _quicktabs_convert_form_to_quicktabs($form_state) {
   $quicktabs = array(
     'title' => $form_state['values']['title'],
     'ajax' => $form_state['values']['ajax'],
+    'style' => $form_state['values']['style'],
     'tabs' => $formvalues_tabs,
   );
 
