@@ -77,12 +77,12 @@ form>.add-tab { /* For non-IE browsers*/
 
 iframe.quicktabs-preview {
   border: none;
-  width: 200px;
+  width: 280px;
   height: 80px;
 }
 
 #quicktabs-settings .quicktabs-tabstyles .form-item {
-  width: 200px;
+  width: 280px;
   float: left;
   margin: 0 10px 10px 0;
   border: 1px solid #ccc;

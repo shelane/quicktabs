@@ -458,7 +458,10 @@ function quicktabs_quicktabs_tabstyles() {
 
   $tabstyles = array();
   foreach ($files as $file) {
-    $tabstyles[$file->filename] = drupal_ucfirst($file->name);
+    // Skip RTL files.
+    if (!strpos($file->name, '-rtl')) {
+      $tabstyles[$file->filename] = drupal_ucfirst($file->name);
+    }
   }
   return $tabstyles;
 }

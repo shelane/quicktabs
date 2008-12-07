@@ -541,6 +541,7 @@ function quicktabs_preview_page($style) {
 function theme_quicktabs_preview_page($style) {
   $tabs['one'] = array('title' => t('One'), 'type' => 'freetext', 'text' => t('First tab'));
   $tabs['two'] = array('title' => t('Two'), 'type' => 'freetext', 'text' => t('Second tab'));
+  $tabs['three'] = array('title' => t('Three'), 'type' => 'freetext', 'text' => t('Third tab'));
   $rendered_tabs = quicktabs_render($tabs, $style);
   drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs-preview.css', 'theme');
 

@@ -1,0 +1,7 @@
+/* $Id$ */
+
+/* iframe in QT settings */
+
+html, body {
+  direction: rtl;
+}
