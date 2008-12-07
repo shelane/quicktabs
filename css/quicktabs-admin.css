@@ -78,20 +78,7 @@ form>.add-tab { /* For non-IE browsers*/
 iframe.quicktabs-preview {
   border: none;
   width: 200px;
-  height: 50px;
-}
-iframe.quicktabs-preview body {
-  background: none;
-  background-color: #FFFFFF;
-}
-ul.quicktabs_tabs li {
-  display: inline;
-  background: none;
-  list-style-type: none;
-  padding: 2px;
-}
-body.quicktabs_iframe ul#simplemenu {
-  display: none;
+  height: 80px;
 }
 
 #quicktabs-settings .quicktabs-tabstyles .form-item {

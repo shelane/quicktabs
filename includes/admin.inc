@@ -479,12 +479,20 @@ function quicktabs_block_delete_submit($form, &$form_state) {
  * Callback function for admin/settings/quicktabs. Display the settings form.
  */
 function quicktabs_settings() {
+  $styles = module_invoke_all('quicktabs_tabstyles');
+  // The keys used for options must be valid html id-s.
+  // Removing the css file path, because that can't be used.
+  foreach ($styles as $style) {
+    $options[$style] = $style;
+  }
+  ksort($options);
+
   $form['quicktabs_tabstyle'] = array(
     '#type' => 'radios',
     '#title' => t('Tab Style'),
-    '#options' => array('default' => t('Default (no style)')) + module_invoke_all('quicktabs_tabstyles'),
+    '#options' => array('nostyle' => t('No style')) + $options,
     '#default_value' => variable_get('quicktabs_tabstyle', 'default'),
-    '#description' => t('Choose a tab style for your Quick Tabs blocks.'),
+    '#description' => t('Choose the default tab style for your Quick Tabs.'),
     '#attributes' => array('class' => 'quicktabs-tabstyles clear-block'),
   );
   $form['submit'] = array(
@@ -499,6 +507,7 @@ function quicktabs_settings() {
  */
 function quicktabs_settings_submit($form, &$form_state) {
   variable_set('quicktabs_tabstyle', $form_state['values']['quicktabs_tabstyle']);
+  drupal_set_message(t('Your default Quick Tabs style has been saved.'));
 }
 
 /**
@@ -508,19 +517,11 @@ function quicktabs_settings_submit($form, &$form_state) {
  */
 function theme_quicktabs_settings($form) {
   drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs-admin.css');
-  drupal_set_title(t('Quick Tabs Settings'));
-
-  // Default preview.
-  $form['quicktabs_tabstyle']['default']['#description'] = 'Default '. t('Preview') .':<br /><iframe class="quicktabs-preview" scrolling="no" src="'. url('quicktabs/preview') .'"></iframe>';
 
   // Preview for each style.
-  $tabstyle_number = 0;
-  foreach (element_children($form['quicktabs_tabstyle']) as $tabstyle_key) {
-    if ($tabstyle_key != 'default') {
-      $form['quicktabs_tabstyle'][$tabstyle_key]['#description'] = $form['quicktabs_tabstyle'][$tabstyle_key]['#title'] .' '. t('Preview') .':<br /><iframe class="quicktabs-preview" scrolling="no" src="'. url('quicktabs/preview/'. $tabstyle_number) .'"></iframe>';
-      $tabstyle_number++;
-    }
-
+  foreach ($form['quicktabs_tabstyle']['#options'] as $style => $style_title) {
+    $preview = '<iframe class="quicktabs-preview" scrolling="no" src="'. url('quicktabs/preview/'. $style) .'"></iframe>';
+    $form['quicktabs_tabstyle'][$style]['#description'] = t('%style preview', array('%style' => $style_title)) .':<br />'. $preview;
   }
   return drupal_render($form);
 }
@@ -528,18 +529,8 @@ function theme_quicktabs_settings($form) {
 /**
  * Callback function for quicktabs/preview.
  */
-function quicktabs_preview_page($tabstyle_number = NULL) {
-  $tabstyles = module_invoke_all('quicktabs_tabstyles');
-  $css_files = array_keys($tabstyles);
-  if (isset($css_files[$tabstyle_number])) {
-    quicktabs_add_css($css_files[$tabstyle_number]);
-  }
-  else {
-    quicktabs_add_css('default');
-  }
-  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
-  print theme('quicktabs_preview_page');
-  exit;
+function quicktabs_preview_page($style) {
+  print theme('quicktabs_preview_page', $style);
 }
 
 /**
@@ -547,20 +538,22 @@ function quicktabs_preview_page($tabstyle_number = NULL) {
  *
  * @ingroup themeable
  */
-function theme_quicktabs_preview_page() {
+function theme_quicktabs_preview_page($style) {
+  $tabs['one'] = array('title' => t('One'), 'type' => 'freetext', 'text' => t('First tab'));
+  $tabs['two'] = array('title' => t('Two'), 'type' => 'freetext', 'text' => t('Second tab'));
+  $rendered_tabs = quicktabs_render($tabs, $style);
+  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs-preview.css', 'theme');
+
   $output = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
-  $output .= '<html xmlns="http://www.w3.org/1999/xhtml">';
-  $output .= '<head>';
-  $output .= ' <title>'. t('Quick Tabs Preview') .'</title>';
+  $output .= '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
+  $output .= "<head>\n";
+  $output .= '<title>'. t('Quick Tabs Preview') .'</title>'."\n";
   $output .= drupal_get_html_head();
   $output .= drupal_get_css();
   $output .= drupal_get_js();
-  $output .= ' </head>';
-  $output .= ' <body style="background: none; background-color: #fff; color: #000;" class="quicktabs_iframe">';
-  $output .= '<div class="quicktabs_wrapper">';
-  $output .= '<ul class="quicktabs_tabs"><li><a href="#">One</a></li><li><a href="#">Two</a></li></ul>';
-  $output .= '<div class="quicktabs_main"><div class="quicktabs"></div><div class="quicktabs"></div></div></div>';
-
+  $output .= "</head>\n";
+  $output .= '<body class="quicktabs_iframe">';
+  $output .= $rendered_tabs;
   $output .= '</body></html>';
 
   return $output;

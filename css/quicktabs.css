@@ -1,5 +1,9 @@
 /* $Id$ */
 
+html.js div.quicktabs {
+  display: none;
+}
+
 ul.quicktabs_tabs li {
   display: inline;
   background: none;
@@ -8,7 +12,4 @@ ul.quicktabs_tabs li {
 }
 ul.quicktabs_tabs li a:focus {
   outline: none;
-}
-html.js div.quicktabs {
-  display: none;
 }
