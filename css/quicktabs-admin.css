@@ -75,7 +75,7 @@ form>.add-tab { /* For non-IE browsers*/
 
 /* QT style selection form */
 
-iframe.quicktabs-preview {
+div.quicktabs-preview {
   border: none;
   width: 280px;
   height: 80px;
@@ -105,4 +105,7 @@ iframe.quicktabs-preview {
   height: 15px;
   margin-top: 2px;
 }
-
+#quicktabs-settings .quicktabs_wrapper {
+  margin: 5px;
+  font: bold 12px/170% Verdana;
+}

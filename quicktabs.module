@@ -26,10 +26,6 @@ function quicktabs_theme() {
       'arguments' => array('form' => NULL),
       'file' => 'includes/admin.inc',
     ),
-    'quicktabs_preview_page' => array(
-      'arguments' => array('style'),
-      'file' => 'includes/admin.inc',
-    ),
     'quicktabs_admin_form_tabs' => array(
       'arguments' => array('form' => NULL),
       'file' => 'includes/admin.inc',
@@ -101,13 +97,6 @@ function quicktabs_menu() {
     'access callback' => 'user_access',
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'includes/admin.inc',
-  );
-  $items['quicktabs/preview'] = array(
-    'page callback' => 'quicktabs_preview_page',
-    'access callback' => 'user_access',
-    'access arguments' => array('administer site configuration'),
-    'type' => MENU_CALLBACK,
     'file' => 'includes/admin.inc',
   );
   $items['quicktabs/ahah'] = array(

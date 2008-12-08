@@ -533,46 +533,16 @@ function quicktabs_settings_submit($form, &$form_state) {
 function theme_quicktabs_settings($form) {
   drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs-admin.css');
 
-  // Preview for each style.
-  foreach ($form['quicktabs_tabstyle']['#options'] as $style => $style_title) {
-    $preview = '<iframe class="quicktabs-preview" scrolling="no" src="'. url('quicktabs/preview/'. $style) .'"></iframe>';
-    $form['quicktabs_tabstyle'][$style]['#description'] = t('%style preview', array('%style' => $style_title)) .':<br />'. $preview;
-  }
-  return drupal_render($form);
-}
-
-/**
- * Callback function for quicktabs/preview.
- */
-function quicktabs_preview_page($style) {
-  print theme('quicktabs_preview_page', $style);
-}
-
-/**
- * Theme function for quicktabs preview page.
- *
- * @ingroup themeable
- */
-function theme_quicktabs_preview_page($style) {
   $tabs['one'] = array('title' => t('One'), 'type' => 'freetext', 'text' => t('First tab'));
   $tabs['two'] = array('title' => t('Two'), 'type' => 'freetext', 'text' => t('Second tab'));
   $tabs['three'] = array('title' => t('Three'), 'type' => 'freetext', 'text' => t('Third tab'));
-  $rendered_tabs = quicktabs_render($tabs, $style);
-  drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs-preview.css', 'theme');
 
-  $output = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
-  $output .= '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
-  $output .= "<head>\n";
-  $output .= '<title>'. t('Quick Tabs Preview') .'</title>'."\n";
-  $output .= drupal_get_html_head();
-  $output .= drupal_get_css();
-  $output .= drupal_get_js();
-  $output .= "</head>\n";
-  $output .= '<body class="quicktabs_iframe">';
-  $output .= $rendered_tabs;
-  $output .= '</body></html>';
-
-  return $output;
+  // Preview for each style.
+  foreach ($form['quicktabs_tabstyle']['#options'] as $style => $style_title) {
+    $preview = '<div class="quicktabs-preview">'. quicktabs_render($tabs, $style) .'</div>';
+    $form['quicktabs_tabstyle'][$style]['#description'] = t('%style preview', array('%style' => $style_title)) .':<br />'. $preview;
+  }
+  return drupal_render($form);
 }
 
 /**

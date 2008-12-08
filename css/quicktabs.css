@@ -4,6 +4,9 @@ html.js div.quicktabs {
   display: none;
 }
 
+ul.quicktabs_tabs {
+  margin-top: 0;
+}
 ul.quicktabs_tabs li {
   display: inline;
   background: none;
