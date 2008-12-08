@@ -270,7 +270,7 @@ function _quicktabs_form($details) {
   $form['qtabs']['qtid'] = array(
     '#type' => 'textfield',
     '#title' => t('Quick Tabs'),
-    '#description' => t('Insert the Quick Tabs ID. Do not put ajax quick tabs inside ajax quick tabs, because that does not work.'),
+    '#description' => t('Insert the Quick Tabs ID. Different styles may not work when putting an ajax quick tabs inside ajax quick tabs.'),
     '#maxlength' => 10,
     '#size' => 20,
     '#default_value' => isset($details['qtid']) ? $details['qtid'] : '',
