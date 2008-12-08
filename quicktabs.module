@@ -182,12 +182,8 @@ function quicktabs_render($tabs, $style = 'default') {
   quicktabs_add_css($style);
   drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
 
-  $tabtitles = array();
-  foreach ($tabs as $tab) {
-    $tabtitles[] = $tab['title'];
-  }
   $output = '<div class="quicktabs_wrapper quicktabs-style-'. drupal_strtolower($style) .'">';
-  $output .= theme('quicktabs_tabs', $tabtitles, $style);
+  $output .= theme('quicktabs_tabs', $tabs, $style);
   $output .= '<div class="quicktabs_main quicktabs-style-'. drupal_strtolower($style) .'">';
   foreach ($tabs as $tab) {
     $output .= '<div class="quicktabs">';
@@ -351,36 +347,45 @@ function theme_quicktabs_tabs($tabs, $style, $ajax = FALSE, $path = NULL, $qtid 
 
     if ($ajax) {
       $qtpath = 'quicktabs_'. $qtid . '='. $i;
-      switch ($tab['type']) {
-      case 'qtabs':
-        $id = 'qtabs--'. $qtid .'--'. $i .'--'. $tab['qtid'];
-        break;
-      case 'view':
-        if (module_exists('views')) {
-          if ($tab['args'] != '') {
-            $argstring = '--'. str_replace(',', '|', $tab['args']);
-          }
-          else {
-            $argstring = '';
-          }
-          $id = 'view--'. $qtid .'--'. $i .'--'. $tab['vid'] .'--'. $tab['display'] . $argstring;
-        }
-        break;
-      case 'node':
-        $id = 'node--'. $qtid .'--'. $i .'--'. $tab['nid'] .'--'. $tab['teaser'] .'--'. $tab['hide_title'];
-        break;
-      case 'block':
-        $id = 'block--'. $qtid .'--'. $i .'--'. $tab['bid'] .'--'. $tab['hide_title'];
-        break;
-      }
+      $id = _quicktabs_construct_id($tab, $qtid, $i);
       $output .= '<li'. drupal_attributes(array('class' => $class)) .'><a href="'. $path . $qtpath .'" class="qt_ajax_tabs" id="'. $id .'">'. $tab['title'] .'</a></li>';
     } else {
-      $output .= '<li'. drupal_attributes(array('class' => $class)) .'><a href="#">'. $tab .'</a></li>';
+      $output .= '<li'. drupal_attributes(array('class' => $class)) .'><a href="#">'. $tab['title'] .'</a></li>';
     }
     $index++;
   }
   $output .= '</ul>';
   return $output;
+}
+
+/**
+ * Helper function to construct id for ajax tabs.
+ */
+function _quicktabs_construct_id($tab, $qtid, $key) {
+  $details = array();
+  switch ($tab['type']) {
+    case 'qtabs':
+      $details = array($tab['qtid']);
+      break;
+    case 'view':
+      if (module_exists('views')) {
+        if ($tab['args'] != '') {
+          $details = array($tab['vid'], $tab['display'], str_replace(',', '-', $tab['args']));
+        }
+        else {
+          $details = array($tab['vid'], $tab['display']);
+        }
+      }
+      break;
+    case 'node':
+      $details = array($tab['nid'], $tab['teaser'], $tab['hide_title']);
+      break;
+    case 'block':
+      $details = array($tab['bid'], $tab['hide_title']);
+      break;
+  }
+  $id = implode('--', array_merge(array($tab['type'], $qtid, $key), $details));
+  return $id;
 }
 
 /**

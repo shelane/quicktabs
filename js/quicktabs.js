@@ -46,7 +46,7 @@ var quicktabsClick = function() {
       }
       var args;
       if (viewDetails.length == 6) {
-        args = viewDetails[5].replace(/\|/g, '/');
+        args = viewDetails[5].replace(/-/g, '/');
       } else {
         args = '';
       }
