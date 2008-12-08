@@ -539,7 +539,7 @@ function theme_quicktabs_settings($form) {
 
   // Preview for each style.
   foreach ($form['quicktabs_tabstyle']['#options'] as $style => $style_title) {
-    $preview = '<div class="quicktabs-preview">'. quicktabs_render($tabs, $style) .'</div>';
+    $preview = '<div class="quicktabs-preview">'. quicktabs_render($style, $tabs, $style) .'</div>';
     $form['quicktabs_tabstyle'][$style]['#description'] = t('%style preview', array('%style' => $style_title)) .':<br />'. $preview;
   }
   return drupal_render($form);
