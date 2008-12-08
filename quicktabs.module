@@ -329,13 +329,17 @@ function theme_quicktabs($quicktabs) {
  *
  * @ingroup themeable
  */
-function theme_quicktabs_tabs($tabs, $style, $ajax = FALSE, $path = NULL, $qtid = 0, $active_tab = 0) {
+function theme_quicktabs_tabs($tabs, $style, $ajax = FALSE, $path = NULL, $qtid = 0, $active_tab = NULL) {
   $output = '';
   $tabs_count = count($tabs);
   if ($tabs_count <= 0) {
     return $output;
   }
 
+  if (!isset($active_tab)) {
+    // Select the first tab.
+    $active_tab = key($tabs);
+  }
   $index = 1;
   $output .= '<ul class="quicktabs_tabs quicktabs-style-'. drupal_strtolower($style) .'">';
   foreach ($tabs as $i => $tab) {
