@@ -395,7 +395,7 @@ function _quicktabs_construct_id($tab, $qtid, $key) {
 /**
  * Fetch the necessary CSS files for the tab styles.
  */
-function quicktabs_add_css(&$style = 'default') {
+function quicktabs_add_css(&$style) {
   // Add quicktabs CSS.
   drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs.css');
 
