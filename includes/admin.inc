@@ -287,10 +287,10 @@ function theme_quicktabs_admin_form_tabs($form) {
   drupal_add_tabledrag('qt-tablist-table', 'order', 'sibling', 'qt-tabs-weight');
   $rows = array();
   $headers = array(
-    t('Tab Title'),
-    t('Tab Weight'),
+    t('Tab title'),
+    t('Tab weight'),
     t('Tab type'),
-    t('Tab Content'),
+    t('Tab content'),
     t('Operations'),
   );
 
