@@ -73,7 +73,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
   }
 
   $form['title'] = array(
-  '#title' => t('Block Title'),
+  '#title' => t('Block title'),
   '#type' => 'textfield',
   '#description' => t('The title of the whole block.'),
   '#default_value' => (isset($quicktabs['title']) ? $quicktabs['title'] : ''),
@@ -88,7 +88,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
   ksort($style_options);
   $form['style'] = array(
     '#type' => 'select',
-    '#title' => t('Tab Style'),
+    '#title' => t('Tab style'),
     '#options' => array('nostyle' => t('No style')) + array('default' => t('Default style')) + $style_options,
     '#default_value' => isset($quicktabs['style']) ? $quicktabs['style'] : 'default',
     '#description' => t('Choose the tab style for your Quick Tabs.'),
@@ -255,7 +255,7 @@ function _quicktabs_form($details) {
   $form['type'] = array(
     '#type' => 'radios',
     '#options' => $tabtypes,
-    '#title' => t('Tab Content'),
+    '#title' => t('Tab content'),
     '#default_value' => isset($details['type']) ? $details['type'] : 'block',
   );
 
