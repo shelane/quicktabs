@@ -45,24 +45,15 @@ function quicktabs_form($form_state, $formtype, $quicktabs = array()) {
       '#value' => isset($quicktabs['qtid']) ? $quicktabs['qtid'] : 0,
     );
   }
-
-  if (isset($quicktabs['tabs'])) {
-    $tabcontent = $quicktabs['tabs'];
-  }
-  else {
-    $tabcontent = array();
-  }
-
-  if (isset($form_state['qt_count'])) {
-    $qt_count = $form_state['qt_count'];
-  }
-  else {
-    $qt_count = empty($tabcontent) ? 2 : count($tabcontent);
+  if (empty($quicktabs['tabs'])) {
+    $quicktabs['tabs'] = array(
+      0 => array(),
+      1 => array(),
+    );
   }
 
   // Add the current tabs to the form.
-  for ($delta = 0; $delta < $qt_count; $delta++) {
-    $details = isset($tabcontent[$delta]) ? $tabcontent[$delta] : array();
+  foreach ($quicktabs['tabs'] as $delta => $details) {
     $details['delta'] = $delta;
     $form['qt_wrapper']['tabs'][$delta] = _quicktabs_form($details);
   }
@@ -147,20 +138,6 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
       'effect' => 'fade',
     ),
   );
-  $form['qt_wrapper']['remove'] = array(
-    '#type' => 'submit',
-    '#prefix' => '<div id="delete-tabs-button">',
-    '#suffix' => '<label for="edit-remove">' . t('Remove last tab') . '</label></div>',
-    '#value' => t('remove'),
-    '#attributes' => array('class' => 'delete-tab'),
-    '#submit' => array('qt_remove_tab_submit'),
-    '#ahah' => array(
-      'path' => 'quicktabs/ahah',
-      'wrapper' => 'quicktabs-tabs',
-      'method' => 'replace',
-      'effect' => 'fade',
-    ),
-  );
 
   $form['submit_form'] = array(
     '#type' => 'submit',
@@ -219,7 +196,6 @@ function _quicktabs_form($details) {
       '#title' => 'display',
       '#options' => _quicktabs_get_views_displays($selected_view),
       '#default_value' => isset($details['display']) ? $details['display'] : '',
-      '#description' => t('Choose a display for your view.'),
     );
     $form['view']['args'] = array(
       '#type' => 'textfield',
@@ -283,6 +259,21 @@ function _quicktabs_form($details) {
     '#default_value' => isset($details['type']) ? $details['type'] : 'block',
   );
 
+  $form['remove'] = array(
+    '#type' => 'submit',
+    '#prefix' => '<div>',
+    '#suffix' => '<label for="edit-remove">' . t('Delete') . '</label></div>',
+    '#value' => 'remove_'. $delta,
+    '#attributes' => array('class' => 'delete-tab'),
+    '#submit' => array('qt_remove_tab_submit'),
+    '#ahah' => array(
+      'path' => 'quicktabs/ahah',
+      'wrapper' => 'quicktabs-tabs',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
+  );
+
   return $form;
 }
 
@@ -300,6 +291,7 @@ function theme_quicktabs_admin_form_tabs($form) {
     t('Tab Weight'),
     t('Tab type'),
     t('Tab Content'),
+    t('Operations'),
   );
 
   foreach (element_children($form) as $key) {
@@ -317,6 +309,7 @@ function theme_quicktabs_admin_form_tabs($form) {
         array('data' => (module_exists('views') ? drupal_render($form[$key]['view']) : ''), 'class' => 'qt-tab-view-content'),
         array('data' => drupal_render($form[$key]['node']), 'class' => 'qt-tab-node-content'),
         array('data' => drupal_render($form[$key]['qtabs']), 'class' => 'qt-tab-qtabs-content'),
+        array('data' => drupal_render($form[$key]['remove']), 'class' => 'qt-tab-remove'),
       ),
       'class' => 'draggable',
     );
@@ -342,50 +335,44 @@ function theme_quicktabs_admin_form_tabs($form) {
  * Submit handler for the "Add Tab" button.
  */
 function qt_more_tabs_submit($form, &$form_state) {
+  $quicktabs = _quicktabs_convert_form_to_quicktabs($form_state);
+  // Add an empty tab at the end.
+  $quicktabs['tabs'][] = array();
+
   unset($form_state['submit_handlers']);
   form_execute_handlers('submit', $form, $form_state);
-  $quicktabs = _quicktabs_convert_form_to_quicktabs($form_state);
   $form_state['quicktabs'] = $quicktabs;
   $form_state['rebuild'] = TRUE;
-  if ($form_state['values']['tabs_more']) {
-    if (isset($form_state['values']['tabs'])) {
-      $form_state['qt_count'] = count($form_state['values']['tabs']) + 1;
-    }
-    else {
-      $form_state['qt_count'] = 1;
-    }
-  }
-  return $quicktabs;
 }
 
 /**
  * Submit handler for the "Remove Tab" button.
  */
 function qt_remove_tab_submit($form, &$form_state) {
+  // Get the tab delta for the clicked button.
+  $delta = $form_state['clicked_button']['#parents'][1];
+  // Copy the form_state because unset() does not work on variable
+  // that is passed by reference.
+  $form_state_copy = $form_state;
+  unset($form_state_copy['values']['tabs'][$delta]);
+  $quicktabs = _quicktabs_convert_form_to_quicktabs($form_state_copy);
+
   unset($form_state['submit_handlers']);
   form_execute_handlers('submit', $form, $form_state);
-  $quicktabs = _quicktabs_convert_form_to_quicktabs($form_state);
   $form_state['quicktabs'] = $quicktabs;
   $form_state['rebuild'] = TRUE;
-  if (isset($form_state['values']['tabs'])) {
-    $form_state['qt_count'] = count($form_state['values']['tabs']) - 1;
-  }
-  else {
-    $form_state['qt_count'] = 0;
-  }
-  return $quicktabs;
 }
 
 /**
  * Submit handler for the Views drop down.
  */
 function qt_get_displays_submit($form, &$form_state) {
+  $quicktabs = _quicktabs_convert_form_to_quicktabs($form_state);
+
   unset($form_state['submit_handlers']);
   form_execute_handlers('submit', $form, $form_state);
-  $quicktabs = _quicktabs_convert_form_to_quicktabs($form_state);
   $form_state['quicktabs'] = $quicktabs;
   $form_state['rebuild'] = TRUE;
-  return $quicktabs;
 }
 
 /**
@@ -642,7 +629,9 @@ function _quicktabs_convert_form_to_quicktabs($form_state) {
       $formvalues_tabs[$j]['title'] = $tab['title'];
       $formvalues_tabs[$j]['weight'] = $tab['weight'];
       $formvalues_tabs[$j]['type'] = $tab['type'];
+      $weight[$j] = $tab['weight'];
     }
+    array_multisort($weight, SORT_ASC, $formvalues_tabs);
   }
   $quicktabs = array(
     'title' => $form_state['values']['title'],

@@ -13,11 +13,21 @@
 #qt-tablist-table .form-item .description {
   margin-top: 3px;
 }
-#qt-tablist-table .qt-tab-title,
-#qt-tablist-table .qt-tab-type {
+#qt-tablist-table .qt-tab-title {
   width: 130px;
   height: 120px;
 }
+#qt-tablist-table .qt-tab-type,
+#qt-tablist-table .qt-tab-remove {
+  width: 100px;
+}
+#qt-tablist-table .qt-tab-remove label {
+  width: auto;
+}
+#qt-tablist-table .description {
+  white-space: normal;
+}
+
 #qt-tablist-table .qt-tab-title .form-item .form-text {
   width: 80px;
 }
@@ -33,22 +43,17 @@
 #qt-tablist-table .qt-tab-view-content input.form-submit {
   display: none;
 }
-#qt-tablist-table .qt-tab-view-content .form-item {
-  padding-right: 15px;
-  float: left;
-}
 
-#quicktabs-form #delete-tabs-button label,
+#qt-tablist-table .qt-tab-remove label,
 #quicktabs-form #add-more-tabs-button label{
   font-weight: bold;
 }
-#quicktabs-form #delete-tabs-button,
 #quicktabs-form #add-more-tabs-button{
   padding: 20px;
   float: left;
 }
 #quicktabs-form .add-tab,
-#quicktabs-form #delete-tabs-button input{
+#qt-tablist-table .qt-tab-remove input{
   width: 39px;
   height: 23px;
   padding:0;
