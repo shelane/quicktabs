@@ -23,7 +23,7 @@ $.fn.prepareQuicktabs = function() {
   }
   else {
     // Click on the first tab.
-    $(this).children('.quicktabs_tabs').find('li.first.active a').trigger('click');
+    $(this).children('.quicktabs_tabs').find('li.first a').trigger('click');
   }
 
   return false;
@@ -60,7 +60,7 @@ var quicktabsClick = function() {
             var result = Drupal.parseJson(data);
             $container.append('<div id="' + tabpage_id + '" class="quicktabs_tabpage">' + result['data'] + '</div>');
             // The new quicktabs must be prepared.
-            $container.prepareQuicktabs();
+            $container.find('#quicktabs-' + tabDetails[3]).prepareQuicktabs();
           });
           break;
         case 'block':
