@@ -168,6 +168,9 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
  * Render quicktabs.
  */
 function quicktabs_render($qtid = 0, $tabs, $style = 'default') {
+  if ($style == 'default') {
+    $style = variable_get('quicktabs_tabstyle', 'nostyle');
+  }
   quicktabs_add_css($style);
   drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
 
@@ -192,6 +195,9 @@ function quicktabs_render($qtid = 0, $tabs, $style = 'default') {
  * Render ajax quicktabs.
  */
 function quicktabs_ajax_render($qtid, $tabs, $style = 'default') {
+  if ($style == 'default') {
+    $style = variable_get('quicktabs_tabstyle', 'nostyle');
+  }
   quicktabs_add_css($style);
   drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
 
@@ -389,12 +395,12 @@ function _quicktabs_construct_tab_attributes($qtid, $tab, $key, $ajax, $path) {
 /**
  * Fetch the necessary CSS files for the tab styles.
  */
-function quicktabs_add_css(&$style) {
+function quicktabs_add_css($style) {
   // Add quicktabs CSS.
   drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs.css');
 
-  // Add specific CSS.
   if ($style == 'default') {
+    // Get the default style.
     $style = variable_get('quicktabs_tabstyle', 'nostyle');
   }
 
