@@ -31,7 +31,7 @@ function quicktabs_theme() {
       'file' => 'includes/admin.inc',
     ),
     'quicktabs_tabs' => array(
-      'arguments' => array('qtid' => 0, 'tabs', 'style'),
+      'arguments' => array('qtid' => 0, 'tabs', 'style', 'ajax' => FALSE, 'active_tab' => 'none'),
     ),
     'quicktabs' => array(
       'arguments' => array('quicktabs'),
@@ -174,17 +174,41 @@ function quicktabs_render($qtid = 0, $tabs, $style = 'default') {
   quicktabs_add_css($style);
   drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
 
-  $output = '<div class="quicktabs_wrapper quicktabs-style-'. drupal_strtolower($style) .'">';
-  $output .= theme('quicktabs_tabs', $qtid, $tabs, $style);
+  $attributes = drupal_attributes(array(
+    'id' => 'quicktabs-'. $qtid,
+    'class' => 'quicktabs_wrapper quicktabs-style-'. drupal_strtolower($style),
+  ));
+  $output = '<div'. $attributes .'>';
+  $active_tab = _quicktabs_get_active_tab($qtid, $tabs);
+  $output .= theme('quicktabs_tabs', $qtid, $tabs, $style, FALSE, $active_tab);
+
   // The main content area, each quick tabs container needs a unique id.
-  $output .= '<div id="quicktabs_container_'. $qtid .'" class="quicktabs_main quicktabs-style-'. drupal_strtolower($style) .'">';
-  // Render all tabpgages.
-  foreach ($tabs as $key => $tab) {
-    $attributes = drupal_attributes(array(
-      'id' => 'quicktabs_tabpage_'. $qtid .'_'. $key,
-      'class' => 'quicktabs_tabpage',
-    ));
-    $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($tab) .'</div>';
+  $attributes = drupal_attributes(array(
+    'id' => 'quicktabs_container_'. $qtid,
+    'class' => 'quicktabs_main quicktabs-style-'. drupal_strtolower($style),
+  ));
+  $output .= '<div'. $attributes .'>';
+
+  if (_quicktabs_javascript_enabled()) {
+    // Render all tabpgages.
+    foreach ($tabs as $key => $tab) {
+      $attributes = drupal_attributes(array(
+        'id' => 'quicktabs_tabpage_'. $qtid .'_'. $key,
+        'class' => 'quicktabs_tabpage',
+      ));
+      $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($tab) .'</div>';
+    }
+  }
+  else {
+    // The user does not have javascript enabled, render only the active tabpage.
+    $active_tab = _quicktabs_get_active_tab($qtid, $tabs);
+    if (isset($active_tab)) {
+      $attributes = drupal_attributes(array(
+        'id' => 'quicktabs_tabpage_'. $qtid .'_'. $active_tab,
+        'class' => 'quicktabs_tabpage',
+      ));
+      $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($tabs[$active_tab]) .'</div>';
+    }
   }
   $output .= '</div></div>';
 
@@ -229,28 +253,20 @@ function quicktabs_ajax_render($qtid, $tabs, $style = 'default') {
     }
   }
 
-  // Need to construct a path for the tab links for when js is disabled.
-  $fullpath = explode('?', request_uri());
-  $queries = $_GET;
-  unset($queries['quicktabs_'. $qtid]);
-  unset($queries['q']);
-  unset($queries['page']);
-  $querystring = '';
-  if (!empty($queries)) {
-    $i = 0;
-    foreach ($queries as $key => $value) {
-      $querystring .= $i > 0 ? '&'. $key .'='. $value : $key .'='. $value;
-      $i++;
-    }
-    $querystring .= '&';
-  }
-  $path = $fullpath[0];
-  $path .= '?'. $querystring;
+  $attributes = drupal_attributes(array(
+    'id' => 'quicktabs-'. $qtid,
+    'class' => 'quicktabs_wrapper quicktabs-style-'. drupal_strtolower($style),
+  ));
+  $output = '<div'. $attributes .'>';
+  $active_tab = _quicktabs_get_active_tab($qtid, $tabs);
+  $output .= theme('quicktabs_tabs', $qtid, $tabs, $style, TRUE, $active_tab);
 
-  $output = '<div class="quicktabs_wrapper quicktabs-style-'. drupal_strtolower($style) .'">';
-  $output .= theme('quicktabs_tabs', $qtid, $tabs, $style, TRUE, $path);
   // The main content area, each quick tabs container needs a unique id.
-  $output .= '<div id="quicktabs_container_'. $qtid .'" class="quicktabs_main quicktabs-style-'. drupal_strtolower($style) .'">';
+  $attributes = drupal_attributes(array(
+    'id' => 'quicktabs_container_'. $qtid,
+    'class' => 'quicktabs_main quicktabs-style-'. drupal_strtolower($style),
+  ));
+  $output .= '<div'. $attributes .'>';
   // Do not render any tabpgage, it is done from quicktabs.js.
   $output .= '</div></div>';
 
@@ -304,7 +320,7 @@ function quicktabs_ajax_qtabs($qtid) {
  * @ingroup themeable
  */
 function theme_quicktabs($quicktabs) {
-  if (isset($quicktabs['qtid']) and $quicktabs['qtid'] > 0 and $quicktabs['ajax']) {
+  if ($quicktabs['ajax'] and _quicktabs_javascript_enabled()) {
     $output = quicktabs_ajax_render($quicktabs['qtid'], $quicktabs['tabs'], $quicktabs['style']);
   }
   else {
@@ -320,7 +336,7 @@ function theme_quicktabs($quicktabs) {
  *
  * @ingroup themeable
  */
-function theme_quicktabs_tabs($qtid = 0, $tabs, $style, $ajax = FALSE, $path = NULL) {
+function theme_quicktabs_tabs($qtid = 0, $tabs, $style, $ajax = FALSE, $active_tab = 'none') {
   $output = '';
   $tabs_count = count($tabs);
   if ($tabs_count <= 0) {
@@ -331,11 +347,12 @@ function theme_quicktabs_tabs($qtid = 0, $tabs, $style, $ajax = FALSE, $path = N
   $output .= '<ul class="quicktabs_tabs quicktabs-style-'. drupal_strtolower($style) .'">';
   foreach ($tabs as $i => $tab) {
     $class = 'qtab-'. $i;
-    // Add first and last classes to the list of tabs to help out themers.
+    // Add first, last and active classes to the list of tabs to help out themers.
+    $class .= ($i == $active_tab ? ' active' : '');
     $class .= ($index == 1 ? ' first' : '');
     $class .= ($index == $tabs_count ? ' last': '');
     $attributes_li = drupal_attributes(array('class' => $class));
-    $attributes_a = _quicktabs_construct_tab_attributes($qtid, $tab, $i, $ajax, $path);
+    $attributes_a = _quicktabs_construct_tab_attributes($qtid, $tab, $i, $ajax);
 
     $output .= '<li'. $attributes_li .'><a'. $attributes_a .'>'. $tab['title'] .'</a></li>';
     $index++;
@@ -347,7 +364,7 @@ function theme_quicktabs_tabs($qtid = 0, $tabs, $style, $ajax = FALSE, $path = N
 /**
  * Helper function to construct tab attributes.
  */
-function _quicktabs_construct_tab_attributes($qtid, $tab, $key, $ajax, $path) {
+function _quicktabs_construct_tab_attributes($qtid, $tab, $tabkey, $ajax) {
   $details = array();
   switch ($tab['type']) {
     case 'qtabs':
@@ -373,21 +390,42 @@ function _quicktabs_construct_tab_attributes($qtid, $tab, $key, $ajax, $path) {
       $details = array();
       break;
   }
-  $id = implode('--', array_merge(array($tab['type'], $qtid, $key), $details));
+  $id = implode('--', array_merge(array($tab['type'], $qtid, $tabkey), $details));
+
+  // Need to construct a path for the tab links.
+  $fullpath = explode('?', request_uri());
+  $href = $fullpath[0];
+
+  if ($ajax or !_quicktabs_javascript_enabled()) {
+    $queries = $_GET;
+    unset($queries['quicktabs_'. $qtid]);
+    unset($queries['q']);
+    unset($queries['page']);
+    $querystring = '';
+    if (!empty($queries)) {
+      $i = 0;
+      foreach ($queries as $key => $value) {
+        $querystring .= $i > 0 ? '&'. $key .'='. $value : $key .'='. $value;
+        $i++;
+      }
+      $querystring .= '&';
+    }
+    $href .= '?'. $querystring;
+    $href .= 'quicktabs_'. $qtid .'='. $tabkey;
+  }
 
   if ($ajax) {
-    $attributes = drupal_attributes(array(
-      'id' => $id,
-      'class' => 'qt_ajax_tab',
-      'href' => $path .'quicktabs_'. $qtid . '='. $key,
-    ));
-  } else {
-    $attributes = drupal_attributes(array(
-      'id' => $id,
-      'class' => 'qt_tab',
-      'href' => '#',
-    ));
+    $class = 'qt_ajax_tab';
   }
+  else {
+    $class = 'qt_tab';
+    $href .= '#quicktabs-'. $qtid;
+  }
+  $attributes = drupal_attributes(array(
+    'id' => $id,
+    'class' => $class,
+    'href' => $href,
+  ));
 
   return $attributes;
 }
@@ -548,3 +586,20 @@ function quicktabs_render_tabpage($tab) {
   return $output;
 }
 
+/**
+ * Helper function to determine if the user has javascript enabled.
+ */
+function _quicktabs_javascript_enabled() {
+  return (isset($_COOKIE['has_js']) && $_COOKIE['has_js']);
+}
+
+/**
+ * Helper function to determine active tab from the url.
+ */
+function _quicktabs_get_active_tab($qtid, $tabs) {
+  $active_tab = isset($_GET['quicktabs_'. $qtid]) ? $_GET['quicktabs_'. $qtid] : key($tabs);
+  if (isset($active_tab) and isset($tabs[$active_tab])) {
+    return $active_tab;
+  }
+  return NULL;
+}

@@ -14,8 +14,17 @@ $.fn.prepareQuicktabs = function() {
     this.myTabIndex = i++;
     $(this).bind('click', quicktabsClick);
   });
-  // Click on the first tab.
-  $(this).find('ul.quicktabs_tabs li.first:not(.active) a').trigger('click');
+
+  // Search for the active tab.
+  var $active_tab = $(this).children('.quicktabs_tabs').find('li.active a');
+
+  if ($active_tab.hasClass('qt_tab') || $active_tab.hasClass('qt_ajax_tab')) {
+    $active_tab.trigger('click');
+  }
+  else {
+    // Click on the first tab.
+    $(this).children('.quicktabs_tabs').find('li.first.active a').trigger('click');
+  }
 
   return false;
 };
