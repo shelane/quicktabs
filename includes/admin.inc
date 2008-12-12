@@ -125,7 +125,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
   $form['qt_wrapper']['tabs_more'] = array(
     '#type' => 'submit',
     '#prefix' => '<div id="add-more-tabs-button">',
-    '#suffix' => '<label for="edit-tabs-more">' . t('Add tab') . '</label></div>',
+    '#suffix' => '<label for="edit-tabs-more">'. t('Add tab') .'</label></div>',
     '#value' => t('More tabs'),
     '#description' => t("Click here to add more tabs."),
     '#attributes' => array('class' => 'add-tab'),
@@ -171,7 +171,7 @@ function _quicktabs_form($details) {
     'block' => t('Block'),
     'node' => t('Node'),
     'qtabs' => t('QTabs'),
-   );
+  );
 
   if (module_exists('views')) {
     $views = quicktabs_get_views();
@@ -262,7 +262,7 @@ function _quicktabs_form($details) {
   $form['remove'] = array(
     '#type' => 'submit',
     '#prefix' => '<div>',
-    '#suffix' => '<label for="edit-remove">' . t('Delete') . '</label></div>',
+    '#suffix' => '<label for="edit-remove">'. t('Delete') .'</label></div>',
     '#value' => 'remove_'. $delta,
     '#attributes' => array('class' => 'delete-tab'),
     '#submit' => array('qt_remove_tab_submit'),
@@ -325,7 +325,7 @@ function theme_quicktabs_admin_form_tabs($form) {
   $output .= drupal_render($form);
 
   // Add our JS file, which has some Drupal core JS overrides, and ensures ahah behaviours get re-attached
-  drupal_add_js(drupal_get_path('module', 'quicktabs') . '/js/quicktabs_ahah.js', 'module', 'footer');
+  drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_ahah.js', 'module', 'footer');
   drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs_form.js');
   drupal_add_css(drupal_get_path('module', 'quicktabs') .'/css/quicktabs-admin.css');
   return $output;
@@ -523,10 +523,14 @@ function theme_quicktabs_settings($form) {
   $tabs['one'] = array('title' => t('One'), 'type' => 'freetext', 'text' => t('First tab'));
   $tabs['two'] = array('title' => t('Two'), 'type' => 'freetext', 'text' => t('Second tab'));
   $tabs['three'] = array('title' => t('Three'), 'type' => 'freetext', 'text' => t('Third tab'));
+  $quicktabs['tabs'] = $tabs;
+  $quicktabs['ajax'] = FALSE;
 
   // Preview for each style.
   foreach ($form['quicktabs_tabstyle']['#options'] as $style => $style_title) {
-    $preview = '<div class="quicktabs-preview">'. quicktabs_render($style, $tabs, $style) .'</div>';
+    $quicktabs['style'] = $style;
+    $quicktabs['qtid'] = drupal_strtolower($style);
+    $preview = '<div class="quicktabs-preview">'. theme('quicktabs', $quicktabs) .'</div>';
     $form['quicktabs_tabstyle'][$style]['#description'] = t('%style preview', array('%style' => $style_title)) .':<br />'. $preview;
   }
   return drupal_render($form);
