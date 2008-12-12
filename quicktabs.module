@@ -216,7 +216,7 @@ function quicktabs_render($quicktabs) {
           'id' => 'quicktabs_tabpage_'. $quicktabs['qtid'] .'_'. $active_tab,
           'class' => 'quicktabs_tabpage',
         ));
-        $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($tabs[$active_tab]) .'</div>';
+        $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($quicktabs['tabs'][$active_tab]) .'</div>';
       }
     }
   }
