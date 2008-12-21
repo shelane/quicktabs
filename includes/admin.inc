@@ -7,7 +7,7 @@
 function quicktabs_list() {
   $result = db_query('SELECT qtid, title FROM {quicktabs} ORDER BY title');
   $header = array(
-    array('data' => t('Quick Tabs Block Name')),
+    array('data' => t('Quick Tabs')),
     array('data' => t('Operations'), 'colspan' => 3),
   );
   $rows = array();
@@ -103,7 +103,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
       FALSE => t('No') .': '. t('All tabpages will be loaded at page load.'),
     ),
     '#default_value' => isset($quicktabs['ajax']) ? $quicktabs['ajax'] : 0,
-    '#description' => t('Choose how the tabpages shoud be loaded.'),
+    '#description' => t('Choose how the tabpages should be loaded.'),
     '#weight' => -5,
   );
 
@@ -127,7 +127,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
     '#prefix' => '<div id="add-more-tabs-button">',
     '#suffix' => '<label for="edit-tabs-more">'. t('Add tab') .'</label></div>',
     '#value' => t('More tabs'),
-    '#description' => t("Click here to add more tabs."),
+    '#description' => t('Click here to add more tabs.'),
     '#attributes' => array('class' => 'add-tab'),
     '#weight' => 1,
     '#submit' => array('qt_more_tabs_submit'), // If no javascript action.
