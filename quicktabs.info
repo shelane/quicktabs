@@ -1,4 +1,4 @@
 ; $Id$
 name = Quick Tabs
-description = Create blocks of tabbed views and blocks.
+description = Create blocks of tabbed views, blocks and nodes.
 core = 6.x

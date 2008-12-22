@@ -110,7 +110,7 @@ var quicktabsClick = function() {
                 });
               }
             },
-            error: function() { alert(Drupal.t("An error occurred at ") + ajax_path); },
+            error: function() { alert(Drupal.t("An error occurred at @path.", {'@path': ajax_path})); },
             dataType: 'json'
           });
           break;

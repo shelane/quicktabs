@@ -7,7 +7,7 @@
 function quicktabs_list() {
   $result = db_query('SELECT qtid, title FROM {quicktabs} ORDER BY title');
   $header = array(
-    array('data' => t('Quick Tabs')),
+    array('data' => t('Quicktab')),
     array('data' => t('Operations'), 'colspan' => 3),
   );
   $rows = array();
@@ -20,7 +20,12 @@ function quicktabs_list() {
     );
     $rows[] = $tablerow;
   }
-  $output = theme('table', $header, $rows, array('id' => 'quicktabs'));
+  if (!empty($rows)) {
+    $output = theme('table', $header, $rows, array('id' => 'quicktabs'));
+  }
+  else {
+    $output = '<p>'. t('Click on the "New QT block" tab to get started.') .'</p>';
+  }
   return $output;
 }
 
@@ -34,7 +39,7 @@ function quicktabs_clone($quicktabs) {
 }
 
 /**
- * Build the Quick Tabs (normal) creation and edit form.
+ * Build the quicktab creation and edit form.
  */
 function quicktabs_form($form_state, $formtype, $quicktabs = array()) {
   $form = _qt_admin_main_form($form_state, $quicktabs);
@@ -75,7 +80,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
   $form['title'] = array(
   '#title' => t('Block title'),
   '#type' => 'textfield',
-  '#description' => t('The title of the whole block.'),
+  '#description' => t('This will appear as the name of this block in administer >> site building >> blocks.'),
   '#default_value' => (isset($quicktabs['title']) ? $quicktabs['title'] : ''),
   '#weight' => -7
   );
@@ -88,10 +93,10 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
   ksort($style_options);
   $form['style'] = array(
     '#type' => 'select',
-    '#title' => t('Tab style'),
+    '#title' => t('Style'),
     '#options' => array('nostyle' => t('No style')) + array('default' => t('Default style')) + $style_options,
     '#default_value' => isset($quicktabs['style']) ? $quicktabs['style'] : 'default',
-    '#description' => t('Choose the tab style for your Quick Tabs.'),
+    '#description' => t('Choose the quicktab style.'),
     '#weight' => -6,
   );
 
@@ -99,11 +104,11 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
     '#type' => 'radios',
     '#title' => t('Ajax'),
     '#options' => array(
-      TRUE => t('Yes') .': '. t('Individual tabpages will be loaded at tab click.'),
-      FALSE => t('No') .': '. t('All tabpages will be loaded at page load.'),
+      TRUE => t('Yes') .': '. t('Tab content will be loaded at tab click.'),
+      FALSE => t('No') .': '. t('All tabs will be loaded at page load.'),
     ),
     '#default_value' => isset($quicktabs['ajax']) ? $quicktabs['ajax'] : 0,
-    '#description' => t('Choose how the tabpages should be loaded.'),
+    '#description' => t('Choose how the content of tabs should be loaded.'),
     '#weight' => -5,
   );
 
@@ -127,8 +132,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
     '#prefix' => '<div id="add-more-tabs-button">',
     '#suffix' => '<label for="edit-tabs-more">'. t('Add tab') .'</label></div>',
     '#value' => t('More tabs'),
-    '#description' => t('Click here to add more tabs.'),
-    '#attributes' => array('class' => 'add-tab'),
+    '#attributes' => array('class' => 'add-tab', 'title' => t('Click here to add more tabs.')),
     '#weight' => 1,
     '#submit' => array('qt_more_tabs_submit'), // If no javascript action.
     '#ahah' => array(
@@ -163,14 +167,13 @@ function _quicktabs_form($details) {
   $form['title'] = array(
     '#type' => 'textfield',
     '#size' => '10',
-    '#title' => t('Tab @n', array('@n' => ($delta + 1))),
     '#default_value' => isset($details['title']) ? $details['title'] : '',
   );
 
   $tabtypes = array(
     'block' => t('Block'),
     'node' => t('Node'),
-    'qtabs' => t('QTabs'),
+    'qtabs' => t('QTab'),
   );
 
   if (module_exists('views')) {
@@ -227,7 +230,7 @@ function _quicktabs_form($details) {
   $form['node']['nid'] = array(
     '#type' => 'textfield',
     '#title' => t('Node'),
-    '#description' => t('Insert the node ID of the node.'),
+    '#description' => t('The node ID of the node.'),
     '#maxlength' => 10,
     '#size' => 20,
     '#default_value' => isset($details['nid']) ? $details['nid'] : '',
@@ -245,8 +248,8 @@ function _quicktabs_form($details) {
 
   $form['qtabs']['qtid'] = array(
     '#type' => 'textfield',
-    '#title' => t('Quick Tabs'),
-    '#description' => t('Insert the Quick Tabs ID. Different styles may not work when putting an ajax quick tabs inside ajax quick tabs.'),
+    '#title' => t('Quicktab'),
+    '#description' => t('The quicktab ID.') .' '. t('Different styles may not work when putting an ajax quicktab inside ajax quicktab.'),
     '#maxlength' => 10,
     '#size' => 20,
     '#default_value' => isset($details['qtid']) ? $details['qtid'] : '',
@@ -255,7 +258,6 @@ function _quicktabs_form($details) {
   $form['type'] = array(
     '#type' => 'radios',
     '#options' => $tabtypes,
-    '#title' => t('Tab content'),
     '#default_value' => isset($details['type']) ? $details['type'] : 'block',
   );
 
@@ -264,7 +266,7 @@ function _quicktabs_form($details) {
     '#prefix' => '<div>',
     '#suffix' => '<label for="edit-remove">'. t('Delete') .'</label></div>',
     '#value' => 'remove_'. $delta,
-    '#attributes' => array('class' => 'delete-tab'),
+    '#attributes' => array('class' => 'delete-tab', 'title' => t('Click here to delete this tab.')),
     '#submit' => array('qt_remove_tab_submit'),
     '#ahah' => array(
       'path' => 'quicktabs/ahah',
@@ -295,8 +297,6 @@ function theme_quicktabs_admin_form_tabs($form) {
   );
 
   foreach (element_children($form) as $key) {
-    // No need to print the field title every time.
-    unset($form[$key]['title']['#title'], $form[$key]['type']['#title']);
     $form[$key]['weight']['#attributes']['class'] = 'qt-tabs-weight';
     // Build the table row.
     $row = array(
@@ -407,7 +407,7 @@ function quicktabs_form_validate($form, &$form_state) {
   // We don't want it to validate when we're just adding or removing tabs.
   if ($form_state['clicked_button']['#id'] == 'edit-submit-form') {
     if (empty($form_state['values']['title'])) {
-      form_set_error('title', t('You must give your Quick Tabs block a title.'));
+      form_set_error('title', t('Title is required for the quicktab block.'));
     }
     else {
       if (!isset($form_state['values']['tabs'])) {
@@ -415,7 +415,7 @@ function quicktabs_form_validate($form, &$form_state) {
       }
       foreach ($form_state['values']['tabs'] as $j => $tab) {
         if (empty($tab['title'])) {
-          form_set_error('tabs]['. $j .'][title', t('You must give each tab a title.'));
+          form_set_error('tabs]['. $j .'][title', t('Title is required for each tab.'));
         }
       }
     }
@@ -432,11 +432,11 @@ function quicktabs_form_submit($form, &$form_state) {
 
     if ($quicktabs['qtid'] > 0) {
       quicktabs_updateblock($quicktabs);
-      drupal_set_message(t('Your Quick Tabs block has been updated.'));
+      drupal_set_message(t('The quicktab block has been updated.'));
     }
     else {
       quicktabs_createblock($quicktabs);
-      drupal_set_message(t('Your Quick Tabs block has been created and can now be enabled.'));
+      drupal_set_message(t('The quicktab block has been created.'));
     }
     drupal_goto('admin/build/quicktabs');
   }
@@ -459,20 +459,20 @@ function quicktabs_updateblock($quicktabs) {
 }
 
 /**
- * Deletion of Quick Tabs blocks.
+ * Deletion of quicktab block.
  */
 function quicktabs_block_delete(&$form_state, $quicktabs) {
   $form['qtid'] = array('#type' => 'hidden', '#value' => $quicktabs['qtid']);
   $form['qt_name'] = array('#type' => 'hidden', '#value' => $quicktabs['title']);
-  return confirm_form($form, t('Are you sure you want to delete the Quick Tabs block %name?', array('%name' => $quicktabs['title'])), 'admin/build/quicktabs', '', t('Delete'), t('Cancel'));
+  return confirm_form($form, t('Are you sure you want to delete the quicktab block %name?', array('%name' => $quicktabs['title'])), 'admin/build/quicktabs', '', t('Delete'), t('Cancel'));
 }
 
 /**
- * Submit handler for Quick Tabs blocks deletion.
+ * Submit handler for quicktab block deletion.
  */
 function quicktabs_block_delete_submit($form, &$form_state) {
   db_query('DELETE FROM {quicktabs} WHERE qtid = %d', $form_state['values']['qtid']);
-  drupal_set_message(t('The Quick Tabs block %name has been removed.', array('%name' => $form_state['values']['qt_name'])));
+  drupal_set_message(t('The quicktab block %name has been removed.', array('%name' => $form_state['values']['qt_name'])));
   cache_clear_all();
   $form_state['redirect'] = 'admin/build/quicktabs';
 };
@@ -491,10 +491,10 @@ function quicktabs_settings() {
 
   $form['quicktabs_tabstyle'] = array(
     '#type' => 'radios',
-    '#title' => t('Tab Style'),
+    '#title' => t('Quicktab styles'),
     '#options' => array('nostyle' => t('No style')) + $options,
-    '#default_value' => variable_get('quicktabs_tabstyle', 'default'),
-    '#description' => t('Choose the default tab style for your Quick Tabs.'),
+    '#default_value' => variable_get('quicktabs_tabstyle', 'nostyle'),
+    '#description' => t('Select the default style for quicktabs.'),
     '#attributes' => array('class' => 'quicktabs-tabstyles clear-block'),
   );
   $form['submit'] = array(
@@ -509,7 +509,7 @@ function quicktabs_settings() {
  */
 function quicktabs_settings_submit($form, &$form_state) {
   variable_set('quicktabs_tabstyle', $form_state['values']['quicktabs_tabstyle']);
-  drupal_set_message(t('Your default Quick Tabs style has been saved.'));
+  drupal_set_message(t('The default quicktab style has been saved.'));
 }
 
 /**

@@ -7,13 +7,11 @@
 function quicktabs_help($path, $arg) {
   switch ($path) {
     case 'admin/build/quicktabs':
-      return t('<p>The Quick Tabs module allows you to create blocks of tabbed content. You can create a block on your site containing up to six tabs with corresponding content. Clicking on the tabs makes the corresponding content display instantly (it uses jQuery). The content for each tabbed section can be either a view or an existing block. It is an ideal way to do something like the Most Popular / Most Emailed stories tabs you see on many news websites.</p>
-<p>Once created, the Quick Tabs blocks show up in your block listing, ready to be configured and enabled like other blocks.</p>
-<p>Multiple Quick Tabs blocks can be placed on a single page.</p>
-<p>Visit the <a href="@configuration">Quick Tabs configuration page</a> to choose a style for your Quick Tabs blocks.</p>
-<p>Click on the "New QT block" tab to get started.</p>', array('@configuration' => url('admin/settings/quicktabs')));
+      return t('<p>The Quick Tabs module allows you to create blocks of tabbed content. Clicking on the tabs makes the corresponding content display instantly (it uses jQuery). The content for each tabbed section can be either a node, view, block or another quicktab. It is an ideal way to do something like the Most Popular / Most Emailed stories tabs you see on many news websites.</p>
+<p>Once created, the quicktab block show up in your block listing, ready to be configured and enabled like other blocks. Multiple quicktabs can be placed on a single page.</p>
+<p>Visit the <a href="@configuration">configuration page</a> to see the available styles and select the default style for your quicktabs.</p>', array('@configuration' => url('admin/settings/quicktabs')));
     case 'admin/build/quicktabs/add':
-      return '<p>'. t('Here you can create a new Quick Tabs block. Once you have created this block you will be taken to the <a href="@overview">blocks</a> page to configure and enable it.', array('@overview' => url('admin/build/block'))) .'</p>';
+      return '<p>'. t('Here you can create a new quicktab block. Once you have created this block you can configure and enable it on the <a href="@overview">blocks</a> page.', array('@overview' => url('admin/build/block'))) .'</p>';
   }
 }
 
@@ -44,8 +42,8 @@ function quicktabs_theme() {
  */
 function quicktabs_menu() {
   $items['admin/build/quicktabs'] = array(
-    'title' => 'Quick Tabs',
-    'description' => 'Create blocks of tabbed content - content for each tab can be a view or a block.',
+    'title' => 'Quicktabs',
+    'description' => 'Create blocks of tabbed content.',
     'page callback' => 'quicktabs_list',
     'access callback' => 'user_access',
     'access arguments' => array('administer quicktabs'),
@@ -90,8 +88,8 @@ function quicktabs_menu() {
   );
 
   $items['admin/settings/quicktabs'] = array(
-    'title' => 'Quick Tabs',
-    'description' => 'Select a style for your Quick Tabs blocks.',
+    'title' => 'Quicktabs',
+    'description' => 'Select the default style for quicktabs.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('quicktabs_settings'),
     'access callback' => 'user_access',
@@ -186,7 +184,7 @@ function quicktabs_render($quicktabs) {
   $active_tab = _quicktabs_get_active_tab($quicktabs);
   $output .= theme('quicktabs_tabs', $quicktabs, $active_tab);
 
-  // The main content area, each quick tabs container needs a unique id.
+  // The main content area, each quicktab container needs a unique id.
   $attributes = drupal_attributes(array(
     'id' => 'quicktabs_container_'. $quicktabs['qtid'],
     'class' => 'quicktabs_main quicktabs-style-'. drupal_strtolower($quicktabs['style']),
