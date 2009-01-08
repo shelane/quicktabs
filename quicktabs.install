@@ -80,11 +80,12 @@ function quicktabs_update_1() {
  */
 function quicktabs_update_6002() {
   $ret = array();
-  module_load_include('inc', 'quicktabs', 'includes/admin');
   $result = db_query('SELECT qtid FROM {quicktabs}');
 
   while ($row = db_fetch_object($result)) {
-    $quicktabs = quicktabs_load($row->qtid);
+    $quicktabs = db_fetch_array(db_query('SELECT tabs, ajax FROM {quicktabs} WHERE qtid = %d', $row->qtid));
+    $quicktabs['tabs'] = unserialize($quicktabs['tabs']);
+
     foreach ($quicktabs['tabs'] as $key => $tab) {
       $newtab = array();
       $newtab['type'] = $tab['type'];
@@ -129,7 +130,8 @@ function quicktabs_update_6002() {
       }
       $quicktabs['tabs'][$key] = $newtab;
     }
-    quicktabs_updateblock($quicktabs);
+    $quicktabs['tabs'] = serialize($quicktabs['tabs']);
+    db_query("UPDATE {quicktabs} SET tabs = '%s' WHERE qtid = %d", $quicktabs['tabs'], $row->qtid);
   }
   return $ret;
 }
