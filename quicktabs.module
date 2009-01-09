@@ -454,6 +454,10 @@ function quicktabs_load($qtid) {
   $tabs = unserialize($quicktabs['tabs']);
   foreach ($tabs as $key => $tab) {
     $weight[$key] = $tab['weight'];
+    if ($tab['qtid'] == $qtid) {
+      unset($tabs[$key]);
+      unset($weight[$key]);
+    }
   }
   array_multisort($weight, SORT_ASC, $tabs);
 
