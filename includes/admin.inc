@@ -418,7 +418,7 @@ function quicktabs_form_validate($form, &$form_state) {
           form_set_error('tabs]['. $j .'][title', t('Title is required for each tab.'));
         }
         elseif ($tab['type'] == 'qtabs' && $tab['qtabs']['qtid'] == $form_state['values']['qtid']) {
-          form_set_error('tabs]['. $j .'][qtabs][qtid', t('You cannot put a Quick Tabs block inside itself.'));
+          form_set_error('tabs]['. $j .'][qtabs][qtid', t('You cannot put a quicktab inside itself.'));
         }
       }
     }
