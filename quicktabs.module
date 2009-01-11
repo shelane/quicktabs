@@ -453,7 +453,7 @@ function quicktabs_load($qtid) {
   $tabs = unserialize($quicktabs['tabs']);
   foreach ($tabs as $key => $tab) {
     $weight[$key] = $tab['weight'];
-    if ($tab['qtid'] == $qtid) {
+    if ($tab['type'] == 'qtabs' and $tab['qtid'] == $qtid) {
       unset($tabs[$key]);
       unset($weight[$key]);
     }
