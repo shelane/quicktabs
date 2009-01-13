@@ -59,7 +59,7 @@ Drupal.quicktabs.tab.prototype.success = function(data) {
   this.container.append(Drupal.theme('quicktabsResponse', this, result));
   if (this.tabType == 'qtabs') {
     // The new quicktabs must be prepared.
-    var $subQt = this.container.find('#quicktabs-' + tab.tabDetails[3]);
+    var $subQt = this.container.find('#quicktabs-' + this.tabDetails[3]);
     Drupal.quicktabs.prepare($subQt);
   }
   // stop the progress bar
@@ -76,7 +76,7 @@ Drupal.quicktabs.tab.prototype.stopProgress = function () {
 
 Drupal.quicktabs.tab.prototype.startProgress = function () {
   var progressBar = new Drupal.progressBar('qt-progress-' + this.element.id, null, null, null);
-  progressBar.setProgress(-1, 'Loading');
+  progressBar.setProgress(-1, Drupal.t('Loading'));
   this.progress = {};
   this.progress.element = $(progressBar.element).addClass('qt-progress qt-progress-bar');
   //this.progress.object = progressBar;
@@ -111,11 +111,6 @@ Drupal.quicktabs.tab.prototype.quicktabsAjaxView = function() {
     type: 'GET',
     data: viewData,
     success: function(response) {
-      // Scroll to the top of the view. This will allow users
-      // to browse newly loaded content after e.g. clicking a pager
-      // link.
-      var offset = $(target).offset();
-      window.scrollTo(0, offset.top - 10);
       // Call all callbacks.
       if (response.__callbacks) {
         $.each(response.__callbacks, function(i, callback) {
