@@ -519,7 +519,7 @@ function quicktabs_render_tabpage($tab) {
       if (isset($tab['nid'])) {
         $node = node_load($tab['nid']);
         if (!empty($node)) {
-          $output = theme('node', $node, $tab['teaser'], $tab['hide_title']);
+          $output = node_view($node, $tab['teaser'], $tab['hide_title'], FALSE);
         }
       }
       break;
