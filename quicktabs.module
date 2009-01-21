@@ -139,13 +139,10 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
   switch ($op) {
     case 'list':
       $blocks = array();
-      $jqueryblocks = array();
-      $result = db_query('SELECT * FROM {quicktabs}');
+      $result = db_query('SELECT qtid, title FROM {quicktabs}');
       while ($row = db_fetch_object($result)) {
-        $jqueryblocks[$row->qtid] = $row->title;
-      }
-      foreach ($jqueryblocks as $key => $val) {
-        $blocks[$key]['info'] = t($val);
+        $blocks[$row->qtid]['info'] = $row->title;
+        $blocks[$row->qtid]['cache'] = BLOCK_NO_CACHE;
       }
       return $blocks;
       break;
