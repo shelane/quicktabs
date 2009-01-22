@@ -78,11 +78,11 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
   }
 
   $form['title'] = array(
-  '#title' => t('Block title'),
-  '#type' => 'textfield',
-  '#description' => t('This will appear as the name of this block in administer >> site building >> blocks.'),
-  '#default_value' => (isset($quicktabs['title']) ? $quicktabs['title'] : ''),
-  '#weight' => -7
+    '#title' => t('Block title'),
+    '#type' => 'textfield',
+    '#description' => t('This will appear as the name of this block in administer >> site building >> blocks.'),
+    '#default_value' => isset($quicktabs['title']) ? $quicktabs['title'] : '',
+    '#weight' => -7,
   );
 
   $styles = module_invoke_all('quicktabs_tabstyles');
