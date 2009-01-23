@@ -57,11 +57,7 @@ Drupal.quicktabs.tab.prototype.success = function(data) {
   var result = Drupal.parseJson(data);
   //var $container = $('#quicktabs_container_' + tab.qtid);
   this.container.append(Drupal.theme('quicktabsResponse', this, result));
-  if (this.tabType == 'qtabs') {
-    // The new quicktabs must be prepared.
-    var $subQt = this.container.find('#quicktabs-' + this.tabDetails[3]);
-    Drupal.quicktabs.prepare($subQt);
-  }
+  Drupal.attachBehaviors(this.container);
   // stop the progress bar
   this.stopProgress();
 }
