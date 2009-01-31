@@ -194,17 +194,7 @@ function quicktabs_render($quicktabs) {
     _quicktabs_prepare_views($quicktabs['tabs']);
   }
 
-  if (!$quicktabs['ajax'] and _quicktabs_javascript_enabled()) {
-    // Render all tabpgages.
-    foreach ($quicktabs['tabs'] as $key => $tab) {
-      $attributes = drupal_attributes(array(
-        'id' => 'quicktabs_tabpage_'. $quicktabs['qtid'] .'_'. $key,
-        'class' => 'quicktabs_tabpage',
-      ));
-      $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($tab) .'</div>';
-    }
-  }
-  else {
+  if ($quicktabs['ajax'] or !_quicktabs_javascript_enabled()) {
     // Render only the active tabpage.
     if (isset($active_tab)) {
       $attributes = drupal_attributes(array(
@@ -212,6 +202,16 @@ function quicktabs_render($quicktabs) {
         'class' => 'quicktabs_tabpage',
       ));
       $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($quicktabs['tabs'][$active_tab]) .'</div>';
+    }
+  }
+  else {
+    // Render all tabpgages.
+    foreach ($quicktabs['tabs'] as $key => $tab) {
+      $attributes = drupal_attributes(array(
+        'id' => 'quicktabs_tabpage_'. $quicktabs['qtid'] .'_'. $key,
+        'class' => 'quicktabs_tabpage',
+      ));
+      $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($tab) .'</div>';
     }
   }
 
@@ -530,9 +530,14 @@ function quicktabs_render_tabpage($tab) {
 }
 
 /**
- * Helper function to determine if the user has javascript enabled.
+ * Helper function to determine if the user has JavaScript enabled.
  */
 function _quicktabs_javascript_enabled() {
+  if (empty($_COOKIE)) {
+    // If there is no cookie then it is better to assume that the user has JavaScript enabled.
+    // @todo: better check is needed.
+    return TRUE;
+  }
   return (isset($_COOKIE['has_js']) && $_COOKIE['has_js']);
 }
 
