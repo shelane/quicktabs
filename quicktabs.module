@@ -293,9 +293,8 @@ function theme_quicktabs_tabs($quicktabs, $active_tab = 'none') {
     $class .= ($index == 1 ? ' first' : '');
     $class .= ($index == $tabs_count ? ' last': '');
     $attributes_li = drupal_attributes(array('class' => $class));
-    $attributes_a = _quicktabs_construct_tab_attributes($quicktabs, $i);
-
-    $output .= '<li'. $attributes_li .'><a'. $attributes_a .'>'. $tab['title'] .'</a></li>';
+    $options = _quicktabs_construct_link_options($quicktabs, $i);
+    $output .= '<li'. $attributes_li .'>'. l($tab['title'], $_GET['q'], $options) .'</li>';
     $index++;
   }
   $output .= '</ul>';
@@ -303,9 +302,9 @@ function theme_quicktabs_tabs($quicktabs, $active_tab = 'none') {
 }
 
 /**
- * Helper function to construct tab attributes.
+ * Helper function to construct link options for tab links.
  */
-function _quicktabs_construct_tab_attributes($quicktabs, $tabkey) {
+function _quicktabs_construct_link_options($quicktabs, $tabkey) {
   $qtid = $quicktabs['qtid'];
   $ajax = $quicktabs['ajax'];
   $tab = $quicktabs['tabs'][$tabkey];
@@ -318,7 +317,8 @@ function _quicktabs_construct_tab_attributes($quicktabs, $tabkey) {
     case 'view':
       if (module_exists('views')) {
         if ($tab['args'] != '') {
-          $details = array($tab['vid'], $tab['display'], str_replace(',', '-', $tab['args']));
+          $args = _quicktabs_get_views_args($tab['args']);
+          $details = array($tab['vid'], $tab['display'], implode('-', $args));
         }
         else {
           $details = array($tab['vid'], $tab['display']);
@@ -337,42 +337,39 @@ function _quicktabs_construct_tab_attributes($quicktabs, $tabkey) {
   }
   $id = implode('--', array_merge(array($tab['type'], $qtid, $tabkey), $details));
 
-  // Need to construct a path for the tab links.
-  $fullpath = explode('?', request_uri());
-  $href = $fullpath[0];
-
-  if ($ajax or !_quicktabs_javascript_enabled()) {
-    $queries = $_GET;
-    unset($queries['quicktabs_'. $qtid]);
-    unset($queries['q']);
-    unset($queries['page']);
-    $querystring = '';
-    if (!empty($queries)) {
-      $i = 0;
-      foreach ($queries as $key => $value) {
-        $querystring .= $i > 0 ? '&'. $key .'='. $value : $key .'='. $value;
-        $i++;
-      }
-      $querystring .= '&';
+  // need to construct the correct querystring for the tab links
+  $queries = $_GET;
+  unset($queries['quicktabs_'. $qtid]);
+  unset($queries['q']);
+  unset($queries['page']);
+  $querystring = '';
+  if (!empty($queries)) {
+    $i = 0;
+    foreach ($queries as $key => $value) {
+      $querystring .= $i > 0 ? '&'. $key .'='. $value : $key .'='. $value;
+      $i++;
     }
-    $href .= '?'. $querystring;
-    $href .= 'quicktabs_'. $qtid .'='. $tabkey;
+    $querystring .= '&';
   }
+  $querystring .= 'quicktabs_'. $qtid .'='. $tabkey;
 
   if ($ajax) {
     $class = 'qt_ajax_tab';
   }
   else {
     $class = 'qt_tab';
-    $href .= '#quicktabs-'. $qtid;
   }
-  $attributes = drupal_attributes(array(
-    'id' => $id,
-    'class' => $class,
-    'href' => $href,
-  ));
+  
+  $link_options = array(
+    'attributes' => array(
+      'id' => $id,
+      'class' => $class,
+    ),
+    'query' => $querystring,
+    'fragment' => 'quicktabs-'. $qtid,
+  );
 
-  return $attributes;
+  return $link_options;
 }
 
 /**
