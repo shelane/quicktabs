@@ -475,15 +475,20 @@ function quicktabs_render_tabpage($tab) {
     case 'view':
       if (isset($tab['vid'])) {
         if (module_exists('views')) {
-          $args = array();
-          if ($tab['args'] != '') {
-            $args_array = explode(',', $tab['args']);
-            foreach ($args_array as $arg) {
-              $args[] = trim($arg);
+          $view = views_get_view($tab['vid']);
+          if ($view->access($tab['display'])) {
+            $args = array();
+            if ($tab['args'] != '') {
+              $args_array = explode(',', $tab['args']);
+              foreach ($args_array as $arg) {
+                $args[] = trim($arg);
+              }
             }
+            $func_args = array_merge(array($tab['vid'], $tab['display']), $args);
+            $output = call_user_func_array('views_embed_view', $func_args);
+          } else {
+            $output = t('You do not have permission to access this content');
           }
-          $func_args = array_merge(array($tab['vid'], $tab['display']), $args);
-          $output = call_user_func_array('views_embed_view', $func_args);
         }
         else {
           $output = t('Views module not enabled, cannot display tab content.');
@@ -512,8 +517,10 @@ function quicktabs_render_tabpage($tab) {
     case 'node':
       if (isset($tab['nid'])) {
         $node = node_load($tab['nid']);
-        if (!empty($node)) {
+        if (!empty($node) && node_access('view', $node)) {
           $output = node_view($node, $tab['teaser'], $tab['hide_title'], TRUE);
+        } else {
+          $output = t('This content either doesn\'t exist or you do not have permission to access it');
         }
       }
       break;

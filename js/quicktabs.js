@@ -46,18 +46,26 @@ Drupal.quicktabs.tab = function (el) {
   // The 'this' variable will not persist inside of the options object.
   var tab = this;
   this.options = {
-    success: function(data) {
-      return tab.success(data);
+    success: function(response) {
+      return tab.success(response);
+    },
+    complete: function(response) {
+      return tab.complete();
     }
   }
 }
 
 // ajax callback for non-views tabs
-Drupal.quicktabs.tab.prototype.success = function(data) {
-  var result = Drupal.parseJson(data);
+Drupal.quicktabs.tab.prototype.success = function(response) {
+  var result = Drupal.parseJson(response.data);
   //var $container = $('#quicktabs_container_' + tab.qtid);
   this.container.append(Drupal.theme('quicktabsResponse', this, result));
   Drupal.attachBehaviors(this.container);
+}
+
+// function to call on completed ajax call
+// for non-views tabs
+Drupal.quicktabs.tab.prototype.complete = function() {
   // stop the progress bar
   this.stopProgress();
 }
@@ -113,6 +121,8 @@ Drupal.quicktabs.tab.prototype.quicktabsAjaxView = function() {
           eval(callback)(target, response);
         });
       }
+    },
+    complete: function() {
       tab.stopProgress();
     },
     error: function() { alert(Drupal.t("An error occurred at @path.", {'@path': ajax_path})); },
@@ -149,7 +159,14 @@ var quicktabsClick = function() {
         if (tab.tabType == 'block') {
           qtAjaxPath +=  '/' + tab.tabDetails[4];
         }
-        $.get(qtAjaxPath, null, tab.options.success);
+        $.ajax({
+          url: qtAjaxPath,
+          type: 'GET',
+          data: null,
+          success: tab.options.success,
+          complete: tab.options.complete,
+          dataType: 'json'
+        });
       }
       else {
         // special treatment for views
