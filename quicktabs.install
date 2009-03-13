@@ -156,3 +156,26 @@ function quicktabs_update_6003() {
   db_add_field($ret, 'quicktabs', 'style', array('description' => 'The tab style.', 'type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'initial' => 'default'));
   return $ret;
 }
+
+/**
+ * Update view args to the new format.
+ */
+function quicktabs_update_6004() {
+  $ret = array();
+  $result = db_query('SELECT qtid, tabs FROM {quicktabs}');
+
+  while ($row = db_fetch_object($result)) {
+    $tabs_array = unserialize($row->tabs);
+
+    foreach ($tabs_array as $key => $tab) {
+      //$newtab = array();
+      if ($tab['type'] == 'view') {
+        $tab['args'] = str_replace(',', '/', $tab['args']);
+        $tabs_array[$key] = $tab;
+      }
+    }
+    $serialized = serialize($tabs_array);
+    db_query("UPDATE {quicktabs} SET tabs = '%s' WHERE qtid = %d", $serialized, $row->qtid);
+  }
+  return $ret;
+}
