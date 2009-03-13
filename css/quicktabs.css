@@ -1,6 +1,6 @@
 /* $Id$ */
 
-html.js div.quicktabs {
+div.quicktabs_tabpage.nojs-hide {
   display: none;
 }
 
