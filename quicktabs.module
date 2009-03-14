@@ -171,7 +171,10 @@ function quicktabs_render($quicktabs) {
     $quicktabs['style'] = variable_get('quicktabs_tabstyle', 'nostyle');
   }
   quicktabs_add_css($quicktabs['style']);
-  drupal_add_js('misc/progress.js', 'core');
+  $javascript = drupal_add_js('misc/progress.js', 'core');
+  if (!isset($javascript['setting'][1]['quicktabs']) || !array_key_exists('qt_'. $quicktabs['qtid'], $javascript['setting'][1]['quicktabs'])) {
+    drupal_add_js(array('quicktabs' => array('qt_'. $quicktabs['qtid'] => $quicktabs)), 'setting');
+  }
   drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
 
   $attributes = drupal_attributes(array(

@@ -4,7 +4,6 @@ Drupal.settings.views = Drupal.settings.views || {'ajax_path': 'views/ajax'};
 
 Drupal.behaviors.quicktabs = function (context) {
   $('.quicktabs_wrapper:not(.quicktabs-processed)', context).addClass('quicktabs-processed').each(function(){
-    //$(this).prepareQuicktabs();
     Drupal.quicktabs.prepare(this);
   });
 };
@@ -14,8 +13,11 @@ Drupal.quicktabs = Drupal.quicktabs || {};
 // setting up the inital behaviours
 Drupal.quicktabs.prepare = function(el) {
   var i = 0;
+  var qtid = el.id.split('-')[1];
+  
   $(el).find('ul.quicktabs_tabs li a').each(function(){
     this.myTabIndex = i++;
+    this.qtid = qtid;
     $(this).bind('click', quicktabsClick);
   });
 
@@ -36,11 +38,17 @@ Drupal.quicktabs.prepare = function(el) {
 Drupal.quicktabs.tab = function (el) {
   this.element = el;
   this.tabIndex = el.myTabIndex;
-  this.tabDetails = el.id.split('--');
-  this.tabType = this.tabDetails[0];
-  this.qtid = this.tabDetails[1];
-  var tabKey = this.tabDetails[2];
-  this.tabpage_id = 'quicktabs_tabpage_' + this.qtid + '_' + tabKey;
+  this.qtid = el.qtid;
+  var qtKey = 'qt_' + this.qtid;
+  var i = 0;
+  for (var key in Drupal.settings.quicktabs[qtKey].tabs) {
+    if (i == this.tabIndex) {
+      this.tabObj = Drupal.settings.quicktabs[qtKey].tabs[key];
+      this.tabKey = key;
+    }
+    i++;
+  }
+  this.tabpage_id = 'quicktabs_tabpage_' + this.qtid + '_' + this.tabKey;
   this.container = $('#quicktabs_container_' + this.qtid);
   this.tabpage = this.container.find('#' + this.tabpage_id);
   // The 'this' variable will not persist inside of the options object.
@@ -58,7 +66,6 @@ Drupal.quicktabs.tab = function (el) {
 // ajax callback for non-views tabs
 Drupal.quicktabs.tab.prototype.success = function(response) {
   var result = Drupal.parseJson(response.data);
-  //var $container = $('#quicktabs_container_' + tab.qtid);
   this.container.append(Drupal.theme('quicktabsResponse', this, result));
   Drupal.attachBehaviors(this.container);
 }
@@ -83,7 +90,6 @@ Drupal.quicktabs.tab.prototype.startProgress = function () {
   progressBar.setProgress(-1, Drupal.t('Loading'));
   this.progress = {};
   this.progress.element = $(progressBar.element).addClass('qt-progress qt-progress-bar');
-  //this.progress.object = progressBar;
   this.container.prepend(this.progress.element);
 }
 
@@ -100,14 +106,14 @@ Drupal.quicktabs.tab.prototype.quicktabsAjaxView = function() {
     ajax_path = ajax_path[0];
   }
   var args;
-  if (tab.tabDetails.length == 6) {
-    args = tab.tabDetails[5].replace(/-/g, '/');
+  if (tab.tabObj.args != '') {
+    args = tab.tabObj.args.replace(/-/g, '/');
   } else {
     args = '';
   }
   var viewData = {
-    'view_name': tab.tabDetails[3],
-    'view_display_id': tab.tabDetails[4],
+    'view_name': tab.tabObj.vid,
+    'view_display_id': tab.tabObj.display,
     'view_args': args
   }
   $.ajax({
@@ -128,7 +134,6 @@ Drupal.quicktabs.tab.prototype.quicktabsAjaxView = function() {
     error: function() { alert(Drupal.t("An error occurred at @path.", {'@path': ajax_path})); },
     dataType: 'json'
   });
-  //break;
 }
 
 var quicktabsClick = function() {
@@ -150,15 +155,21 @@ var quicktabsClick = function() {
     if ($(this).hasClass('qt_ajax_tab')) {
       tab.startProgress();
       // Construct the ajax tabpage.
-      if (tab.tabType != 'view') {
+      if (tab.tabObj.type != 'view') {
         // construct the ajax path to retrieve the content, depending on type
-        var qtAjaxPath = Drupal.settings.basePath + 'quicktabs/ajax/' + tab.tabType + '/' + tab.tabDetails[3];
-        if (tab.tabType == 'node') {
-          qtAjaxPath +=  '/' + tab.tabDetails[4] + '/' + tab.tabDetails[5];
+        var qtAjaxPath = Drupal.settings.basePath + 'quicktabs/ajax/' + tab.tabObj.type + '/';
+        switch (tab.tabObj.type) {
+          case 'node':
+            qtAjaxPath +=  tab.tabObj.nid + '/' + tab.tabObj.teaser + '/' + tab.tabObj.hide_title;
+            break;
+          case 'block':
+            qtAjaxPath +=  tab.tabObj.bid + '/' + tab.tabObj.hide_title;
+            break;
+          case 'qtabs':
+            qtAjaxPath +=  tab.tabObj.qtid;
+            break;
         }
-        if (tab.tabType == 'block') {
-          qtAjaxPath +=  '/' + tab.tabDetails[4];
-        }
+        
         $.ajax({
           url: qtAjaxPath,
           type: 'GET',
@@ -179,6 +190,6 @@ var quicktabsClick = function() {
 
 // theme function for ajax response
 Drupal.theme.prototype.quicktabsResponse = function(tab, result) {
-  var newDiv = tab.tabType == 'view' ? '<div id="' + tab.tabpage_id + '" class="quicktabs_tabpage"><div></div></div>' : '<div id="' + tab.tabpage_id + '" class="quicktabs_tabpage">' + result['data'] + '</div>';
+  var newDiv = tab.tabObj.type == 'view' ? '<div id="' + tab.tabpage_id + '" class="quicktabs_tabpage"><div></div></div>' : '<div id="' + tab.tabpage_id + '" class="quicktabs_tabpage">' + result['data'] + '</div>';
   return newDiv;
 }; 
