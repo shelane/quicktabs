@@ -179,7 +179,7 @@ function _quicktabs_form($details) {
   if (module_exists('views')) {
     $views = quicktabs_get_views();
     $views_keys = array_keys($views);
-    $tabtypes['view'] = t('View');
+    $tabtypes['view'] = t('View!translate_as_list_of_content', array('!translate_as_list_of_content' => ''));
 
     $selected_view = (isset($details['vid']) ? $details['vid'] : (isset($views_keys[0]) ? $views_keys[0] : ''));
     $form['view']['vid'] = array(
