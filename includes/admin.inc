@@ -206,7 +206,7 @@ function _quicktabs_form($details) {
       '#size' => '40',
       '#required' => FALSE,
       '#default_value' => isset($details['args']) ? $details['args'] : '',
-      '#description' => t('Provide a comma separated list of arguments to pass to the view. You may use "%1" to obtain the second argument etc.'),
+      '#description' => t('Additional arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You may use %0, %1, ..., %N to grab arguments from the URL.'),
     );
     $form['view']['get_displays'] = array(
       '#type' => 'submit',
