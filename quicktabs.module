@@ -195,7 +195,7 @@ function quicktabs_render($quicktabs) {
   if ($quicktabs['ajax']) {
     // Prepare ajax views.
     _quicktabs_prepare_views($quicktabs['tabs']);
-    
+
     // Render only the active tabpage.
     if (isset($active_tab)) {
       $attributes = drupal_attributes(array(
@@ -359,7 +359,7 @@ function _quicktabs_construct_link_options($quicktabs, $tabkey) {
   else {
     $class = 'qt_tab';
   }
-  
+
   $link_options = array(
     'attributes' => array(
       'id' => $id,
@@ -486,8 +486,9 @@ function quicktabs_render_tabpage($tab) {
             }
             $func_args = array_merge(array($tab['vid'], $tab['display']), $args);
             $output = call_user_func_array('views_embed_view', $func_args);
-          } else {
-            $output = t('You do not have permission to access this content');
+          }
+          else {
+            $output = t('You are not authorized to access this content.');
           }
         }
         else {
@@ -517,10 +518,13 @@ function quicktabs_render_tabpage($tab) {
     case 'node':
       if (isset($tab['nid'])) {
         $node = node_load($tab['nid']);
-        if (!empty($node) && node_access('view', $node)) {
-          $output = node_view($node, $tab['teaser'], $tab['hide_title'], TRUE);
-        } else {
-          $output = t('This content either doesn\'t exist or you do not have permission to access it');
+        if (!empty($node)) {
+          if (node_access('view', $node)) {
+            $output = node_view($node, $tab['teaser'], $tab['hide_title'], TRUE);
+          }
+          else {
+            $output = t('You are not authorized to access this content.');
+          }
         }
       }
       break;
