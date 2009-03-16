@@ -506,7 +506,7 @@ function quicktabs_render_tabpage($tab) {
         if (isset($block->content)) {
           $block->module = $blockmodule;
           $block->delta = $blockdelta;
-          $block->region = 'quicktabs';
+          $block->region = 'quicktabs_tabpage';
           if ($tab['hide_title'] or !isset($block->subject)) {
             $block->subject = FALSE;
           }
