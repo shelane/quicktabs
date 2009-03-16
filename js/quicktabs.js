@@ -107,7 +107,7 @@ Drupal.quicktabs.tab.prototype.quicktabsAjaxView = function() {
   }
   var args;
   if (tab.tabObj.args != '') {
-    args = tab.tabObj.args.replace(/-/g, '/');
+    args = tab.tabObj.args.join('/');
   } else {
     args = '';
   }

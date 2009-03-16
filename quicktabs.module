@@ -170,6 +170,9 @@ function quicktabs_render($quicktabs) {
   if ($quicktabs['style'] == 'default') {
     $quicktabs['style'] = variable_get('quicktabs_tabstyle', 'nostyle');
   }
+  // convert views arguments to an array, retrieving %-style args from url
+  $quicktabs['tabs'] = _quicktabs_prepare_views_args($quicktabs['tabs']);
+  
   quicktabs_add_css($quicktabs['style']);
   $javascript = drupal_add_js('misc/progress.js', 'core');
   if (!isset($javascript['setting'][1]['quicktabs']) || !array_key_exists('qt_'. $quicktabs['qtid'], $javascript['setting'][1]['quicktabs'])) {
@@ -195,7 +198,8 @@ function quicktabs_render($quicktabs) {
   if ($quicktabs['ajax']) {
     // Prepare ajax views.
     _quicktabs_prepare_views($quicktabs['tabs']);
-
+    // Prepare ajax quicktabs.
+    _quicktabs_prepare_qts($quicktabs['tabs']);
     // Render only the active tabpage.
     if (isset($active_tab)) {
       $attributes = drupal_attributes(array(
@@ -309,33 +313,7 @@ function _quicktabs_construct_link_options($quicktabs, $tabkey) {
   $qtid = $quicktabs['qtid'];
   $ajax = $quicktabs['ajax'];
   $tab = $quicktabs['tabs'][$tabkey];
-
-  $details = array();
-  switch ($tab['type']) {
-    case 'qtabs':
-      $details = array($tab['qtid']);
-      break;
-    case 'view':
-      if (module_exists('views')) {
-        if ($tab['args'] != '') {
-          $details = array($tab['vid'], $tab['display'], str_replace('/', '-', $tab['args']));
-        }
-        else {
-          $details = array($tab['vid'], $tab['display']);
-        }
-      }
-      break;
-    case 'node':
-      $details = array($tab['nid'], $tab['teaser'], $tab['hide_title']);
-      break;
-    case 'block':
-      $details = array($tab['bid'], $tab['hide_title']);
-      break;
-    case 'freetext':
-      $details = array();
-      break;
-  }
-  $id = implode('--', array_merge(array($tab['type'], $qtid, $tabkey), $details));
+  $id = implode('-', array($qtid, $tabkey));
 
   // need to construct the correct querystring for the tab links
   $queries = $_GET;
@@ -477,14 +455,7 @@ function quicktabs_render_tabpage($tab) {
         if (module_exists('views')) {
           $view = views_get_view($tab['vid']);
           if ($view->access($tab['display'])) {
-            $args = array();
-            if ($tab['args'] != '') {
-              $args_array = explode('/', $tab['args']);
-              foreach ($args_array as $arg) {
-                $args[] = trim($arg);
-              }
-            }
-            $func_args = array_merge(array($tab['vid'], $tab['display']), $args);
+            $func_args = array_merge(array($tab['vid'], $tab['display']), $tab['args']);
             $output = call_user_func_array('views_embed_view', $func_args);
           }
           else {
@@ -557,10 +528,6 @@ function _quicktabs_prepare_views($tabs) {
     views_add_css('views');
     foreach ($tabs as $key => $tab) {
       if ($tab['type'] == 'view') {
-        $args_array = explode(',', $tab['args']);
-        foreach ($args_array as $arg) {
-          $args[] = trim($arg);
-        }
         // We need to pass view details to js in case there is ajax paging.
         $settings = array(
           'views' => array(
@@ -569,7 +536,7 @@ function _quicktabs_prepare_views($tabs) {
               array(
                 'view_name' => $tab['vid'],
                 'view_display_id' => $tab['display'],
-                'view_args' => implode('/', $args),
+                'view_args' => implode('/', $tab['args']),
                 'view_path' => $_GET['q'],
               ),
             ),
@@ -579,4 +546,41 @@ function _quicktabs_prepare_views($tabs) {
       }
     }
   }
+}
+
+/**
+ * Helper function to add quicktabs settings to ajax tabs.
+ */
+function _quicktabs_prepare_qts($tabs) {
+  foreach ($tabs as $key => $tab) {
+    if ($tab['type'] == 'qtabs') {
+      $quicktabs = quicktabs_load($tab['qtid']);
+      // We need to pass view details to js in case there is ajax paging.
+      $settings = array(
+        'quicktabs' => array(
+          'qt_'. $tab['qtid'] => $quicktabs,
+        ),
+      );
+      drupal_add_js($settings, 'setting');
+    }
+  }
+}
+
+function _quicktabs_prepare_views_args($tabs) {
+  foreach ($tabs as $key => $tab) {
+    $args = array();
+    if ($tab['type'] == 'view') {
+      $args_array = explode('/', $tab['args']);
+      foreach ($args_array as $arg) {
+        $arg = trim($arg);
+        if (strpos($arg, '%') === 0) {
+          $arg = arg(substr($arg, 1));
+        }
+        $args[] = $arg;
+      }
+      $tab['args'] = $args;
+      $tabs[$key] = $tab;
+    }
+  }
+  return $tabs;
 }
