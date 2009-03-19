@@ -576,7 +576,9 @@ function _quicktabs_prepare_views_args($tabs) {
         if (strpos($arg, '%') === 0) {
           $arg = arg(substr($arg, 1));
         }
-        $args[] = $arg;
+        if ($arg) {
+          $args[] = $arg;
+        }
       }
       $tab['args'] = $args;
       $tabs[$key] = $tab;

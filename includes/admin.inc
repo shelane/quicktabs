@@ -420,6 +420,10 @@ function quicktabs_form_validate($form, &$form_state) {
         elseif ($tab['type'] == 'qtabs' && $tab['qtabs']['qtid'] == $form_state['values']['qtid']) {
           form_set_error('tabs]['. $j .'][qtabs][qtid', t('You cannot put a quicktab inside itself.'));
         }
+        elseif ($tab['type'] == 'view') {
+          // Remove spaces from view arguments.
+          $form_state['values']['tabs'][$j]['view']['args'] = str_replace(' ', '', $form_state['values']['tabs'][$j]['view']['args']);
+        }
       }
     }
   }

@@ -171,6 +171,7 @@ function quicktabs_update_6004() {
       //$newtab = array();
       if ($tab['type'] == 'view') {
         $tab['args'] = str_replace(',', '/', $tab['args']);
+        $tab['args'] = str_replace(' ', '', $tab['args']);
         $tabs_array[$key] = $tab;
       }
     }
