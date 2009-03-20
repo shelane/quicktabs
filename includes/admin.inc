@@ -438,31 +438,19 @@ function quicktabs_form_submit($form, &$form_state) {
     $quicktabs = _quicktabs_convert_form_to_quicktabs($form_state);
 
     if ($quicktabs['qtid'] > 0) {
-      quicktabs_updateblock($quicktabs);
-      drupal_set_message(t('The quicktab block has been updated.'));
+      $ret = drupal_write_record('quicktabs', $quicktabs, 'qtid');
+      if ($ret == SAVED_UPDATED) {
+        drupal_set_message(t('The quicktab block has been updated.'));
+      }
     }
     else {
-      quicktabs_createblock($quicktabs);
-      drupal_set_message(t('The quicktab block has been created.'));
+      $ret = drupal_write_record('quicktabs', $quicktabs);
+      if ($ret == SAVED_NEW) {
+        drupal_set_message(t('The quicktab block has been created.'));
+      }
     }
     drupal_goto('admin/build/quicktabs');
   }
-}
-
-/**
- * Insert db record.
- */
-function quicktabs_createblock($quicktabs) {
-  $quicktabs['tabs'] = serialize($quicktabs['tabs']);
-  db_query("INSERT INTO {quicktabs} (ajax, title, tabs, style) VALUES(%d, '%s', '%s', '%s')", $quicktabs['ajax'], $quicktabs['title'], $quicktabs['tabs'], $quicktabs['style']);
-}
-
-/**
- * Update db record.
- */
-function quicktabs_updateblock($quicktabs) {
-  $quicktabs['tabs'] = serialize($quicktabs['tabs']);
-  db_query("UPDATE {quicktabs} SET ajax = %d, title = '%s', tabs = '%s', style = '%s' WHERE qtid = %d", $quicktabs['ajax'], $quicktabs['title'], $quicktabs['tabs'], $quicktabs['style'], $quicktabs['qtid']);
 }
 
 /**

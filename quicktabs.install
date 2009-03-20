@@ -34,6 +34,7 @@ function quicktabs_schema() {
         'type' => 'text',
         'size' => 'medium',
         'not null' => TRUE,
+        'serialize' => TRUE,
       ),
       'style' => array(
         'description' => 'The tab style.',
