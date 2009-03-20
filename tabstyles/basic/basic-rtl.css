@@ -1,13 +1,13 @@
 /* $Id$ */
 
-.quicktabs_main.quicktabs-style-basic{
+.quicktabs-style-basic .quicktabs_main{
   border:1px solid #aaa;
 }
-ul.quicktabs_tabs.quicktabs-style-basic{
+.quicktabs-style-basic ul.quicktabs_tabs{
   border-bottom:none;
   padding:0 0 0 5px;
 }
-ul.quicktabs_tabs.quicktabs-style-basic li{
+.quicktabs-style-basic ul.quicktabs_tabs li{
   float:right;
   margin:0 0 0 3px;
 }
