@@ -15,7 +15,7 @@
 }
 #qt-tablist-table .qt-tab-title {
   width: 130px;
-  height: 120px;
+  height: 125px;
 }
 #qt-tablist-table .qt-tab-type,
 #qt-tablist-table .qt-tab-remove {
@@ -32,13 +32,13 @@
 #qt-tablist-table .qt-tab-type label.option {
   width: auto;
 }
-#qt-tablist-table .qt-tab-block-content .form-item .form-text,
-#qt-tablist-table .qt-tab-view-content .form-item .form-text,
-#qt-tablist-table .qt-tab-node-content .form-item .form-text,
-#qt-tablist-table .qt-tab-qtabs-content .form-item .form-text {
-  width:150px;
+#qt-tablist-table .qt-tab-content .form-item .form-text {
+  width: 150px;
 }
 #qt-tablist-table .qt-tab-view-content input.form-submit {
+  display: none;
+}
+#qt-tablist-table .qt-tab-content {
   display: none;
 }
 

@@ -1,49 +1,5 @@
 Drupal.quicktabsShowHide = function() {
-  switch (this.value) {
-    case 'block':
-      $(this).parents('tr')
-      .find('td.qt-tab-block-content').show();
-      $(this).parents('tr')
-      .find('td.qt-tab-node-content').hide();
-      $(this).parents('tr')
-      .find('td.qt-tab-view-content').hide();
-      $(this).parents('tr')
-      .find('td.qt-tab-qtabs-content').hide();
-      break;
-
-    case 'node':
-      $(this).parents('tr')
-      .find('td.qt-tab-block-content').hide();
-      $(this).parents('tr')
-      .find('td.qt-tab-node-content').show();
-      $(this).parents('tr')
-      .find('td.qt-tab-view-content').hide();
-      $(this).parents('tr')
-      .find('td.qt-tab-qtabs-content').hide();
-      break;
-
-    case 'view':
-      $(this).parents('tr')
-      .find('td.qt-tab-block-content').hide();
-      $(this).parents('tr')
-      .find('td.qt-tab-node-content').hide();
-      $(this).parents('tr')
-      .find('td.qt-tab-view-content').show();
-      $(this).parents('tr')
-      .find('td.qt-tab-qtabs-content').hide();
-      break;
-
-    case 'qtabs':
-      $(this).parents('tr')
-      .find('td.qt-tab-block-content').hide();
-      $(this).parents('tr')
-      .find('td.qt-tab-node-content').hide();
-      $(this).parents('tr')
-      .find('td.qt-tab-view-content').hide();
-      $(this).parents('tr')
-      .find('td.qt-tab-qtabs-content').show();
-      break;
-  }
+  $(this).parents('tr').find('td.qt-tab-' + this.value + '-content').show().siblings('td.qt-tab-content').hide();
 };
 
 Drupal.behaviors.quicktabsform = function(context) {
