@@ -1,44 +1,50 @@
 /* $Id$ */
 
-.quicktabs_main.quicktabs-style-basic{
+.quicktabs-style-basic .quicktabs_main{
   background-color:#fff;
   border:1px solid #aaa;
   border-top:none;
   padding:10px;
   clear:both;
 }
-ul.quicktabs_tabs.quicktabs-style-basic{
+.quicktabs-style-basic ul.quicktabs_tabs{
   border-bottom:1px solid #aaa;
   padding:0 5px 0 0;
-  font:bold 12px/19px Verdana !important;
+  font:bold 11px/19px Verdana !important;
   font-weight:bold;
   height:19px;
   margin:0;
 }
-ul.quicktabs_tabs.quicktabs-style-basic a{
-  font:bold 12px/19px Verdana !important;
+.quicktabs-style-basic ul.quicktabs_tabs a{
+  font:bold 11px/19px Verdana !important;
   text-decoration:none;
   color:#aaa;
 }
-ul.quicktabs_tabs.quicktabs-style-basic a:hover{
+.quicktabs-style-basic ul.quicktabs_tabs a:hover{
   color:#555  !important;
 }
-ul.quicktabs_tabs.quicktabs-style-basic li{
+.quicktabs-style-basic ul.quicktabs_tabs li{
   border:1px solid #e5e5e5;
   border-bottom:none;
   padding:2px 5px;
   margin:0 3px 0 0;
   position:relative;
 }
-ul.quicktabs_tabs.quicktabs-style-basic li:hover{
+.quicktabs-style-basic ul.quicktabs_tabs li:hover{
   border:1px solid #ccc;
   border-bottom:none;
 }
-ul.quicktabs_tabs.quicktabs-style-basic li.active{
+.quicktabs-style-basic ul.quicktabs_tabs li.active{
   border:1px solid #aaa;
   border-bottom:1px solid #fff;
   background-color:#fff;
 }
-ul.quicktabs_tabs.quicktabs-style-basic li.active a{
+.quicktabs-style-basic ul.quicktabs_tabs li.active a{
   color:#027AC6;
+}
+* html .quicktabs-style-basic ul.quicktabs_tabs li{
+  top:1px;
+}
+*+html .quicktabs-style-basic ul.quicktabs_tabs li{
+  top:1px;
 }
