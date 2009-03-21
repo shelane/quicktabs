@@ -453,13 +453,16 @@ function quicktabs_render_tabpage($tab) {
     case 'view':
       if (isset($tab['vid'])) {
         if (module_exists('views')) {
-          $view = views_get_view($tab['vid']);
-          if ($view->access($tab['display'])) {
-            $func_args = array_merge(array($tab['vid'], $tab['display']), $tab['args']);
-            $output = call_user_func_array('views_embed_view', $func_args);
-          }
-          else {
-            $output = t('You are not authorized to access this content.');
+          if ($view = views_get_view($tab['vid'])) {
+            if ($view->access($tab['display'])) {
+              $view->set_display($tab['display']);
+              $view->set_arguments($tab['args']);
+              $output = $view->preview();
+            }
+            else {
+              $output = t('You are not authorized to access this content.');
+            }
+            $view->destroy();
           }
         }
         else {
@@ -566,20 +569,21 @@ function _quicktabs_prepare_qts($tabs) {
   }
 }
 
+/**
+ * Helper function to use view arguments from the URL.
+ */
 function _quicktabs_prepare_views_args($tabs) {
   foreach ($tabs as $key => $tab) {
-    $args = array();
     if ($tab['type'] == 'view') {
-      $args_array = explode('/', $tab['args']);
-      foreach ($args_array as $arg) {
-        $arg = trim($arg);
-        if (strpos($arg, '%') === 0) {
-          $arg = arg(substr($arg, 1));
-        }
-        if ($arg) {
-          $args[] = $arg;
-        }
+      $url_args = arg();
+      $args = $tab['args'];
+
+      foreach ($url_args as $id => $arg) {
+        $args = str_replace("%$id", $arg, $args);
       }
+      $args = preg_replace(',/?(%\d),', '', $args);
+      $args = $args ? explode('/', $args) : array();
+
       $tab['args'] = $args;
       $tabs[$key] = $tab;
     }
