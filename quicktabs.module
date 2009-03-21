@@ -172,7 +172,7 @@ function quicktabs_render($quicktabs) {
   }
   // convert views arguments to an array, retrieving %-style args from url
   $quicktabs['tabs'] = _quicktabs_prepare_views_args($quicktabs['tabs']);
-  
+
   quicktabs_add_css($quicktabs['style']);
   $javascript = drupal_add_js('misc/progress.js', 'core');
   if (!isset($javascript['setting'][1]['quicktabs']) || !array_key_exists('qt_'. $quicktabs['qtid'], $javascript['setting'][1]['quicktabs'])) {
@@ -426,7 +426,7 @@ function quicktabs_load($qtid) {
   $tabs = unserialize($quicktabs['tabs']);
   foreach ($tabs as $key => $tab) {
     $weight[$key] = $tab['weight'];
-    if ($tab['type'] == 'qtabs' and $tab['qtid'] == $qtid) {
+    if ($tab['type'] == 'qtabs' && $tab['qtid'] == $qtid) {
       unset($tabs[$key]);
       unset($weight[$key]);
     }
@@ -478,7 +478,7 @@ function quicktabs_render_tabpage($tab) {
           $block->module = $blockmodule;
           $block->delta = $blockdelta;
           $block->region = 'quicktabs_tabpage';
-          if ($tab['hide_title'] or !isset($block->subject)) {
+          if ($tab['hide_title'] || !isset($block->subject)) {
             $block->subject = FALSE;
           }
           $output = theme('block', $block);
@@ -513,7 +513,7 @@ function quicktabs_render_tabpage($tab) {
  */
 function _quicktabs_get_active_tab($quicktabs) {
   $active_tab = isset($_GET['quicktabs_'. $quicktabs['qtid']]) ? $_GET['quicktabs_'. $quicktabs['qtid']] : key($quicktabs['tabs']);
-  if (isset($active_tab) and isset($quicktabs['tabs'][$active_tab])) {
+  if (isset($active_tab) && isset($quicktabs['tabs'][$active_tab])) {
     return $active_tab;
   }
   return NULL;
