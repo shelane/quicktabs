@@ -313,7 +313,7 @@ function _quicktabs_construct_link_options($quicktabs, $tabkey) {
   $qtid = $quicktabs['qtid'];
   $ajax = $quicktabs['ajax'];
   $tab = $quicktabs['tabs'][$tabkey];
-  $id = implode('-', array($qtid, $tabkey));
+  $id = 'quicktabs-tab-'. implode('-', array($qtid, $tabkey));
 
   // need to construct the correct querystring for the tab links
   $queries = $_GET;
