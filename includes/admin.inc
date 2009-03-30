@@ -161,7 +161,8 @@ function _quicktabs_form($details) {
 
   $form['weight'] = array(
     '#type' => 'weight',
-    '#default_value' => isset($details['weight']) ? $details['weight'] : $delta-10,
+    '#default_value' => isset($details['weight']) ? $details['weight'] : $delta-100,
+    '#delta' => 100,
   );
 
   $form['title'] = array(
