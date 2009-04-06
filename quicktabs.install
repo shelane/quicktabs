@@ -84,7 +84,7 @@ function quicktabs_update_6000() {
  */
 function quicktabs_update_6001() {
   $ret = array();
-  db_add_field($ret, 'quicktabs', 'ajax', array('description' => t('Whether this is an ajax views block'), 'type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
+  db_add_field($ret, 'quicktabs', 'ajax', array('description' => 'Whether this is an ajax views block', 'type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
   return $ret;
 }
 
