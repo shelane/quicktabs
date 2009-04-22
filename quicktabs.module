@@ -449,6 +449,7 @@ function quicktabs_render_tabpage($tab) {
           $output = theme('quicktabs', $quicktabs);
         }
       }
+      break;
 
     case 'view':
       if (isset($tab['vid'])) {
