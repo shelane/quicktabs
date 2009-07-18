@@ -34,6 +34,9 @@ function quicktabs_theme() {
     'quicktabs' => array(
       'arguments' => array('quicktabs'),
     ),
+    'quicktabs_tab_access_denied' => array(
+      'arguments' => array('tab'),
+    ),
   );
 }
 
@@ -267,6 +270,15 @@ function quicktabs_ajax_qtabs($qtid) {
 }
 
 /**
+ * Theme function to display the access denied tab.
+ *
+ * @ingroup themeable
+ */
+function theme_quicktabs_tab_access_denied($tab) {
+  return t('You are not authorized to access this content.');
+}
+
+/**
  * Theme function to output quicktabs.
  *
  * @ingroup themeable
@@ -461,7 +473,7 @@ function quicktabs_render_tabpage($tab) {
               $output = $view->preview();
             }
             else {
-              $output = t('You are not authorized to access this content.');
+              $output = theme('quicktabs_tab_access_denied', $tab);
             }
             $view->destroy();
           }
@@ -498,7 +510,7 @@ function quicktabs_render_tabpage($tab) {
             $output = node_view($node, $tab['teaser'], $tab['hide_title'], TRUE);
           }
           else {
-            $output = t('You are not authorized to access this content.');
+            $output = theme('quicktabs_tab_access_denied', $tab);
           }
         }
       }
