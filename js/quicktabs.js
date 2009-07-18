@@ -145,11 +145,11 @@ var quicktabsClick = function() {
   $(this).parents('li').addClass('active');
 
   // Hide all tabpages.
-  tab.container.children().hide();
+  tab.container.children().addClass('quicktabs-hide');
 
   // Show the active tabpage.
   if (tab.tabpage.hasClass('quicktabs_tabpage')) {
-    tab.tabpage.show();
+    tab.tabpage.removeClass('quicktabs-hide');
   }
   else {
     if ($(this).hasClass('qt_ajax_tab')) {

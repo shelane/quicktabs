@@ -214,7 +214,7 @@ function quicktabs_render($quicktabs) {
     foreach ($quicktabs['tabs'] as $key => $tab) {
       $attributes = drupal_attributes(array(
         'id' => 'quicktabs_tabpage_'. $quicktabs['qtid'] .'_'. $key,
-        'class' => 'quicktabs_tabpage'. ($active_tab == $key ? '' : ' nojs-hide'),
+        'class' => 'quicktabs_tabpage'. ($active_tab == $key ? '' : ' quicktabs-hide'),
       ));
       $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($tab) .'</div>';
     }
