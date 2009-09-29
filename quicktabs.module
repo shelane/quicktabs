@@ -303,14 +303,18 @@ function theme_quicktabs_tabs($quicktabs, $active_tab = 'none') {
 
   $index = 1;
   $output .= '<ul class="quicktabs_tabs quicktabs-style-'. drupal_strtolower($quicktabs['style']) .'">';
-  foreach ($quicktabs['tabs'] as $i => $tab) {
-    $class = 'qtab-'. $i;
+  foreach ($quicktabs['tabs'] as $tabkey => $tab) {
+    $class = 'qtab-'. $tabkey;
     // Add first, last and active classes to the list of tabs to help out themers.
-    $class .= ($i == $active_tab ? ' active' : '');
+    $class .= ($tabkey == $active_tab ? ' active' : '');
     $class .= ($index == 1 ? ' first' : '');
     $class .= ($index == $tabs_count ? ' last': '');
     $attributes_li = drupal_attributes(array('class' => $class));
-    $options = _quicktabs_construct_link_options($quicktabs, $i);
+    $options = _quicktabs_construct_link_options($quicktabs, $tabkey);
+    // Support for translatable tab titles with i18nstrings.module.
+    if (module_exists('i18nstrings')) {
+      $tab['title'] = tt("quicktabs:tab:$quicktabs[qtid]--$tabkey:title", $tab['title']);
+    }
     $output .= '<li'. $attributes_li .'>'. l($tab['title'], $_GET['q'], $options) .'</li>';
     $index++;
   }
@@ -602,4 +606,32 @@ function _quicktabs_prepare_views_args($tabs) {
     }
   }
   return $tabs;
+}
+
+/**
+ * Implementation of hook_locale().
+ */
+function quicktabs_locale($op = 'groups', $group = NULL) {
+  switch ($op) {
+    case 'groups':
+      return array('quicktabs' => t('Quick Tabs'));
+
+    case 'refresh':
+      if ($group == 'quicktabs') {
+        return quicktabs_locale_refresh();
+      }
+  }
+}
+
+/**
+ * Refresh locale strings.
+ */
+function quicktabs_locale_refresh() {
+  $result = db_query("SELECT qtid FROM {quicktabs}");
+  while ($row = db_fetch_object($result)) {
+    $quicktabs = quicktabs_load($row->qtid);
+    foreach ($quicktabs['tabs'] as $tabkey => $tab) {
+      tt("quicktabs:tab:$quicktabs[qtid]--$tabkey:title", $tab['title'], NULL, TRUE);
+    }
+  }
 }
