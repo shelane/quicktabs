@@ -239,7 +239,7 @@ function quicktabs_ajax_node($nid, $teaser, $hide_title) {
     'hide_title' => $hide_title,
   );
   $output = quicktabs_render_tabpage($tabpage);
-  print drupal_json(array('status' => TRUE, 'data' => $output));
+  drupal_json(array('status' => TRUE, 'data' => $output));
 }
 
 /**
@@ -253,7 +253,7 @@ function quicktabs_ajax_block($bid, $hide_title) {
   );
 
   $output = quicktabs_render_tabpage($tabpage);
-  print drupal_json(array('status' => TRUE, 'data' => $output));
+  drupal_json(array('status' => TRUE, 'data' => $output));
 }
 
 /**
@@ -266,7 +266,7 @@ function quicktabs_ajax_qtabs($qtid) {
   );
 
   $output = quicktabs_render_tabpage($tabpage);
-  print drupal_json(array('status' => TRUE, 'data' => $output));
+  drupal_json(array('status' => TRUE, 'data' => $output));
 }
 
 /**
