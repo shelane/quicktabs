@@ -14,9 +14,9 @@ function quicktabs_list() {
   while ($row = db_fetch_object($result)) {
     $tablerow = array(
       array('data' => $row->title),
-      array('data' => l('Edit', 'admin/build/quicktabs/'. $row->qtid .'/edit')),
-      array('data' => l('Clone', 'admin/build/quicktabs/'. $row->qtid .'/clone')),
-      array('data' => l('Delete', 'admin/build/quicktabs/'. $row->qtid .'/delete')),
+      array('data' => l(t('Edit'), 'admin/build/quicktabs/'. $row->qtid .'/edit')),
+      array('data' => l(t('Clone'), 'admin/build/quicktabs/'. $row->qtid .'/clone')),
+      array('data' => l(t('Delete'), 'admin/build/quicktabs/'. $row->qtid .'/delete')),
     );
     $rows[] = $tablerow;
   }
