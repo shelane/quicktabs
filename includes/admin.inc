@@ -85,6 +85,7 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
     '#weight' => -7,
   );
 
+  $style_options = array();
   $styles = module_invoke_all('quicktabs_tabstyles');
   // The keys used for options must be valid html id-s.
   foreach ($styles as $style) {
@@ -477,6 +478,7 @@ function quicktabs_block_delete_submit($form, &$form_state) {
  * Callback function for admin/settings/quicktabs. Display the settings form.
  */
 function quicktabs_settings() {
+  $options = array();
   $styles = module_invoke_all('quicktabs_tabstyles');
   // The keys used for options must be valid html id-s.
   // Removing the css file path, because that can't be used.
