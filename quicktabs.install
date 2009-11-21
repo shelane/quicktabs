@@ -23,6 +23,13 @@ function quicktabs_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'hide_empty_tabs' => array(
+        'description' => 'Whether this tabset hides empty tabs.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
       'title' => array(
         'description' => 'The title of this quicktabs block.',
         'type' => 'varchar',
@@ -179,5 +186,14 @@ function quicktabs_update_6004() {
     $serialized = serialize($tabs_array);
     db_query("UPDATE {quicktabs} SET tabs = '%s' WHERE qtid = %d", $serialized, $row->qtid);
   }
+  return $ret;
+}
+
+/**
+ * Add hide_empty_tabs column.
+ */
+function quicktabs_update_6205() {
+  $ret = array();
+  db_add_field($ret, 'quicktabs', 'hide_empty_tabs', array('description' => t('Whether this tabset hides empty tabs'), 'type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
   return $ret;
 }
