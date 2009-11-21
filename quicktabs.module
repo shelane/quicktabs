@@ -343,21 +343,12 @@ function _quicktabs_construct_link_options($quicktabs, $tabkey) {
   $tab = $quicktabs['tabs'][$tabkey];
   $id = 'quicktabs-tab-'. implode('-', array($qtid, $tabkey));
 
-  // need to construct the correct querystring for the tab links
-  $queries = $_GET;
-  unset($queries['quicktabs_'. $qtid]);
-  unset($queries['q']);
-  unset($queries['page']);
-  $querystring = '';
-  if (!empty($queries)) {
-    $i = 0;
-    foreach ($queries as $key => $value) {
-      $querystring .= $i > 0 ? '&'. $key .'='. $value : $key .'='. $value;
-      $i++;
-    }
-    $querystring .= '&';
-  }
-  $querystring .= 'quicktabs_'. $qtid .'='. $tabkey;
+  // Need to construct the correct query for the tab links.
+  $query = $_GET;
+  unset($query['quicktabs_'. $qtid]);
+  unset($query['q']);
+  unset($query['page']);
+  $query['quicktabs_'. $qtid] = $tabkey;
 
   if ($ajax) {
     $class = 'qt_ajax_tab';
@@ -371,7 +362,7 @@ function _quicktabs_construct_link_options($quicktabs, $tabkey) {
       'id' => $id,
       'class' => $class,
     ),
-    'query' => $querystring,
+    'query' => $query,
     'fragment' => 'quicktabs-'. $qtid,
   );
 
