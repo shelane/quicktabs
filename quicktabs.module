@@ -191,7 +191,11 @@ function quicktabs_render($quicktabs) {
   quicktabs_add_css($quicktabs['style']);
   $javascript = drupal_add_js('misc/progress.js', 'core');
   if (!isset($javascript['setting'][1]['quicktabs']) || !array_key_exists('qt_'. $quicktabs['qtid'], $javascript['setting'][1]['quicktabs'])) {
-    drupal_add_js(array('quicktabs' => array('qt_'. $quicktabs['qtid'] => $quicktabs)), 'setting');
+    // Only the tabs are used in quicktabs.js
+    $settings = array(
+      'tabs' => $quicktabs['ajax'] ? $quicktabs['tabs'] : array_fill_keys(array_keys($quicktabs['tabs']), 0),
+    );
+    drupal_add_js(array('quicktabs' => array('qt_'. $quicktabs['qtid'] => $settings)), 'setting');
   }
   drupal_add_js(drupal_get_path('module', 'quicktabs') .'/js/quicktabs.js');
 
