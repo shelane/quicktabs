@@ -76,6 +76,9 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
   if (isset($form_state['quicktabs'])) {
     $quicktabs = $form_state['quicktabs'] + (array)$quicktabs;
   }
+  else {
+    drupal_alter('quicktabs', $quicktabs, 'edit');
+  }
 
   $form['title'] = array(
     '#title' => t('Block title'),
@@ -446,6 +449,7 @@ function quicktabs_form_submit($form, &$form_state) {
   // We don't want it to submit when we're just adding or removing tabs.
   if ($form_state['clicked_button']['#id'] == 'edit-submit-form') {
     $quicktabs = _quicktabs_convert_form_to_quicktabs($form_state);
+    drupal_alter('quicktabs', $quicktabs, 'presave');
 
     if ($quicktabs['qtid'] > 0) {
       $ret = drupal_write_record('quicktabs', $quicktabs, 'qtid');
@@ -467,6 +471,7 @@ function quicktabs_form_submit($form, &$form_state) {
  * Deletion of quicktab block.
  */
 function quicktabs_block_delete(&$form_state, $quicktabs) {
+  drupal_alter('quicktabs', $quicktabs, 'delete');
   $form['qtid'] = array('#type' => 'hidden', '#value' => $quicktabs['qtid']);
   $form['qt_name'] = array('#type' => 'hidden', '#value' => $quicktabs['title']);
   return confirm_form($form, t('Are you sure you want to delete the quicktab block %name?', array('%name' => $quicktabs['title'])), 'admin/build/quicktabs', '', t('Delete'), t('Cancel'));
