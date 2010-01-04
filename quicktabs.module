@@ -70,6 +70,7 @@ function quicktabs_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('quicktabs_form', 'edit', 3),
     'access arguments' => array('administer quicktabs'),
+    'load arguments' => array('edit'),
     'type' => MENU_CALLBACK,
     'file' => 'includes/admin.inc',
   );
@@ -78,6 +79,7 @@ function quicktabs_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('quicktabs_block_delete', 3),
     'access arguments' => array('administer quicktabs'),
+    'load arguments' => array('delete'),
     'type' => MENU_CALLBACK,
     'file' => 'includes/admin.inc',
   );
@@ -86,6 +88,7 @@ function quicktabs_menu() {
     'page callback' => 'quicktabs_clone',
     'page arguments' => array(3),
     'access arguments' => array('administer quicktabs'),
+    'load arguments' => array('clone'),
     'type' => MENU_CALLBACK,
     'file' => 'includes/admin.inc',
   );
@@ -153,7 +156,6 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
     case 'view':
       $mainblock = array();
       if ($quicktabs = quicktabs_load($delta)) {
-        drupal_alter('quicktabs', $quicktabs, 'view');
         $mainblock['subject'] = $quicktabs['title'];
         $mainblock['content'] = theme('quicktabs', $quicktabs);
       }
@@ -441,7 +443,7 @@ function quicktabs_quicktabs_tabstyles() {
 /**
  * Load the quicktabs data.
  */
-function quicktabs_load($qtid) {
+function quicktabs_load($qtid, $op = 'view') {
   $quicktabs = db_fetch_array(db_query('SELECT qtid, title, tabs, ajax, hide_empty_tabs, style FROM {quicktabs} WHERE qtid = %d', $qtid));
   if (!$quicktabs) {
     return FALSE;
@@ -458,6 +460,7 @@ function quicktabs_load($qtid) {
   array_multisort($weight, SORT_ASC, $tabs);
 
   $quicktabs['tabs'] = $tabs;
+  drupal_alter('quicktabs', $quicktabs, $op);
   return $quicktabs;
 }
 
@@ -477,7 +480,6 @@ function quicktabs_render_tabpage($tab, $hide_empty = FALSE) {
     case 'qtabs':
       if (isset($tab['qtid'])) {
         if ($quicktabs = quicktabs_load($tab['qtid'])) {
-          drupal_alter('quicktabs', $quicktabs, 'view');
           $output = theme('quicktabs', $quicktabs);
         }
       }
@@ -593,7 +595,6 @@ function _quicktabs_prepare_qts($tabs) {
   foreach ($tabs as $key => $tab) {
     if ($tab['type'] == 'qtabs') {
       $quicktabs = quicktabs_load($tab['qtid']);
-      drupal_alter('quicktabs', $quicktabs, 'view');
       // We need to pass view details to js in case there is ajax paging.
       $settings = array(
         'quicktabs' => array(
@@ -648,8 +649,7 @@ function quicktabs_locale($op = 'groups', $group = NULL) {
 function quicktabs_locale_refresh() {
   $result = db_query("SELECT qtid FROM {quicktabs}");
   while ($row = db_fetch_object($result)) {
-    $quicktabs = quicktabs_load($row->qtid);
-    drupal_alter('quicktabs', $quicktabs, 'locale refresh');
+    $quicktabs = quicktabs_load($row->qtid, 'locale refresh');
     foreach ($quicktabs['tabs'] as $tabkey => $tab) {
       tt("quicktabs:tab:$quicktabs[qtid]--$tabkey:title", $tab['title'], NULL, TRUE);
     }
