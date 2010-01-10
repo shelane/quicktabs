@@ -50,17 +50,35 @@ function quicktabs_form($form_state, $formtype, $quicktabs = array()) {
       '#value' => isset($quicktabs['qtid']) ? $quicktabs['qtid'] : 0,
     );
   }
+  $no_tabs = TRUE;
   if (empty($quicktabs['tabs'])) {
     $quicktabs['tabs'] = array(
       0 => array(),
       1 => array(),
     );
   }
+  else {
+    $no_tabs = FALSE;
+    $tab_titles = array();
+  }
 
   // Add the current tabs to the form.
   foreach ($quicktabs['tabs'] as $delta => $details) {
     $details['delta'] = $delta;
     $form['qt_wrapper']['tabs'][$delta] = _quicktabs_form($details);
+    if (isset($details['title'])) {
+      $tab_titles[$delta] = $details['title'];
+    }
+  }
+  
+  if (!$no_tabs) {
+    $form['default_tab'] = array(
+      '#type' => 'select',
+      '#title' => t('Default tab'),
+      '#options' => $tab_titles,
+      '#default_value' => $quicktabs['default_tab'],
+      '#weight' => -6,
+    );
   }
 
   return $form;
@@ -649,6 +667,7 @@ function _quicktabs_convert_form_to_quicktabs($form_state) {
     'title' => $form_state['values']['title'],
     'ajax' => $form_state['values']['ajax'],
     'hide_empty_tabs' => $form_state['values']['hide_empty_tabs'],
+    'default_tab' => isset($form_state['values']['default_tab']) ? $form_state['values']['default_tab'] : 0,
     'style' => $form_state['values']['style'],
     'tabs' => $formvalues_tabs,
   );

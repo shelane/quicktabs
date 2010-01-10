@@ -444,7 +444,7 @@ function quicktabs_quicktabs_tabstyles() {
  * Load the quicktabs data.
  */
 function quicktabs_load($qtid, $op = 'view') {
-  $quicktabs = db_fetch_array(db_query('SELECT qtid, title, tabs, ajax, hide_empty_tabs, style FROM {quicktabs} WHERE qtid = %d', $qtid));
+  $quicktabs = db_fetch_array(db_query('SELECT qtid, title, tabs, ajax, hide_empty_tabs, default_tab, style FROM {quicktabs} WHERE qtid = %d', $qtid));
   if (!$quicktabs) {
     return FALSE;
   }
@@ -552,7 +552,8 @@ function quicktabs_render_tabpage($tab, $hide_empty = FALSE) {
  * Helper function to determine active tab from the url.
  */
 function _quicktabs_get_active_tab($quicktabs) {
-  $active_tab = isset($_GET['quicktabs_'. $quicktabs['qtid']]) ? $_GET['quicktabs_'. $quicktabs['qtid']] : key($quicktabs['tabs']);
+  $active_tab = isset($quicktabs['default_tab']) ? $quicktabs['default_tab'] : key($quicktabs['tabs']);
+  $active_tab = isset($_GET['quicktabs_'. $quicktabs['qtid']]) ? $_GET['quicktabs_'. $quicktabs['qtid']] : $active_tab;
   if (isset($active_tab) && isset($quicktabs['tabs'][$active_tab])) {
     return $active_tab;
   }

@@ -30,6 +30,13 @@ function quicktabs_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'default_tab' => array(
+        'description' => 'Default tab.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'size' => 'tiny',
+        'not null' => TRUE,
+      ),
       'title' => array(
         'description' => 'The title of this quicktabs block.',
         'type' => 'varchar',
@@ -197,3 +204,14 @@ function quicktabs_update_6205() {
   db_add_field($ret, 'quicktabs', 'hide_empty_tabs', array('description' => t('Whether this tabset hides empty tabs'), 'type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0));
   return $ret;
 }
+
+
+/**
+ * Add default_tab column.
+ */
+function quicktabs_update_6206() {
+  $ret = array();
+  db_add_field($ret, 'quicktabs', 'default_tab', array('description' => 'The default tab.', 'type' => 'int', 'size' => 'tiny', 'unsigned' => TRUE, 'not null' => TRUE));
+  return $ret;
+}
+
