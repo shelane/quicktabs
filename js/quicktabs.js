@@ -70,7 +70,7 @@ Drupal.quicktabs.tab = function (el) {
 // ajax callback for non-views tabs
 Drupal.quicktabs.tab.prototype.success = function(response) {
   this.container.append(Drupal.theme('quicktabsResponse', this, response.data.content));
-  $.extend(Drupal.settings, response.data.js_css.js_settings);
+  $.extend(true, Drupal.settings, response.data.js_css.js_settings);
   Drupal.quicktabs.ajax.scripts(response.data.js_css.js_files);
   Drupal.quicktabs.ajax.css_files(response.data.js_css.css_files);
   Drupal.attachBehaviors(this.container);

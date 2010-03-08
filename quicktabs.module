@@ -208,8 +208,6 @@ function quicktabs_render($quicktabs) {
   if ($quicktabs['ajax']) {
     // Prepare ajax views.
     _quicktabs_prepare_views($quicktabs['tabs']);
-    // Prepare ajax quicktabs.
-    _quicktabs_prepare_qts($quicktabs['tabs']);
     // Render only the active tabpage.
     if (isset($active_tab)) {
       $attributes = drupal_attributes(array(
@@ -591,23 +589,6 @@ function _quicktabs_prepare_views($tabs) {
   }
 }
 
-/**
- * Helper function to add quicktabs settings to ajax tabs.
- */
-function _quicktabs_prepare_qts($tabs) {
-  foreach ($tabs as $key => $tab) {
-    if ($tab['type'] == 'qtabs') {
-      $quicktabs = quicktabs_load($tab['qtid']);
-      // We need to pass view details to js in case there is ajax paging.
-      $settings = array(
-        'quicktabs' => array(
-          'qt_'. $tab['qtid'] => $quicktabs,
-        ),
-      );
-      drupal_add_js($settings, 'setting');
-    }
-  }
-}
 
 /**
  * Helper function to use view arguments from the URL.
