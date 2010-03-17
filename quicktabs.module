@@ -492,7 +492,13 @@ function quicktabs_render_tabpage($tab, $hide_empty = FALSE) {
             if ($view->access($tab['display'])) {
               $view->set_display($tab['display']);
               $view->set_arguments($tab['args']);
-              $output = $view->preview();
+              $view_output = $view->preview();
+              if (!empty($view->result) || $view->display_handler->get_option('empty') || !empty($view->style_plugin->definition['even empty'])) {
+                $output = $view_output;
+              }
+              else {
+                $output = '';
+              }
             }
             elseif (!$hide_empty) {
               $output = theme('quicktabs_tab_access_denied', $tab);
