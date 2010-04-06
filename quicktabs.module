@@ -357,6 +357,7 @@ function quicktabs_render_tabpage($tab) {
           $blockmodule = drupal_substr($tab['bid'], 0, $pos);
           $blockdelta = drupal_substr($tab['bid'], $pos + 7);
           $block = (object) module_invoke($blockmodule, 'block_view', $blockdelta);
+
           if (isset($block->content)) {
             $block->module = $blockmodule;
             $block->delta = $blockdelta;
@@ -365,7 +366,7 @@ function quicktabs_render_tabpage($tab) {
               $block->subject = FALSE;
             }
             // TODO: this seems clumsy, find out the proper way of rendering a themed block
-            $output = theme('block', array('elements' => array('#block' => $block, '#children' => $block->content, '#markup' => $block->content)));
+            $output = theme('block', array('elements' => array('#block' => $block, '#children' => render($block->content), '#markup' => render($block->content))));
           }
         }
         elseif (!$hide_empty) {
