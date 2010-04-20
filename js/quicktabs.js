@@ -22,7 +22,7 @@ Drupal.quicktabs.prepare = function(el) {
   $(el).find('ul.quicktabs_tabs li a').each(function(){
     this.myTabIndex = i++;
     this.qtid = qtid;
-    $(this).bind('click', quicktabsClick);
+    $(this).unbind('click').bind('click', quicktabsClick);
   });
 
   // Search for the active tab.

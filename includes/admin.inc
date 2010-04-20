@@ -103,17 +103,10 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
     '#weight' => -10,
   );
 
-  $style_options = array();
-  $styles = module_invoke_all('quicktabs_tabstyles');
-  // The keys used for options must be valid html id-s.
-  foreach ($styles as $style) {
-    $style_options[$style] = $style;
-  }
-  ksort($style_options);
   $form['style'] = array(
     '#type' => 'select',
     '#title' => t('Style'),
-    '#options' => array('nostyle' => t('No style')) + array('default' => t('Default style')) + $style_options,
+    '#options' => quicktabs_style_options(),
     '#default_value' => isset($quicktabs['style']) ? $quicktabs['style'] : 'default',
     '#description' => t('Choose the quicktab style.'),
     '#weight' => -8,

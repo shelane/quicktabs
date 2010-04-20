@@ -28,6 +28,10 @@ function quicktabs_theme() {
       'arguments' => array('form' => NULL),
       'file' => 'includes/admin.inc',
     ),
+    'quicktabs_views_render' => array(
+      'arguments' => array('view' => NULL, 'tabs' => NULL, 'qtid' => NULL),
+      'file' => 'includes/quicktabs.views.inc',
+    ),
     'quicktabs_tabs' => array(
       'arguments' => array('quicktabs', 'active_tab' => 'none'),
     ),
@@ -441,6 +445,24 @@ function quicktabs_quicktabs_tabstyles() {
 }
 
 /**
+ * Get a list of all available tab styles, suitable for use as an options array.
+ */
+function quicktabs_style_options($include_defaults = TRUE) {
+  $styles = module_invoke_all('quicktabs_tabstyles');
+  // The keys used for options must be valid html id-s.
+  foreach ($styles as $style) {
+    $style_options[$style] = $style;
+  }
+  ksort($style_options);
+
+  if ($include_defaults) {
+    $style_options = array('nostyle' => t('No style'), 'default' => t('Default style')) + $style_options;
+  }
+
+  return $style_options;
+}
+
+/**
  * Load the quicktabs data.
  */
 function quicktabs_load($qtid, $op = 'view') {
@@ -714,4 +736,14 @@ function quicktabs_ajax_js_css() {
     $js_css['css_files'] = $css_files;
   }
   return $js_css;
+}
+
+/**
+ * Implementation of hook_views_api().
+ */
+function quicktabs_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'quicktabs') .'/includes',
+  );
 }
