@@ -188,7 +188,7 @@ function quicktabs_render($quicktabs) {
   if (!isset($javascript['setting'][1]['quicktabs']) || !array_key_exists('qt_'. $quicktabs['qtid'], $javascript['setting'][1]['quicktabs'])) {
     // Only the tabs are used in quicktabs.js
     $settings = array(
-      'tabs' => $quicktabs['ajax'] ? $quicktabs['tabs'] : array_fill_keys(array_keys($quicktabs['tabs']), 0),
+      'tabs' => $quicktabs['ajax'] ? $quicktabs['tabs'] : quicktabs_array_fill_keys(array_keys($quicktabs['tabs']), 0),
     );
     drupal_add_js(array('quicktabs' => array('qt_'. $quicktabs['qtid'] => $settings)), 'setting');
   }
@@ -241,7 +241,7 @@ function quicktabs_render($quicktabs) {
  * Ajax callback for tab content.
  */
 function quicktabs_ajax($type) {
-  
+
   $args = func_get_args();
   $type = array_shift($args);
   $func = 'quicktabs_ajax_'. $type;
@@ -692,7 +692,7 @@ function quicktabs_ajax_js_css() {
         }
     }
   }
-  
+
   $css = drupal_add_css();
 
   foreach ($css as $media => $types) {
@@ -724,7 +724,7 @@ function quicktabs_ajax_js_css() {
       }
     }
   }
-  
+
   $js_css = array();
   if (!empty($settings)) {
     $js_css['js_settings'] = call_user_func_array('array_merge_recursive', $settings);
@@ -746,4 +746,15 @@ function quicktabs_views_api() {
     'api' => 2,
     'path' => drupal_get_path('module', 'quicktabs') .'/includes',
   );
+}
+
+/**
+ * PHP4 version of array_fill_keys().
+ */
+function quicktabs_array_fill_keys($keys, $value){
+  $return = array();
+  foreach ($keys as $key) {
+    $return[$key] = $value;
+  }
+  return $return;
 }
