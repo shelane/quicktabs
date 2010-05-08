@@ -648,10 +648,10 @@ function quicktabs_locale($op = 'groups', $group = NULL) {
     case 'groups':
       return array('quicktabs' => t('Quick Tabs'));
 
-    case 'refresh':
-      if ($group == 'quicktabs') {
-        return quicktabs_locale_refresh();
-      }
+    case 'info':
+      $info['quicktabs']['refresh callback'] = 'quicktabs_locale_refresh';
+      $info['quicktabs']['format'] = FALSE;
+      return $info;
   }
 }
 
@@ -666,6 +666,7 @@ function quicktabs_locale_refresh() {
       tt("quicktabs:tab:$quicktabs[qtid]--$tabkey:title", $tab['title'], NULL, TRUE);
     }
   }
+  return TRUE;
 }
 
 /**
