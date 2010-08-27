@@ -253,6 +253,14 @@ function quicktabs_render($quicktabs) {
 }
 
 /**
+ * Wrap output for delivery as an ajax response.
+ */
+function quicktabs_ajax_wrap($output) {
+  $js_css = quicktabs_ajax_js_css();
+  return array('content' => $output, 'js_css' => $js_css);
+}
+
+/**
  * Ajax callback for tab content.
  */
 function quicktabs_ajax($type) {
@@ -622,6 +630,9 @@ function quicktabs_render_tabpage($tab, $hide_empty = FALSE) {
 
     case 'freetext':
       $output = $tab['text'];
+      break;
+    case 'callback':
+      $output = menu_execute_active_handler($tab['path']);
       break;
   }
 

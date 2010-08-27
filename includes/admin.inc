@@ -240,6 +240,7 @@ function _quicktabs_form($details) {
     'block' => t('Block'),
     'node' => t('Node'),
     'qtabs' => t('QTab'),
+    'callback' => t('QT Callback'),
   );
 
   if (module_exists('views')) {
@@ -315,12 +316,20 @@ function _quicktabs_form($details) {
   $form['qtabs']['machine_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Quicktab'),
-    '#description' => t('The quicktab ID.') .' '. t('Different styles may not work when putting an ajax quicktab inside ajax quicktab.'),
+    '#description' => t('The quicktab machine name.') .' '. t('Different styles may not work when putting an ajax quicktab inside ajax quicktab.'),
     '#maxlength' => 10,
     '#size' => 20,
     '#default_value' => isset($details['machine_name']) ? $details['machine_name'] : '',
   );
 
+  $form['callback']['path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Callback Path'),
+    '#description' => t('The path to your custom menu callback.') .' '. t('This should be a special menu callback that can deliver content specially for use in Quicktabs.'),
+    '#size' => 20,
+    '#default_value' => isset($details['path']) ? $details['path'] : '',
+  );
+  
   $form['type'] = array(
     '#type' => 'radios',
     '#options' => $tabtypes,
@@ -374,6 +383,7 @@ function theme_quicktabs_admin_form_tabs($form) {
         array('data' => drupal_render($form[$key]['block']), 'class' => 'qt-tab-content qt-tab-block-content'),
         array('data' => (module_exists('views') ? drupal_render($form[$key]['view']) : ''), 'class' => 'qt-tab-content qt-tab-view-content'),
         array('data' => drupal_render($form[$key]['node']), 'class' => 'qt-tab-content qt-tab-node-content'),
+        array('data' => drupal_render($form[$key]['callback']), 'class' => 'qt-tab-content qt-tab-callback-content'),
         array('data' => drupal_render($form[$key]['qtabs']), 'class' => 'qt-tab-content qt-tab-qtabs-content'),
         array('data' => drupal_render($form[$key]['remove']), 'class' => 'qt-tab-remove'),
       ),
@@ -495,6 +505,12 @@ function quicktabs_form_validate($form, &$form_state) {
         elseif ($tab['type'] == 'view') {
           // Remove spaces from view arguments.
           $form_state['values']['tabs'][$j]['view']['args'] = str_replace(' ', '', $form_state['values']['tabs'][$j]['view']['args']);
+        }
+        elseif ($tab['type'] == 'callback') {
+          $menu_item = menu_get_item($tab['callback']['path']);
+          if (!$menu_item || $menu_item['type'] != MENU_CALLBACK) {
+            form_set_error('tabs]['. $j .'][callback][path', t('You must enter a valid menu callback for the path.'));
+          }
         }
       }
     }

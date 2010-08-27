@@ -174,6 +174,9 @@ var quicktabsClick = function() {
           case 'qtabs':
             qtAjaxPath +=  tab.tabObj.qtid;
             break;
+          case 'callback':
+            qtAjaxPath =  Drupal.settings.basePath + tab.tabObj.path + '/ajax';
+            break;
         }
         
         $.ajax({
@@ -212,7 +215,7 @@ Drupal.quicktabs.ajax.scripts = function(files) {
   });
 
   var html = '';
-  for (i in files) {
+  for (var i in files) {
     if (!Drupal.quicktabs.scripts[files[i]]) {
       Drupal.quicktabs.scripts[files[i]] = files[i];
       html += '<script type="text/javascript" src="' + files[i] + '"></script>';
