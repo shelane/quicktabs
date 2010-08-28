@@ -548,7 +548,7 @@ function quicktabs_form_submit($form, &$form_state) {
  */
 function quicktabs_block_delete(&$form_state, $quicktabs) {
   $form['machine_name'] = array('#type' => 'hidden', '#value' => $quicktabs['machine_name']);
-  $form['machine_name'] = array('#type' => 'hidden', '#value' => $quicktabs['title']);
+  $form['title'] = array('#type' => 'hidden', '#value' => $quicktabs['title']);
   return confirm_form($form, t('Are you sure you want to delete the quicktab block %name?', array('%name' => $quicktabs['title'])), 'admin/build/quicktabs', '', t('Delete'), t('Cancel'));
 }
 
@@ -557,7 +557,7 @@ function quicktabs_block_delete(&$form_state, $quicktabs) {
  */
 function quicktabs_block_delete_submit($form, &$form_state) {
   db_query("DELETE FROM {quicktabs} WHERE machine_name = '%s'", $form_state['values']['machine_name']);
-  drupal_set_message(t('The quicktab block %name has been removed.', array('%name' => $form_state['values']['machine_name'])));
+  drupal_set_message(t('The quicktab block %name has been removed.', array('%name' => $form_state['values']['title'])));
   cache_clear_all();
   $form_state['redirect'] = 'admin/build/quicktabs';
 };
