@@ -175,7 +175,7 @@ var quicktabsClick = function() {
             qtAjaxPath +=  tab.tabObj.qtid;
             break;
           case 'callback':
-            qtAjaxPath =  Drupal.settings.basePath + tab.tabObj.path + '/ajax';
+            qtAjaxPath +=  tab.tabObj.path;
             break;
         }
         
