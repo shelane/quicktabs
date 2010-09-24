@@ -213,7 +213,10 @@ Drupal.quicktabs.ajax.scripts = function(files) {
 
   var html = '';
   for (i in files) {
-    if (!Drupal.quicktabs.scripts[files[i]]) {
+    // Load all files that aren't already present on the page, but make sure not
+    // to add misc/jquery.js because this could override a newer version of
+    // jQuery loaded by jQuery Update module.
+    if (!Drupal.quicktabs.scripts[files[i]] && !files[i].match(/^\/misc\/jquery\.js.*$/)) {
       Drupal.quicktabs.scripts[files[i]] = files[i];
       html += '<script type="text/javascript" src="' + files[i] + '"></script>';
     }
