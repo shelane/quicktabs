@@ -471,6 +471,11 @@ function quicktabs_form_submit($form, &$form_state) {
         drupal_set_message(t('The quicktab block has been created.'));
       }
     }
+    if (module_exists('i18nstrings')) {
+      foreach ($quicktabs['tabs'] as $tabkey => $tab) {
+        i18nstrings_update('quicktabs:tab:' . $quicktabs['qtid'] . '--' . $tabkey . ':title', $tab['title']);
+      }
+    }
     drupal_goto('admin/build/quicktabs');
   }
 }
