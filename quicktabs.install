@@ -12,14 +12,23 @@
 function quicktabs_schema() {
   $schema['quicktabs'] = array(
     'description' => 'The quicktabs table.',
+    'export' => array(
+      'key' => 'machine_name',
+      'identifier' => 'quicktabs',
+      'default hook' => 'quicktabs_default_quicktabs',
+      'api' => array(
+        'owner' => 'quicktabs',
+        'api' => 'quicktabs',
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
     'fields' => array(
-      'qtid' => array(
+      'machine_name' => array(
         'description' => 'The primary identifier for a qt block.',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'size' => 'big',
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => TRUE,
-        'disp-width' => '10',
       ),
       'ajax' => array(
         'description' => 'Whether this is an ajax views block.',
@@ -63,7 +72,7 @@ function quicktabs_schema() {
         'not null' => TRUE,
       ),
     ),
-    'primary key' => array('qtid'),
+    'primary key' => array('machine_name'),
   );
   return $schema;
 }
@@ -75,5 +84,41 @@ function quicktabs_schema() {
 function quicktabs_update_7200() {
   $ret = array();
 
+  // If upgrading from 6.x-2.x, we will need to convert all QT instances to the
+  // new schema. 6.x-3.x will already be converted.
+  if (db_column_exists('quicktabs', 'machine_name')) {
+    return $ret;
+  }
+
+  // Pull all existing quicktabs, and then delete existing quicktabs. We will reinsert.
+  $result = db_query("SELECT * FROM {quicktabs}");
+  $ret[] = update_sql("DELETE FROM {quicktabs}");
+
+  db_drop_field($ret, 'quicktabs', 'qtid');
+  $new_field = array(
+    'description' => 'The primary identifier for a qt block.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+  );
+  db_add_field($ret, 'quicktabs', 'machine_name', $new_field);
+  db_add_primary_key($ret, 'quicktabs', array('machine_name'));
+
+  $used = array();
+  while ($row = db_fetch_array($result)) {
+    // Generate a machine-readable string
+    $qt_name = strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', $row['title']));
+    $i = 0;
+    while (in_array($i == 0 ? $qt_name : "{$qt_name}_{$i}", $used)) {
+      $i++;
+    }
+    $row['machine_name'] = $used[] = $i == 0 ? $qt_name : "{$qt_name}_{$i}";
+    unset($row['qtid']);
+    $placeholders = implode(', ', array_keys($row));
+    $tokens = implode(', ', array_fill(0, count($row), "'%s'"));
+    db_query("INSERT INTO {quicktabs} ($placeholders) VALUES($tokens)", $row);
+
+    $ret[] = "Converted quicktab {$row['machine_name']}.";
+  }
   return $ret;
 }
