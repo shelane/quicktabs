@@ -16,8 +16,8 @@ Drupal.quicktabs = Drupal.quicktabs || {};
 Drupal.quicktabs.prepare = function(el) {
   // el.id format: "quicktabs-$name"
   var name = el.id.substring(el.id.indexOf('-') +1);
-  var qtKey = 'qt_' + name;
-  $(el).find('ul.quicktabs_tabs li a').each(function(){this.name = name}).each(Drupal.quicktabs.initialiseLink);
+  var $ul = $(el).find('ul.quicktabs_tabs:first');
+  $ul.find('li a').each(function(){this.name = name}).each(Drupal.quicktabs.initialiseLink);
 
   // Search for the active tab.
   var $active_tab = $(el).children('.quicktabs_tabs').find('li.active a');

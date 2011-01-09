@@ -46,7 +46,7 @@ function quicktabs_list() {
     }
     else {
       $tablerow = array(
-        array('data' => $quicktabs->title),
+        array('data' => $quicktab->title),
         array('data' => t('Normal')),
         array('data' => l(t('Edit'), 'admin/structure/quicktabs/manage/'. $quicktab->machine_name .'/edit')),
         array('data' => l(t('Clone'), 'admin/structure/quicktabs/manage/'. $quicktab->machine_name .'/clone')),

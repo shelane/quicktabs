@@ -189,8 +189,8 @@ function quicktabs_get_all_quicktabs() {
 
   // Otherwise, load from DB
   $result = db_query('SELECT machine_name, title, tabs, ajax, hide_empty_tabs, default_tab, style FROM {quicktabs} ORDER BY title');
-  while ($quicktab = db_fetch_object($result)) {
-    $quicktabs[$quicktab['machine_name']] = _quicktabs_unpack($quicktab);
+  foreach ($result as $quicktab) {
+    $quicktabs[$quicktab->machine_name] = _quicktabs_unpack($quicktab);
   }
   return $quicktabs;
 }
@@ -218,12 +218,12 @@ function _quicktabs_unpack($quicktab) {
  * Load the quicktabs data.
  */
 function quicktabs_load($qt_name, $op = 'view') {
-  // Load quicktabs via ctools is present.
-  //if (module_exists('ctools')) {
-  //  ctools_include('export');
-  //  $defaults = ctools_export_load_object('quicktabs', 'names', array($qt_name));
-  //  return isset($defaults[$qt_name]) ? $defaults[$qt_name] : FALSE;
-  //}
+  // Load quicktabs via ctools if present.
+  if (module_exists('ctools')) {
+    ctools_include('export');
+    $defaults = ctools_export_load_object('quicktabs', 'names', array($qt_name));
+    return isset($defaults[$qt_name]) ? $defaults[$qt_name] : FALSE;
+  }
 
   // Load quicktabs from the database.
   $quicktab = db_query("SELECT machine_name, title, tabs, ajax, hide_empty_tabs, default_tab, style FROM {quicktabs} WHERE machine_name = :machine_name", array(':machine_name' => $qt_name))->fetchObject();
@@ -591,7 +591,7 @@ function _quicktabs_construct_link_options($quicktab, $tabkey) {
   $id = 'quicktabs-tab-' . implode('-', array($qt_name, $tabkey));
 
   // Need to construct the correct querystring for the tab links.
-  $query = drupal_get_query_parameters(NULL, array("quicktabs_$qt_name"), 'q', 'page');
+  $query = drupal_get_query_parameters(NULL, array("quicktabs_$qt_name", 'q', 'page'));
   $query["quicktabs_{$qt_name}"] = $tabkey;
 
   $class = array();
