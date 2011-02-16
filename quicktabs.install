@@ -79,33 +79,34 @@ function quicktabs_schema() {
 
 /**
  * Update to Drupal 7.
- * Could be solved later. Set the version number for new installs for now.
  */
 function quicktabs_update_7200() {
-  $ret = array();
 
   // If upgrading from 6.x-2.x, we will need to convert all QT instances to the
   // new schema. 6.x-3.x will already be converted.
-  if (db_column_exists('quicktabs', 'machine_name')) {
-    return $ret;
+  if (db_field_exists('quicktabs', 'machine_name')) {
+    return t('No updates necessary');
   }
 
   // Pull all existing quicktabs, and then delete existing quicktabs. We will reinsert.
   $result = db_query("SELECT * FROM {quicktabs}");
-  $ret[] = update_sql("DELETE FROM {quicktabs}");
+  if (!db_query("DELETE FROM {quicktabs}")) {
+    throw new DrupalUpdateException(t('Could not complete the update.'));
+  }
 
-  db_drop_field($ret, 'quicktabs', 'qtid');
+  db_drop_field('quicktabs', 'qtid');
   $new_field = array(
     'description' => 'The primary identifier for a qt block.',
     'type' => 'varchar',
     'length' => 255,
     'not null' => TRUE,
   );
-  db_add_field($ret, 'quicktabs', 'machine_name', $new_field);
-  db_add_primary_key($ret, 'quicktabs', array('machine_name'));
+  db_add_field('quicktabs', 'machine_name', $new_field);
+  db_add_primary_key('quicktabs', array('machine_name'));
 
-  $used = array();
-  while ($row = db_fetch_array($result)) {
+  $output = $used = array();
+  foreach ($result as $qt) {
+    $row = (array)$qt;
     // Generate a machine-readable string
     $qt_name = strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', $row['title']));
     $i = 0;
@@ -115,10 +116,16 @@ function quicktabs_update_7200() {
     $row['machine_name'] = $used[] = $i == 0 ? $qt_name : "{$qt_name}_{$i}";
     unset($row['qtid']);
     $placeholders = implode(', ', array_keys($row));
-    $tokens = implode(', ', array_fill(0, count($row), "'%s'"));
-    db_query("INSERT INTO {quicktabs} ($placeholders) VALUES($tokens)", $row);
+    $values = array();
+    // Ugh - really?? Somebody tell me there's a better way to do this :-/
+    foreach ($row as $name => $value) {
+      $values[':' . $name] = $value;
+    }
+    $tokens = implode(', ', array_keys($values));
+    db_query("INSERT INTO {quicktabs} ($placeholders) VALUES($tokens)", $values);
 
-    $ret[] = "Converted quicktab {$row['machine_name']}.";
+    $output[] = "Converted quicktab {$row['machine_name']}.";
   }
-  return $ret;
+
+  return implode('<br />', $output);
 }

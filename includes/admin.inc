@@ -498,7 +498,6 @@ function theme_quicktabs_admin_form_tabs($variables) {
  * ajax callback.
  */
 function quicktabs_ajax($form, $form_state) {
-  watchdog("ajax", "I haz ajax");
   $form_tabs = $form['qt_wrapper']['tabs'];
   return $form_tabs;
 }
