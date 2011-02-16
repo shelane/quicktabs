@@ -378,7 +378,7 @@ function quicktabs_ajax_view($vid, $display) {
 /**
  * Render quicktabs tabpage.
  */
-function quicktabs_render_tabpage($tab) {
+function quicktabs_render_tabpage($tab, $hide_empty = FALSE) {
   static $cache;
 
   $cachekey = md5(serialize($tab));
