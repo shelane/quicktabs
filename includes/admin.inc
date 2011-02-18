@@ -296,7 +296,7 @@ function _quicktabs_admin_main_form($form_state, &$quicktab) {
     '#weight' => 1,
     '#submit' => array('qt_more_tabs_submit'),
     '#ajax' => array(
-      'callback' => 'quicktabs_ajax',
+      'callback' => 'quicktabs_ajax_callback',
       'wrapper' => 'quicktab-tabs',
       'effect' => 'fade',
     ),
@@ -358,7 +358,7 @@ function _quicktabs_form(array $tab) {
       '#default_value' => $selected_view,
       '#title' => t('Select a view'),
       '#ajax' => array(
-        'callback' => 'quicktabs_ajax',
+        'callback' => 'quicktabs_ajax_callback',
         'wrapper' => 'quicktab-tabs',
         'method' => 'replace',
         'effect' => 'fade',
@@ -424,7 +424,7 @@ function _quicktabs_form(array $tab) {
     '#attributes' => array('class' => array('delete-tab'), 'title' => t('Click here to delete this tab.')),
     '#submit' => array('qt_remove_tab_submit'),
     '#ajax' => array(
-      'callback' => 'quicktabs_ajax',
+      'callback' => 'quicktabs_ajax_callback',
       'wrapper' => 'quicktab-tabs',
       'method' => 'replace',
       'effect' => 'fade',
@@ -497,7 +497,7 @@ function theme_quicktabs_admin_form_tabs($variables) {
 /**
  * ajax callback.
  */
-function quicktabs_ajax($form, $form_state) {
+function quicktabs_ajax_callback($form, $form_state) {
   $form_tabs = $form['qt_wrapper']['tabs'];
   return $form_tabs;
 }
