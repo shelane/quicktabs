@@ -1,4 +1,3 @@
-# $Id$
 #
 # French translation of Quicktabs module
 #

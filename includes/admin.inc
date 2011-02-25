@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * Page callback for quicktabs admin landing page.
