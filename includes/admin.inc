@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  * Provides the Quick Tabs' administrative interface.
