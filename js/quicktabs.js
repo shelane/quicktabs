@@ -1,4 +1,3 @@
-// $Id$
 
 Drupal.settings.views = Drupal.settings.views || {'ajax_path': 'views/ajax'};
 
