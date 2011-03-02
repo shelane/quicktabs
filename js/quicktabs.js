@@ -20,14 +20,14 @@ Drupal.quicktabs.prepare = function(el) {
   $ul.find('li a').each(function(){this.name = name}).each(Drupal.quicktabs.initialiseLink);
 
   // Search for the active tab.
-  var $active_tab = $(el).children('.quicktabs_tabs').find('li.active a');
-  if ($active_tab.hasClass('qt_tab') || $active_tab.hasClass('qt_ajax_tab')) {
-    $active_tab.trigger('click');
-  }
-  else {
-    // Click on the first tab.
-    $(el).children('.quicktabs_tabs').find('li.first a').trigger('click');
-  }
+  //var $active_tab = $(el).children('.quicktabs_tabs').find('li.active a');
+  //if ($active_tab.hasClass('qt_tab') || $active_tab.hasClass('qt_ajax_tab')) {
+  //  $active_tab.trigger('click');
+  //}
+  //else {
+  //  // Click on the first tab.
+  //  $(el).children('.quicktabs_tabs').find('li.first a').trigger('click');
+  //}
 }
 
 Drupal.quicktabs.initialiseLink = function(index, element, tab) {

@@ -1,4 +1,5 @@
 <?php
+// $Id: quicktabs.module,v 1.10.4.16 2011/02/18 22:57:42 katbailey Exp $
 
 /**
  * Implements hook_help().
@@ -225,7 +226,6 @@ function quicktabs_load($qt_name, $op = 'view') {
 function quicktabs_render($quicktabs) {
   // First convert any Views arguments in our tabs to the necessary format
   $quicktabs->tabs = _quicktabs_prepare_views_args($quicktabs->tabs, $quicktabs->ajax);
-  
   // Check if any tabs need to be hidden because of empty content.
   if ($quicktabs->hide_empty_tabs && !$quicktabs->ajax) {
     // Remove empty tabpages.
@@ -235,14 +235,14 @@ function quicktabs_render($quicktabs) {
         unset($quicktabs->tabs[$key]);
       }
       else {
-        $quicktab->tabs[$key]['rendered'] = $contents;
+        $quicktabs->tabs[$key]['rendered'] = $contents;
       }
     }
     $quicktabs->tabs = array_merge($quicktabs->tabs);
   }
 
   $active_tab = _quicktabs_get_active_tab($quicktabs);
-  if ($tabs = _quicktabs_build_tabs($quicktabs, $active_tab)) {
+  if ($tabs = _quicktabs_build_tablinks($quicktabs, $active_tab)) {
     // Create the quicktabs renderable array and add the necessary css and js to it
     $qt_ra = array(
       '#attached' => array(
@@ -343,97 +343,101 @@ function quicktabs_render_tab_content($tab, $hide_empty = FALSE) {
     return $cache[$cachekey];
   }
 
-  $output = '';
-
-  switch ($tab['type']) {
-    case 'qtabs':
-      if (isset($tab['machine_name'])) {
-        if ($quicktabs = quicktabs_load($tab['machine_name'])) {
-          $output = quicktabs_render($quicktabs);
-        }
-      }
-      break;
-
-    case 'view':
-      if (isset($tab['vid'])) {
-        if (module_exists('views')) {
-
-          if ($view = views_get_view($tab['vid'])) {
-
-            if ($view->access($tab['display'])) {
-              $view->set_display($tab['display']);
-              $view->set_arguments($tab['args']);
-              $view_output = $view->preview();
-              if (!empty($view->result) || $view->display_handler->get_option('empty') || !empty($view->style_plugin->definition['even empty'])) {
-                $output = $view_output;
-              }
-              else {
-                $output = '';
-              }
-            }
-            elseif (!$hide_empty) {
-              $output = theme('quicktabs_tab_access_denied', array('tab' => $tab));
-            }
-            $view->destroy();
-          }
-        }
-        elseif (!$hide_empty) {
-          $output = t('Views module is not enabled, cannot display tab content.');
-        }
-      }
-      break;
-
-    case 'block':
-      if (isset($tab['bid'])) {
-        if (module_exists('block')) {
-          $pos = strpos($tab['bid'], '_delta_');
-          $blockmodule = drupal_substr($tab['bid'], 0, $pos);
-          $blockdelta = drupal_substr($tab['bid'], $pos + 7);
-          $block = (object) module_invoke($blockmodule, 'block_view', $blockdelta);
-
-          if (isset($block->content)) {
-            $block->module = $blockmodule;
-            $block->delta = $blockdelta;
-            $block->region = 'quicktabs_tabpage';
-            if ($tab['hide_title'] || !isset($block->subject)) {
-              $block->subject = FALSE;
-            }
-            $output = $block->content;
-          }
-        }
-        elseif (!$hide_empty) {
-          $output = t('Block module is not enabled, cannot display tab content.');
-        }
-      }
-      break;
-
-    case 'node':
-      if (isset($tab['nid'])) {
-        $node = node_load($tab['nid']);
-        if (!empty($node)) {
-          if (node_access('view', $node)) {
-            $buildmode = $tab['teaser'] ? 'teaser' : 'full';
-            $nstruct = node_view($node, $buildmode);
-            if ($tab['hide_title']) {
-              $nstruct['#node']->title = NULL;
-            }
-            $output = $nstruct;
-          }
-          elseif (!$hide_empty) {
-            $output = theme('quicktabs_tab_access_denied', array($tab));
-          }
-        }
-      }
-      break;
-
-    case 'freetext':
-      $output = $tab['text'];
-      break;
-  }
-
+  $type = $tab['type'];
+  $func = '_quicktabs_build_content_'. $type;
+  $output = call_user_func_array($func, array($tab, $hide_empty));
   $cache[$cachekey] = $output;
   return $output;
 }
+
+function _quicktabs_build_content_qtabs($tab, $hide_empty = FALSE) {
+  $output = array();
+  if (isset($tab['machine_name'])) {
+    if ($quicktabs = quicktabs_load($tab['machine_name'])) {
+      $output = quicktabs_render($quicktabs);
+    }
+  }
+  return $output;
+}
+
+function _quicktabs_build_content_view($tab, $hide_empty = FALSE) {
+  $output = array();
+  if (isset($tab['vid'])) {
+    if (module_exists('views')) {
+      if ($view = views_get_view($tab['vid'])) {
+        if ($view->access($tab['display'])) {
+          $view->set_display($tab['display']);
+          $view->set_arguments($tab['args']);
+          $view_output = $view->preview();
+          if (!empty($view->result) || $view->display_handler->get_option('empty') || !empty($view->style_plugin->definition['even empty'])) {
+            $output['#markup'] = $view_output;
+          }
+        }
+        elseif (!$hide_empty) {
+          $output['#markup'] = theme('quicktabs_tab_access_denied', array('tab' => $tab));
+        }
+        $view->destroy();
+      }
+    }
+    elseif (!$hide_empty) {
+      $output['#markup'] = t('Views module is not enabled, cannot display tab content.');
+    }
+  }
+  return $output;
+}
+
+function _quicktabs_build_content_block($tab, $hide_empty = FALSE) {
+  $output = array();
+  if (isset($tab['bid'])) {
+    if (module_exists('block')) {
+      $pos = strpos($tab['bid'], '_delta_');
+      $module = drupal_substr($tab['bid'], 0, $pos);
+      $delta = drupal_substr($tab['bid'], $pos + 7);
+
+      $block = block_load($module, $delta);
+      $block->region = 'quicktabs_tabpage';
+
+      $block_arr = _block_render_blocks(array($block));
+      if ($tab['hide_title']) {
+        $block_arr["{$block->module}_{$block->delta}"]->subject = FALSE;
+      }
+      if (!empty($block_arr["{$block->module}_{$block->delta}"]->content)) {
+        $build = _block_get_renderable_array($block_arr);
+        $output = $build;
+      }
+    }
+    elseif (!$hide_empty) {
+      $output['#markup'] = t('Block module is not enabled, cannot display tab content.');
+    }
+  }
+  return $output;
+}
+
+function _quicktabs_build_content_node($tab, $hide_empty = FALSE) {
+  $output = '';
+  if (isset($tab['nid'])) {
+    $node = node_load($tab['nid']);
+    if (!empty($node)) {
+      if (node_access('view', $node)) {
+        $buildmode = $tab['teaser'] ? 'teaser' : 'full';
+        $nstruct = node_view($node, $buildmode);
+        if ($tab['hide_title']) {
+          $nstruct['#node']->title = NULL;
+        }
+        $output = $nstruct;
+      }
+      elseif (!$hide_empty) {
+        $output = theme('quicktabs_tab_access_denied', array($tab));
+      }
+    }
+  }
+  return $output;
+}
+
+function _quicktabs_build_content_qtabs_freetext($tab, $hide_empty = FALSE) {
+  return isset($tab['text']) ? $tab['text'] : '';
+}
+
 
 /**
  * Fetch the necessary CSS files for the tab styles.
@@ -489,8 +493,8 @@ function theme_quicktabs_tabs($vars) {
   return $output;
 }
 
-function _quicktabs_build_tabs($quicktabs, $active_tab) {
-  $tabs = array();
+function _quicktabs_build_tablinks($quicktabs, $active_tab) {
+  $tablinks = array();
   $tabs_count = count($quicktabs->tabs);
   if ($tabs_count <= 0) {
     return NULL;
@@ -504,11 +508,11 @@ function _quicktabs_build_tabs($quicktabs, $active_tab) {
       '#href' =>  '#tabs-'. $i,
       '#options' => _quicktabs_construct_link_options($quicktabs, $i),
     );
-    $tabs[] = $tablink;
+    $tablinks[] = $tablink;
     $index++;
   }
 
-  return $tabs;
+  return $tablinks;
 }
 
 /**
@@ -654,3 +658,4 @@ function _quicktabs_prepare_views_args($tabs, $ajax = 0) {
   }
   return $tabs;
 }
+
