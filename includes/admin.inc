@@ -128,7 +128,7 @@ function theme_quicktabs_style_options($variables) {
     $element = $style_element[$style];
     $quicktabs->style = $style;
     $quicktabs->machine_name = drupal_strtolower($style);
-    $preview = '<div class="quicktabs-preview">'. quicktabs_render($quicktabs) .'</div>';
+    $preview = '<div class="quicktabs-preview">'. drupal_render(quicktabs_render($quicktabs)) .'</div>';
     $element['#description'] = t('%style preview', array('%style' => $element['#title'])) .':<br />'. $preview;
     $markup .= drupal_render($element);
   }

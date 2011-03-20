@@ -414,11 +414,13 @@ function _quicktabs_build_content_block($tab, $hide_empty = FALSE) {
 }
 
 function _quicktabs_build_content_node($tab, $hide_empty = FALSE) {
-  $output = '';
+  $output = array();
   if (isset($tab['nid'])) {
     $node = node_load($tab['nid']);
     if (!empty($node)) {
+
       if (node_access('view', $node)) {
+
         $buildmode = $tab['teaser'] ? 'teaser' : 'full';
         $nstruct = node_view($node, $buildmode);
         if ($tab['hide_title']) {
@@ -427,15 +429,15 @@ function _quicktabs_build_content_node($tab, $hide_empty = FALSE) {
         $output = $nstruct;
       }
       elseif (!$hide_empty) {
-        $output = theme('quicktabs_tab_access_denied', array($tab));
+        $output['#markup'] = theme('quicktabs_tab_access_denied', array($tab));
       }
     }
   }
   return $output;
 }
 
-function _quicktabs_build_content_qtabs_freetext($tab, $hide_empty = FALSE) {
-  return isset($tab['text']) ? $tab['text'] : '';
+function _quicktabs_build_content_freetext($tab, $hide_empty = FALSE) {
+  return isset($tab['text']) ? array('#markup' => $tab['text']) : array();
 }
 
 
