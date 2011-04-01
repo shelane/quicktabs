@@ -358,7 +358,10 @@ function _quicktabs_form(array $tab) {
       '#default_value' => $selected_view,
       '#title' => t('Select a view'),
       '#ajax' => array(
-        'callback' => '_quicktabs_replace_view_displays_callback',
+        'callback' => 'quicktabs_ajax_callback',
+        'wrapper' => 'quicktab-tabs',
+        'method' => 'replace',
+        'effect' => 'fade',
       ),
     );
     $form['view']['display'] = array(
@@ -492,26 +495,11 @@ function theme_quicktabs_admin_form_tabs($variables) {
 }
 
 /**
- * Ajax callback for add more and remove buttons.
+ * Ajax callback for add more and remove buttons and for the view dropdown.
  */
 function quicktabs_ajax_callback($form, $form_state) {
   $form_tabs = $form['qt_wrapper']['tabs'];
   return $form_tabs;
-}
-
-/**
- * Ajax callback, triggered when view is changed.
- */
-function _quicktabs_replace_view_displays_callback($form, $form_state) {
-  $view_name = $form_state['triggering_element']['#value'];
-  $delta = $form_state['triggering_element']['#parents'][1];
-  $display_options = _quicktabs_get_views_displays($view_name);
-  $form['qt_wrapper']['tabs'][$delta]['view']['display']['#options'] = $display_options;
-
-  $commands = array();
-  // Replace the view display dropdown.
-  $commands[] = ajax_command_replace("#view-display-dropdown-$delta", drupal_render($form['qt_wrapper']['tabs'][$delta]['view']['display']));
-  return array('#type' => 'ajax', '#commands' => $commands);
 }
 
 
