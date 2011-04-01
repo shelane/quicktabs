@@ -149,7 +149,7 @@ function quicktabs_block_view($delta = '') {
   if ($quicktabs = quicktabs_load($delta)) {
     $qt = quicktabs_render($quicktabs);
     $block['subject'] = $quicktabs->title;
-    $block['content'] = quicktabs_render($quicktabs);
+    $block['content'] = $qt;
     if (!empty($block['content'])) {
       $block['content']['#contextual_links']['quicktabs'] = array('admin/structure/quicktabs/manage', array($delta));
     }
