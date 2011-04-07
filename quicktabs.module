@@ -224,8 +224,12 @@ function quicktabs_load($qt_name, $op = 'view') {
  * Render quicktabs.
  */
 function quicktabs_render($quicktabs) {
+  
   // First convert any Views arguments in our tabs to the necessary format
   $quicktabs->tabs = _quicktabs_prepare_views_args($quicktabs->tabs, $quicktabs->ajax);
+
+  $tab_settings = (array)$quicktabs;
+
   // Check if any tabs need to be hidden because of empty content.
   if ($quicktabs->hide_empty_tabs && !$quicktabs->ajax) {
     // Remove empty tabpages.
@@ -240,7 +244,6 @@ function quicktabs_render($quicktabs) {
     }
     $quicktabs->tabs = array_merge($quicktabs->tabs);
   }
-
   $active_tab = _quicktabs_get_active_tab($quicktabs);
   if ($tabs = _quicktabs_build_tablinks($quicktabs, $active_tab)) {
     // Create the quicktabs renderable array and add the necessary css and js to it
@@ -271,7 +274,7 @@ function quicktabs_render($quicktabs) {
     );
   
     if (!isset($javascript['setting'][1]['quicktabs']) || !array_key_exists('qt_' . $quicktabs['machine_name'], $javascript['setting'][1]['quicktabs'])) {
-      $qt_ra['#attached']['js'][] = array('data' => array('quicktabs' => array('qt_' . $quicktabs->machine_name => $quicktabs)), 'type' => 'setting');
+      $qt_ra['#attached']['js'][] = array('data' => array('quicktabs' => array('qt_' . $quicktabs->machine_name => $tab_settings)), 'type' => 'setting');
     }
   
     if ($quicktabs->ajax) {
