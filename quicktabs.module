@@ -332,7 +332,8 @@ function quicktabs_ajax($type) {
   }
 
   $output = quicktabs_render_tab_content($tabpage);
-  drupal_json_output(array('status' => 0, 'data' => drupal_render($output)));
+  $data = !empty($output) ? drupal_render($output) : '';
+  drupal_json_output(array('status' => 0, 'data' => $data));
 }
 
 /**
@@ -400,13 +401,14 @@ function _quicktabs_build_content_block($tab, $hide_empty = FALSE) {
       $block = block_load($module, $delta);
       $block->region = 'quicktabs_tabpage';
 
-      $block_arr = _block_render_blocks(array($block));
-      if ($tab['hide_title']) {
-        $block_arr["{$block->module}_{$block->delta}"]->subject = FALSE;
-      }
-      if (!empty($block_arr["{$block->module}_{$block->delta}"]->content)) {
-        $build = _block_get_renderable_array($block_arr);
-        $output = $build;
+      if ($block_arr = _block_render_blocks(array($block))) {
+        if ($tab['hide_title']) {
+          $block_arr["{$block->module}_{$block->delta}"]->subject = FALSE;
+        }
+        if (!empty($block_arr["{$block->module}_{$block->delta}"]->content)) {
+          $build = _block_get_renderable_array($block_arr);
+          $output = $build;
+        }
       }
     }
     elseif (!$hide_empty) {
