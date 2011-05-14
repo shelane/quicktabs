@@ -510,7 +510,7 @@ function _quicktabs_build_tablinks($quicktabs, $active_tab) {
     $tablink = array(
       '#type' => 'link',
       '#title' => $tab['title'],
-      '#href' =>  '#tabs-'. $i,
+      '#href' =>  $_GET['q'],
       '#options' => _quicktabs_construct_link_options($quicktabs, $i),
     );
     $tablinks[] = $tablink;
