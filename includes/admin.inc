@@ -88,7 +88,7 @@ function quicktabs_form($form_state, $formtype, $quicktabs = array()) {
   // Add the current tabs to the form.
   foreach ($quicktabs['tabs'] as $delta => $details) {
     $details['delta'] = $delta;
-    $form['qt_wrapper']['tabs'][$delta] = _quicktabs_form($details);
+    $form['qt_wrapper']['tabs'][$delta] = _quicktabs_form($details, $quicktabs);
     if (isset($details['title'])) {
       $tab_titles[$delta] = $details['title'];
     }
@@ -218,8 +218,14 @@ function _qt_admin_main_form($form_state, &$quicktabs) {
 
 /*
  * Build one row (one tabpage) on the QT admin form.
+ * 
+ * @param array $details
+ *  An array containing the details of this particular tabpage.
+ * 
+ * @param array $quicktabs
+ *  An array containing the details of the quicktabs block being edited.
  */
-function _quicktabs_form($details) {
+function _quicktabs_form($details, $quicktabs) {
   $form['#tree'] = TRUE;
   $delta = $details['delta'];
 
@@ -312,13 +318,20 @@ function _quicktabs_form($details) {
     '#default_value' => isset($details['hide_title']) ? $details['hide_title'] : 1,
   );
 
+  $tab_options = array();
+  foreach (quicktabs_get_all_quicktabs() as $machine_name => $tab) {
+    // Do not offer the option to put a tab inside itself.
+    if ($quicktabs['machine_name'] != $machine_name) {
+      $tab_options[$machine_name] = $tab['title'];
+    }
+  }
+
   $form['qtabs']['machine_name'] = array(
-    '#type' => 'textfield',
+    '#type' => 'select',
     '#title' => t('Quicktab'),
-    '#description' => t('The quicktab machine name.') .' '. t('Different styles may not work when putting an ajax quicktab inside ajax quicktab.'),
-    '#maxlength' => 10,
-    '#size' => 20,
+    '#description' => t('The quicktab block to put inside this tab.') .' '. t('Different styles may not work when putting an ajax quicktab inside ajax quicktab.'),
     '#default_value' => isset($details['machine_name']) ? $details['machine_name'] : '',
+    '#options' => $tab_options,
   );
 
   $form['callback']['path'] = array(
