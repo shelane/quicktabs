@@ -171,7 +171,7 @@ var quicktabsClick = function() {
             qtAjaxPath +=  tab.tabObj.bid + '/' + tab.tabObj.hide_title;
             break;
           case 'qtabs':
-            qtAjaxPath +=  tab.tabObj.qtid;
+            qtAjaxPath +=  tab.tabObj.machine_name;
             break;
           case 'callback':
             qtAjaxPath +=  tab.tabObj.path;
