@@ -27,7 +27,7 @@ function quicktabs_views_plugins() {
   );
 }
 
-function theme_quicktabs_views_render($view, $tabs, $qtid) {
+function theme_quicktabs_views_render($view, $tabs, $machine_name) {
   foreach ($tabs as $index => $tab) {
     if (is_array($tab['content'])) {
       $text = '';
@@ -44,7 +44,7 @@ function theme_quicktabs_views_render($view, $tabs, $qtid) {
   }
 
   $quicktabs = array(
-    'qtid' => $qtid,
+    'machine_name' => $machine_name,
     'ajax' => '0', // TODO: Support AJAX, set this to $view->use_ajax.
     'hide_empty_tabs' => '0',
     'default_tab' => '0',

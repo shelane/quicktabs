@@ -73,7 +73,7 @@ class quicktabs_style_plugin extends views_plugin_style {
     }
 
     $view = $this->view;
-    $qtid = 'view__' . $view->name .'__'. $view->current_display;
+    $machine_name = 'view__' . $view->name .'__'. $view->current_display;
 
     // Group the rows according to the grouping field, if specified.
     $sets = $this->render_grouping($this->view->result, $this->options['grouping']);
@@ -117,22 +117,22 @@ class quicktabs_style_plugin extends views_plugin_style {
       }
     }
 
-    $output = theme('quicktabs_views_render', $view, $tabs, $qtid);
+    $output = theme('quicktabs_views_render', $view, $tabs, $machine_name);
 
     // If doing a live preview, add the JavaScript directly to the output.
     if (isset($view->live_preview) && $view->live_preview) {
       $js = drupal_add_js();
       $qtsettings = array();
       foreach ($js['setting'] as $settings) {
-        if (isset($settings['quicktabs']['qt_'. $qtid])) {
-          $qtsettings = $settings['quicktabs']['qt_'. $qtid];
+        if (isset($settings['quicktabs']['qt_'. $machine_name])) {
+          $qtsettings = $settings['quicktabs']['qt_'. $machine_name];
           break;
         }
       }
 
       $output .= "<script type=\"text/javascript\">\n";
       $output .= "Drupal.settings.quicktabs = Drupal.settings.quicktabs || {};\n";
-      $output .= "jQuery.extend(Drupal.settings.quicktabs, ". drupal_to_js(array('qt_'. $qtid => $qtsettings)) .");\n";
+      $output .= "jQuery.extend(Drupal.settings.quicktabs, ". drupal_to_js(array('qt_'. $machine_name => $qtsettings)) .");\n";
       $output .= "</script>\n";
     }
 
