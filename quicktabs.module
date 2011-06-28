@@ -361,7 +361,7 @@ function theme_quicktabs_tabs($quicktabs, $active_tab = 'none') {
     $options = _quicktabs_construct_link_options($quicktabs, $tabkey);
     // Support for translatable tab titles with i18nstrings.module.
     if (module_exists('i18nstrings')) {
-      $tab['title'] = tt("quicktabs:tab:$quicktabs[machine_name]--$tabkey:title", $tab['title']);
+      $tab['title'] = tt("quicktabs:tab:{$quicktabs['machine_name']}--$tabkey:title", $tab['title']);
     }
     $output .= '<li'. $attributes_li .'>'. l($tab['title'], $_GET['q'], $options) .'</li>';
     $index++;

@@ -551,6 +551,12 @@ function quicktabs_form_submit($form, &$form_state) {
         drupal_set_message(t('The quicktab block has been created.'));
       }
     }
+    // Update the i18nstrings record
+    foreach ($quicktabs['tabs'] as $tabkey => $tab) {
+      if (module_exists('i18nstrings')) {
+        i18nstrings_update("quicktabs:tab:{$quicktabs['machine_name']}--$tabkey:title", $tab['title']);
+      }
+    }
     drupal_goto('admin/build/quicktabs');
   }
 }
