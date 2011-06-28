@@ -260,9 +260,14 @@ function quicktabs_ajax($type) {
   $args = func_get_args();
   $type = array_shift($args);
   $func = 'quicktabs_ajax_'. $type;
-  $output = call_user_func_array($func, $args);
-  $js_css = quicktabs_ajax_js_css();
-  $response = array('content' => $output, 'js_css' => $js_css);
+  $response = array('content' => '', 'js_css' => array());
+  if (function_exists($func)) {
+    $output = call_user_func_array($func, $args);
+    $js_css = quicktabs_ajax_js_css();
+    $response['content'] = $output;
+    $response['js_css'] = $js_css;
+  }
+
   drupal_json(array('status' => 0, 'data' => $response));
 }
 
