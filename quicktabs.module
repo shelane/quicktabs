@@ -103,14 +103,17 @@ function quicktabs_menu() {
     'type' => MENU_LOCAL_TASK,
     'file' => 'includes/admin.inc',
   );
-  $items['admin/build/quicktabs/%quicktabs/export'] = array(
-    'title' => 'Export',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('quicktabs_export_form', 3),
-    'access arguments' => array('administer quicktabs'),
-    'type' => MENU_LOCAL_TASK,
-    'file' => 'includes/admin.inc',
-  );
+
+  if (module_exists('ctools')) {
+    $items['admin/build/quicktabs/%quicktabs/export'] = array(
+      'title' => 'Export',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('quicktabs_export_form', 3),
+      'access arguments' => array('administer quicktabs'),
+      'type' => MENU_LOCAL_TASK,
+      'file' => 'includes/admin.inc',
+    );
+  }
 
   $items['admin/settings/quicktabs'] = array(
     'title' => 'Quicktabs',
