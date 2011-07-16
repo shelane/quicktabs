@@ -237,6 +237,8 @@ function quicktabs_render($quicktabs) {
       ));
       $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($quicktabs['tabs'][$active_tab]) .'</div>';
     }
+    // We need page preprocessing to populate Drupal.quicktabs.scripts when js aggregation is on.
+    quicktabs_has_rendered_ajax_tab(TRUE);
   }
   else {
     // Render all tabpgages.
@@ -833,4 +835,49 @@ function quicktabs_array_fill_keys($keys, $value){
     $return[$key] = $value;
   }
   return $return;
+}
+
+/**
+ * Tracks if an ajax tab has been rendered for the current request.
+ */
+function quicktabs_has_rendered_ajax_tab($value = NULL){
+  static $ajax = FALSE;
+  if (isset($value)) {
+    $ajax = $value;
+  }
+  return $ajax;
+}
+
+/**
+ * Implementation of hook_preprocess_page().
+ */
+function quicktabs_preprocess_page(&$variables) {
+  // Check if any ajax tab has been rendered.
+  if (quicktabs_has_rendered_ajax_tab()) {
+    // Check if js or css preprocessing is on.
+    $ppjs = variable_get('preprocess_js', FALSE);
+    $ppcss = variable_get('preprocess_css', FALSE);
+    if ($ppjs || $ppcss) {
+      $files = quicktabs_ajax_js_css();
+      $js = '<script type="text/javascript">';
+      $js .= "\n<!--//--><![CDATA[//><!--";
+      $js .= "\nif (Drupal && Drupal.quicktabs) {";
+      // Populate scripts
+      if ($ppjs && !empty($files['js_files'])) {
+        $js .= "\n  Drupal.quicktabs.scripts = " . drupal_to_js(drupal_map_assoc($files['js_files'])) . ';';
+      }
+      // Populate css
+      if ($ppcss && !empty($files['css_files'])) {
+        $css_paths = array();
+        foreach ($files['css_files'] as $entry) {
+          $css_paths[$entry['file']] = $entry['file'];
+        }
+        $js .= "\n  Drupal.quicktabs.css = " . drupal_to_js($css_paths) . ';';
+      }
+      $js .= "\n}";
+      $js .= "\n//--><!]]>";
+      $js .= "\n</script>";
+      $variables['closure'] .= $js;
+    }
+  }
 }
