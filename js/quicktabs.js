@@ -17,8 +17,8 @@ Drupal.quicktabs.prepare = function(el) {
   var i = 0;
   // el.id format: "quicktabs-$qtid"
   var qtid = el.id.substring(el.id.indexOf('-') +1);
-
-  $(el).find('ul.quicktabs_tabs li a').each(function(){
+  var $ul = $(el).find('ul.quicktabs_tabs:first');
+  $ul.find('li a').each(function(){
     this.myTabIndex = i++;
     this.qtid = qtid;
     $(this).unbind('click').bind('click', quicktabsClick);
