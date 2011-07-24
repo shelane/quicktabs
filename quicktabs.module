@@ -187,6 +187,9 @@ function quicktabs_render($quicktabs) {
       if (empty($contents)) {
         $quicktabs['tabs'][$key] = NULL;
       }
+      else {
+        $quicktabs['tabs'][$key]['rendered'] = $contents;
+      }
     }
   }
 
@@ -246,7 +249,8 @@ function quicktabs_render($quicktabs) {
         'id' => 'quicktabs_tabpage_'. $quicktabs['machine_name'] .'_'. $key,
         'class' => 'quicktabs_tabpage'. ($active_tab == $key ? '' : ' quicktabs-hide'),
       ));
-      $output .= '<div'. $attributes .'>'. quicktabs_render_tabpage($tab) .'</div>';
+      $tab_content = isset($tab['rendered']) ? $tab['rendered'] : quicktabs_render_tabpage($tab);
+      $output .= '<div'. $attributes .'>'. $tab_content .'</div>';
     }
   }
 
