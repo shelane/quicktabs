@@ -579,7 +579,7 @@ function quicktabs_render_tabpage($tab, $hide_empty = FALSE) {
  * Helper function to determine active tab from the url.
  */
 function _quicktabs_get_active_tab($quicktabs) {
-  $active_tab = isset($quicktabs['default_tab']) ? $quicktabs['default_tab'] : key($quicktabs['tabs']);
+  $active_tab = isset($quicktabs['default_tab']) && $quicktabs['default_tab'] !== false ? $quicktabs['default_tab'] : key($quicktabs['tabs']);
   $active_tab = isset($_GET['quicktabs_'. $quicktabs['qtid']]) ? $_GET['quicktabs_'. $quicktabs['qtid']] : $active_tab;
   if (isset($active_tab) && isset($quicktabs['tabs'][$active_tab])) {
     return $active_tab;
