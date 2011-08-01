@@ -324,7 +324,7 @@ function quicktabs_ajax($type) {
       list($tabpage['nid'], $tabpage['teaser'], $tabpage['hide_title']) = $args;
       break;
     case 'block':
-      list($tabpage['bid'], $tabpage['hide_title']) = $args;
+      list($tabpage['qt_name'], $tabpage['bid'], $tabpage['hide_title']) = $args;
       break;
     case 'qtabs':
       $tabpage['machine_name'] = $args[0];
@@ -394,6 +394,29 @@ function _quicktabs_build_content_block($tab, $hide_empty = FALSE) {
   $output = array();
   if (isset($tab['bid'])) {
     if (module_exists('block')) {
+      // Ensure the block is assigned to the requested quicktabs block. This test prevents
+      // AJAX access to blocks that have not been added to an AJAX-enabled quicktabs block.
+      // The qt_name key is set only for AJAX requests.
+      if (isset($tab['qt_name'])) {
+        $break = TRUE;
+        $quicktabs = quicktabs_load($tab['qt_name']);
+        // Ensure AJAX is enabled for the quicktabs block.
+        if (!empty($quicktabs) && $quicktabs->ajax == 1) {
+          // Ensure the requested tab has been added to the quicktabs block.
+          foreach ($quicktabs->tabs as $quicktab) {
+            if (isset($quicktab['bid']) && ($quicktab['bid'] == $tab['bid'])) {
+              $break = FALSE;
+              break;
+            }
+          }
+        }
+        if ($break == TRUE) {
+          if (!$hide_empty) {
+            $output['#markup'] = theme('quicktabs_tab_access_denied', $tab);
+          }
+          return $output;
+        }
+      }
       $pos = strpos($tab['bid'], '_delta_');
       $module = drupal_substr($tab['bid'], 0, $pos);
       $delta = drupal_substr($tab['bid'], $pos + 7);
