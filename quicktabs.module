@@ -296,9 +296,10 @@ function quicktabs_ajax_node($nid, $teaser, $hide_title) {
 /**
  * Ajax callback for block tabpage.
  */
-function quicktabs_ajax_block($bid, $hide_title) {
+function quicktabs_ajax_block($qt_name, $bid, $hide_title) {
   $tabpage = array(
     'type' => 'block',
+    'qt_name' => $qt_name,
     'bid' => $bid,
     'hide_title' => $hide_title,
   );
@@ -615,6 +616,29 @@ function quicktabs_render_tabpage($tab, $hide_empty = FALSE) {
 
     case 'block':
       if (isset($tab['bid'])) {
+        // Ensure the block is assigned to the requested quicktabs block. This test prevents
+        // AJAX access to blocks that have not been added to an AJAX-enabled quicktabs block.
+        // The qt_name key is set only for AJAX requests.
+        if (isset($tab['qt_name'])) {
+          $break = TRUE;
+          $quicktabs = quicktabs_load($tab['qt_name']);
+          // Ensure AJAX is enabled for the quicktabs block.
+          if (!empty($quicktabs) && $quicktabs['ajax'] == 1) {
+            // Ensure the requested tab has been added to the quicktabs block.
+            foreach ($quicktabs['tabs'] as $quicktab) {
+              if (isset($quicktab['bid']) && ($quicktab['bid'] == $tab['bid'])) {
+                $break = FALSE;
+                break;
+              }
+            }
+          }
+          if ($break == TRUE) {
+            if (!$hide_empty) {
+              $output = theme('quicktabs_tab_access_denied', $tab);
+            }
+            break;
+          }
+        }
         $pos = strpos($tab['bid'], '_delta_');
         $blockmodule = substr($tab['bid'], 0, $pos);
         $blockdelta = substr($tab['bid'], $pos + 7);
