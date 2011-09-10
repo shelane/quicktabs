@@ -177,6 +177,8 @@ function quicktabs_block($op = 'list', $delta = 0, $edit = array()) {
  * Render quicktabs.
  */
 function quicktabs_render($quicktabs) {
+  // Allow other modules to alter the Quicktabs instance before it gets output.
+  drupal_alter('quicktabs', $quicktabs);
   // convert views arguments to an array, retrieving %-style args from url
   $quicktabs['tabs'] = _quicktabs_prepare_views_args($quicktabs['tabs']);
 
@@ -562,7 +564,6 @@ function _quicktabs_unpack($quicktabs) {
   array_multisort($weight, SORT_ASC, $tabs);
 
   $quicktabs['tabs'] = $tabs;
-  drupal_alter('quicktabs', $quicktabs, $op);
   return $quicktabs;
 }
 
