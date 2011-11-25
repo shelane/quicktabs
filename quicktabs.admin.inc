@@ -157,6 +157,9 @@ function _quicktabs_admin_main_form($form_state, &$qt) {
     $form['machine_name']['#value'] = $qt->machine_name;
   }
 
+  // Get the form element definitions for renderer features.
+  $features = quicktabs_get_renderer_features();
+  $supported_features = array();
   ctools_include('plugins');
   $renderers = ctools_get_plugins('quicktabs', 'renderers');
   $renderer_options = array();
@@ -169,6 +172,10 @@ function _quicktabs_admin_main_form($form_state, &$qt) {
       // PHP 5.2 doesn't support $class::staticMethod() syntax, so we have to
       // use call_user_func_array() until PHP 5.3 is required.
       $renderer_form_options[$name] = call_user_func_array(array($class, 'optionsForm'), array($qt));
+      // Keep track of which features (e.g. ajax, history) this renderer supports
+      foreach (array_keys($features) as $feature_name) {
+        $supported_features[$feature_name][$name] = call_user_func_array(array($class, 'supportsFeature'), array($feature_name));
+      }
     }
   }
   ksort($renderer_options);
@@ -189,44 +196,15 @@ function _quicktabs_admin_main_form($form_state, &$qt) {
     }
     $form['options'][$renderer] = $options;
   }
-  
-  $styles = module_invoke_all('quicktabs_tabstyles');
-  if (count($styles)) {
-    $style_options = array();
-    // The keys used for options must be valid html IDs.
-    foreach ($styles as $style) {
-      $style_options[$style] = $style;
-    }
-    ksort($style_options);
-    $form['style'] = array(
-      '#type' => 'select',
-      '#title' => t('Style'),
-      '#options' => array('nostyle' => t('No style')) + array('default' => t('Default style')) + $style_options,
-      '#default_value' => isset($qt->style) ? $qt->style : 'default',
-      '#description' => t('Choose the quicktab style.'),
-      '#states' => array('visible' => array(':input[name="renderer"]' => array('value' => 'quicktabs'))),
-      '#weight' => -6,
-    );
-  }
-  else {
-    $form['style'] = array(
-      '#type' => 'value',
-      '#value' => 'nostyle',
-    );
-  }
 
-  $form['ajax'] = array(
-    '#type' => 'radios',
-    '#title' => t('Ajax'),
-    '#options' => array(
-      TRUE => t('Yes') . ': ' . t('Load only the first tab on page view'),
-      FALSE => t('No') . ': ' . t('Load all tabs on page view.'),
-    ),
-    '#default_value' => isset($qt->ajax) ? $qt->ajax : 0,
-    '#description' => t('Choose how the content of tabs should be loaded.<p>By choosing "Yes", only the first tab will be loaded when the page first viewed. Content for other tabs will be loaded only when the user clicks the other tab. This will provide faster initial page loading, but subsequent tab clicks will be slower. This can place less load on a server.</p><p>By choosing "No", all tabs will be loaded when the page is first viewed. This will provide slower initial page loading, and more server load, but subsequent tab clicks will be faster for the user. Use with care if you have heavy views.</p><p>Warning: if you enable Ajax, any block you add to this quicktabs block will be accessible to anonymous users, even if you place role restrictions on the quicktabs block. Do not enable Ajax if the quicktabs block includes any blocks with potentially sensitive information.</p>'),
-    '#states' => array('visible' => array(':input[name="renderer"]' => array('value' => 'quicktabs'))),
-    '#weight' => -5,
-  );
+  // Add the form elements for the renderer features, shown according to whether
+  // the chosen renderer supports that feature.
+  $form['options']['supported_features'] = array();
+  foreach ($features as $name => $feature) {
+    $form_element = $feature['form_element'];
+    $form_element['#default_value'] = isset($qt->options[$name]) ? $qt->options[$name] : $form_element['#default_value'];
+    $form['options']['supported_features'][$name] = $form_element;
+  }
 
   $form['hide_empty_tabs'] = array(
     '#type' => 'checkbox',

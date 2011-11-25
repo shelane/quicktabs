@@ -6,6 +6,26 @@
  */
 class QuickQuicktabs extends QuickRenderer {
 
+  public static function optionsForm($qt) {
+    $form = array();
+    $form['history'] = array(
+      '#type' => 'checkbox',
+      '#title' => 'History',
+      '#description' => t('Store tab state in the URL allowing for browser back / forward and bookmarks.'),
+      '#default_value' => (isset($qt->renderer) && $qt->renderer == 'ui_tabs' && isset($qt->options['history']) && $qt->options['history']),
+    );
+    return $form;
+  }
+
+  public static function supportsFeature($feature) {
+    $features = drupal_map_assoc(array(
+      'ajax',
+      'history',
+      'style',
+    ));
+    return isset($features[$feature]);
+  }
+
   public function render() {
     $quickset = $this->quickset;
 
@@ -94,20 +114,28 @@ class QuickQuicktabs extends QuickRenderer {
    * Add any necessary js, css and libraries for the render array.
    */
   protected function add_attached() {
+    $settings = $this->quickset->getSettings();
+    $options = $settings['options'];
+
     $attached = array(
       'css' => array(
         array('data' => drupal_get_path('module', 'quicktabs') .'/css/quicktabs.css'),
       ),
       'js' => array(
-        array('data' => drupal_get_path('module', 'quicktabs') . '/js/quicktabs.js'),
+        array('data' => drupal_get_path('module', 'quicktabs') . '/js/quicktabs.js', 'weight' => JS_DEFAULT + 1),
         array('data' => 'misc/progress.js', 'weight' => JS_LIBRARY),
       ),
     );
-    $settings = $this->quickset->getSettings();
+
     // Add the custom style css if a custom style has been set.
     $style_css = quicktabs_get_css($settings['style']);
     if (!empty($style_css)) {
       $attached['css'][] = $style_css;
+    }
+
+    if ($options['history']) {
+      $attached['library'][] = array('system', 'jquery.bbq');
+      $attached['js'][] = array('data' => drupal_get_path('module', 'quicktabs') . '/js/quicktabs_bbq.js', 'weight' => JS_DEFAULT);
     }
     // Prepare a tab_settings array for passing the tab info to our JavaScript.
     $tab_settings = array();

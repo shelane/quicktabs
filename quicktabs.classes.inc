@@ -295,6 +295,25 @@ abstract class QuickRenderer {
     return array();
   }
   
+  /**
+   * Method for declaring whether the renderer plugin supports a given feature.
+   *
+   * There are three features provided by Quicktabs itself:
+   * - ajax (allows tab content to be loaded via ajax)
+   * - style (allows the use of the tabstyles module for custom styles)
+   * - history (integration with the jquery bbq plugin for history support)
+   *
+   * @param string $feature
+   *   The name of the optional feature.
+   *
+   * @return boolean
+   *   TRUE if this renderer knows and supports the specified feature. FALSE
+   *   otherwise.
+   */
+  public static function supportsFeature($feature) {
+    return FALSE;
+  }
+  
 }
 
 /*******************************************************

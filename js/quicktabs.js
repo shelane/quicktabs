@@ -20,6 +20,10 @@ Drupal.behaviors.quicktabs = {
 Drupal.quicktabs.prepare = function(el) {
   // el.id format: "quicktabs-$name"
   var qt_name = Drupal.quicktabs.getQTName(el);
+  var options = {};
+  if (Drupal.settings.quicktabs['qt_' + qt_name].options.history) {
+    options.event = 'change';
+  }
   var $ul = $(el).find('ul.quicktabs-tabs:first');
   $ul.find('li a').each(function(i, element){
     element.myTabIndex = i;
@@ -29,8 +33,10 @@ Drupal.quicktabs.prepare = function(el) {
     if ($(parent_li).hasClass('active')) {
       $(element).addClass('quicktabs-loaded');
     }
-    $(element).once(function() {$(this).bind('click', {tab: tab}, Drupal.quicktabs.clickHandler);});
+    var event = options.event || 'click';
+    $(element).once(function() {$(this).bind(event, {tab: tab}, Drupal.quicktabs.clickHandler);});
   });
+  Drupal.quicktabsBbq($(el), 'ul.quicktabs-tabs li a');
 }
 
 Drupal.quicktabs.clickHandler = function(event) {
