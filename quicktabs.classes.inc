@@ -114,9 +114,9 @@ class QuickSet {
   private static function getDefaultSettings() {
     return array(
       'title' => '<none>',
-      'style' => 'nostyle',
+      //'style' => 'nostyle',
       'hide_empty_tabs' => 0,
-      'ajax' => 0,
+      //'ajax' => 0,
       'default_tab' => 0,
       'options' => array(),
     );
@@ -139,8 +139,8 @@ class QuickSet {
 
     $this->prepareContents();
     // Set the default style if necessary.
-    if ($this->settings['style'] == 'default') {
-      $this->settings['style'] = variable_get('quicktabs_tabstyle', 'nostyle');
+    if ($this->settings['options']['style'] == 'default') {
+      $this->settings['options']['style'] = variable_get('quicktabs_tabstyle', 'nostyle');
     }
   }
 
@@ -183,7 +183,7 @@ class QuickSet {
     if (!count($this->contents))  {
       throw new InvalidQuickSetException('There are no contents to render.');
     }
-    if ($this->settings['hide_empty_tabs'] && !$this->settings['ajax']) {
+    if ($this->settings['hide_empty_tabs'] && !$this->settings['options']['ajax']) {
       // Check if any tabs need to be hidden because of empty content.
       $renderable_contents = 0;
       foreach ($this->contents as $key => $tab) {
@@ -206,7 +206,7 @@ class QuickSet {
         throw new InvalidQuickSetException('There are no contents to render.');
       }
     }
-    elseif ($this->settings['ajax']) {
+    elseif ($this->settings['options']['ajax']) {
       // Make sure that there is at most 1 prerendered tab and it is the default tab.
       // Prerendered content cannot be rendered via ajax.
       $has_prerendered = FALSE; // keep track of whether we have found a prerendered tab.
@@ -220,14 +220,14 @@ class QuickSet {
             // will be overridden, so we need to make sure it does not attempt
             // to load a pre-rendered tab via ajax. Turn ajax option off.
             if ($this->getActiveTab() !== $key) {
-              $this->settings['ajax'] = 0;
+              $this->settings['options']['ajax'] = 0;
             }
           }
           else {
             // We are on a second custom tab and the ajax option is set, we cannot
             // render custom tabs via ajax, so we skip out of the loop, set the
             // ajax option to off, and call the method again.
-            $this->settings['ajax'] = 0;
+            $this->settings['options']['ajax'] = 0;
             $this->prepareContents();
             return;
           }

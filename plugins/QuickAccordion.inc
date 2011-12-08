@@ -89,6 +89,9 @@ class QuickAccordion extends QuickRenderer {
 
     $name = $this->quickset->getName();
     if (!isset($qtkey) || !array_key_exists('qt_' . $name, $javascript['settings']['data'][$qtkey]['quicktabs'])) {
+      if (!isset($options['jquery_ui'])) {
+        $options['jquery_ui'] = array();
+      }
       $quicktabs_array = array('name' => $name, 'active_tab' => $this->quickset->getActiveTab(), 'options' => $options['jquery_ui'], 'history' => $options['history']);
       $attached['js'][] = array('data' => array('quicktabs' => array('qt_'. $name => $quicktabs_array)), 'type' => 'setting');
     }

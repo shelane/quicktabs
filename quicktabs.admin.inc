@@ -157,54 +157,63 @@ function _quicktabs_admin_main_form($form_state, &$qt) {
     $form['machine_name']['#value'] = $qt->machine_name;
   }
 
-  // Get the form element definitions for renderer features.
-  $features = quicktabs_get_renderer_features();
-  $supported_features = array();
   ctools_include('plugins');
   $renderers = ctools_get_plugins('quicktabs', 'renderers');
   $renderer_options = array();
   foreach ($renderers as $name => $info) {
-    if ($class = ctools_plugin_load_class('quicktabs', 'renderers', $name, 'handler')) {
-      // Add the renderer to the dropdown list of renderers
-      $renderer_options[$name] = $name;
-      // Get the renderer's options form elements
-      
-      // PHP 5.2 doesn't support $class::staticMethod() syntax, so we have to
-      // use call_user_func_array() until PHP 5.3 is required.
-      $renderer_form_options[$name] = call_user_func_array(array($class, 'optionsForm'), array($qt));
-      // Keep track of which features (e.g. ajax, history) this renderer supports
-      foreach (array_keys($features) as $feature_name) {
-        $supported_features[$feature_name][$name] = call_user_func_array(array($class, 'supportsFeature'), array($feature_name));
-      }
-    }
+    // Add the renderer to the dropdown list of renderers
+    $renderer_options[$name] = $name;
   }
   ksort($renderer_options);
+
+  $selected_renderer = isset($qt->renderer) ? $qt->renderer : 'quicktabs';
   $form['renderer'] = array(
     '#type' => 'select',
     '#title' => t('Renderer'),
     '#options' => $renderer_options,
-    '#default_value' => isset($qt->renderer) ? $qt->renderer : 'quicktabs',
+    '#default_value' => $selected_renderer,
     '#description' => t('Choose how to render the content.'),
     '#weight' => -7,
+    '#ajax' => array(
+      'event' => 'change',
+      'callback' => 'quicktabs_renderer_dropdown_callback',
+      'wrapper' => 'options-replace',
+    ),
   );
+
+  // Get the form element definitions for renderer features.
+  $features = quicktabs_get_renderer_features();
+  $supported_features = array();
+
   // Add the renderer options form elements to the form, to be shown only if the
-  // renderer in question is selected.
-  $form['options'] = array('#tree' => TRUE, '#weight' => -6);
-  foreach ($renderer_form_options as $renderer => $options) {
-    foreach ($options as &$option) {
-      $option['#states'] = array('visible' => array(':input[name="renderer"]' => array('value' => $renderer)));
+  // renderer in question is selected. Unfortunately we can't use states for this
+  // because of http://drupal.org/node/735528, i.e. in some cases we want to show
+  // a particular element if the value of another element is 'foo' OR 'bar'.
+  $form['options'] = array(
+    '#tree' => TRUE,
+    '#weight' => -6,
+    '#prefix' => '<div id="options-replace">',
+    '#suffix' => '</div>',
+  );
+
+  if ($class = ctools_plugin_load_class('quicktabs', 'renderers', $selected_renderer, 'handler')) {
+    // Keep track of which features (e.g. ajax, history) this renderer supports
+    foreach (array_keys($features) as $feature_name) {
+      $supported_features[$feature_name] = call_user_func_array(array($class, 'supportsFeature'), array($feature_name));
     }
-    $form['options'][$renderer] = $options;
+    // Get the renderer-specific options form elements
+    $renderer_form_options = call_user_func_array(array($class, 'optionsForm'), array($qt));
   }
 
-  // Add the form elements for the renderer features, shown according to whether
-  // the chosen renderer supports that feature.
-  $form['options']['supported_features'] = array();
-  foreach ($features as $name => $feature) {
-    $form_element = $feature['form_element'];
-    $form_element['#default_value'] = isset($qt->options[$name]) ? $qt->options[$name] : $form_element['#default_value'];
-    $form['options']['supported_features'][$name] = $form_element;
+  // Add the form elements for supported features.
+  foreach (array_filter($supported_features) as $feature_name => $supported) {
+    $form_element = $features[$feature_name]['form_element'];
+    $form_element['#default_value'] = isset($qt->options[$feature_name]) ? $qt->options[$feature_name] : $form_element['#default_value'];
+    $form['options'][$feature_name] = $form_element;
   }
+
+  // Add renderer-specific options.
+  $form['options'] += $renderer_form_options;
 
   $form['hide_empty_tabs'] = array(
     '#type' => 'checkbox',
@@ -391,8 +400,14 @@ function theme_quicktabs_admin_form_tabs($variables) {
  * Ajax callback for the add tab and remove tab buttons.
  */
 function quicktabs_ajax_callback($form, $form_state) {
-  $form_tabs = $form['qt_wrapper']['tabs'];
-  return $form_tabs;
+  return $form['qt_wrapper']['tabs'];
+}
+
+/**
+ * Ajax callback for the renderer dropdown.
+ */
+function quicktabs_renderer_dropdown_callback($form, $form_state) {
+  return $form['options'];
 }
 
 /**
@@ -620,13 +635,13 @@ function _quicktabs_convert_form_to_quicktabs($form_state) {
   $renderer = $form_state['values']['renderer'];
   $qt = new stdClass();
   $qt->title = $form_state['values']['title'];
-  $qt->ajax = $form_state['values']['ajax'];
   $qt->default_tab = isset($form_state['values']['default_tab']) ? $form_state['values']['default_tab'] : 0;
   $qt->hide_empty_tabs = $form_state['values']['hide_empty_tabs'];
   $qt->renderer = $renderer;
-  $qt->style = $form_state['values']['style'];
+  $qt->ajax = 0;
+  $qt->style = 'nostyle';
   $qt->tabs = $formvalues_tabs;
-  $qt->options = isset($form_state['values']['options'][$renderer]) ? $form_state['values']['options'][$renderer] : array();
+  $qt->options = isset($form_state['values']['options']) ? $form_state['values']['options'] : array();
 
   if (isset($form_state['values']['machine_name'])) {
     $qt->machine_name = $form_state['values']['machine_name'];

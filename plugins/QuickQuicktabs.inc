@@ -12,7 +12,7 @@ class QuickQuicktabs extends QuickRenderer {
       '#type' => 'checkbox',
       '#title' => 'History',
       '#description' => t('Store tab state in the URL allowing for browser back / forward and bookmarks.'),
-      '#default_value' => (isset($qt->renderer) && $qt->renderer == 'ui_tabs' && isset($qt->options['history']) && $qt->options['history']),
+      '#default_value' => (isset($qt->renderer) && isset($qt->options['history']) && $qt->options['history']),
     );
     return $form;
   }
@@ -43,19 +43,19 @@ class QuickQuicktabs extends QuickRenderer {
         '#theme' => 'qt_quicktabs',
         '#options' => array('attributes' => array(
           'id' => 'quicktabs-' . $qt_name,
-          'class' => 'quicktabs-wrapper quicktabs-style-' . drupal_html_class($settings['style']),
+          'class' => 'quicktabs-wrapper quicktabs-style-' . drupal_html_class($settings['options']['style']),
         )),
-        'tabs' => array('#theme' => 'qt_quicktabs_tabset', '#options' => array('active' => $active_tab, 'style' => drupal_html_class($settings['style'])), 'tablinks' => $tabs),
+        'tabs' => array('#theme' => 'qt_quicktabs_tabset', '#options' => array('active' => $active_tab, 'style' => drupal_html_class($settings['options']['style'])), 'tablinks' => $tabs),
         // The main content area, each quicktab container needs a unique id.
         'container' => array(
-          '#prefix' => '<div id="quicktabs-container-' . $qt_name .'" class="quicktabs_main quicktabs-style-' . drupal_html_class($settings['style']) .'">',
+          '#prefix' => '<div id="quicktabs-container-' . $qt_name .'" class="quicktabs_main quicktabs-style-' . drupal_html_class($settings['options']['style']) .'">',
           '#suffix' => '</div>',
           'divs' => array(),
         ),
       );
 
       // If in ajax mode, we'll only be rendering one tab, otherwise all of them.
-      $tabs_to_render = $settings['ajax'] ? array($active_tab => $contents[$active_tab]) : $contents;
+      $tabs_to_render = $settings['options']['ajax'] ? array($active_tab => $contents[$active_tab]) : $contents;
       foreach ($tabs_to_render as $key => $tab) {
         if (!empty($tab)) {
           $attribs = array(
@@ -90,7 +90,7 @@ class QuickQuicktabs extends QuickRenderer {
           '#href' =>  $_GET['q'],
           '#options' => $this->construct_link_options($i),
         );
-        if ($settings['ajax']) {
+        if ($settings['options']['ajax']) {
           $tab_settings = $tab->getSettings();
           $ajax_keys = $tab->getAjaxKeys();
           $ajax_args = array();
@@ -115,7 +115,6 @@ class QuickQuicktabs extends QuickRenderer {
    */
   protected function add_attached() {
     $settings = $this->quickset->getSettings();
-    $options = $settings['options'];
 
     $attached = array(
       'css' => array(
@@ -128,12 +127,12 @@ class QuickQuicktabs extends QuickRenderer {
     );
 
     // Add the custom style css if a custom style has been set.
-    $style_css = quicktabs_get_css($settings['style']);
+    $style_css = quicktabs_get_css($settings['options']['style']);
     if (!empty($style_css)) {
       $attached['css'][] = $style_css;
     }
 
-    if ($options['history']) {
+    if ($settings['options']['history']) {
       $attached['library'][] = array('system', 'jquery.bbq');
       $attached['js'][] = array('data' => drupal_get_path('module', 'quicktabs') . '/js/quicktabs_bbq.js', 'weight' => JS_DEFAULT);
     }
@@ -146,8 +145,8 @@ class QuickQuicktabs extends QuickRenderer {
     }
     // Add our JS settings
     $javascript = drupal_add_js();
-    foreach ($javascript['settings']['data'] as $key => $settings) {
-      if (key($settings) == 'quicktabs') {
+    foreach ($javascript['settings']['data'] as $key => $setting) {
+      if (key($setting) == 'quicktabs') {
         $qtkey = $key;
         break;
       }
