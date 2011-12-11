@@ -260,7 +260,7 @@ function _quicktabs_form($details, $quicktabs) {
       '#default_value' => $selected_view,
       '#title' => t('Select a view'),
       '#ahah' => array(
-        'path' => 'quicktabs/ahah/',
+        'path' => 'quicktabs/ahah',
         'wrapper' => 'quicktabs-tabs',
         'method' => 'replace',
         'event' => 'change',
