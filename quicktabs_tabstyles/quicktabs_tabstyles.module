@@ -47,7 +47,7 @@ function quicktabs_tabstyles_styles() {
     '#attributes' => array('class' => array('quicktabs-tabstyles', 'clear-block')),
     '#theme' => 'quicktabs_style_options',
   );
-  
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
@@ -78,12 +78,12 @@ function theme_quicktabs_style_options($variables) {
     array('title' => t('Three'), 'contents' => array('#markup' => t('Third tab')), 'weight' => 2)
   );
 
-  $options = array('renderer' => 'quicktabs', 'hide_empty_tabs' => 0, 'ajax' => 0);
+  $settings = array('renderer' => 'quicktabs', 'hide_empty_tabs' => 0, 'options' => array('ajax' => 0));
   // Preview for each style.
   foreach (element_children($style_element) as $style) {
     $element = $style_element[$style];
-    $options['style'] = $style;
-    $quicktabs = quicktabs_build_quicktabs(drupal_strtolower($style), $options, $tabs);
+    $settings['options']['style'] = $style;
+    $quicktabs = quicktabs_build_quicktabs(drupal_strtolower($style), $settings, $tabs);
     $preview = '<div class="quicktabs-preview">'. drupal_render($quicktabs['content']) .'</div>';
     $element['#description'] = t('%style preview', array('%style' => $element['#title'])) .':<br />'. $preview;
     $markup .= drupal_render($element);

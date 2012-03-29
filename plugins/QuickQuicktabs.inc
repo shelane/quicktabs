@@ -132,7 +132,7 @@ class QuickQuicktabs extends QuickRenderer {
       $attached['css'][] = $style_css;
     }
 
-    if ($settings['options']['history']) {
+    if (isset($settings['options']['history']) && $settings['options']['history']) {
       $attached['library'][] = array('system', 'jquery.bbq');
       $attached['js'][] = array('data' => drupal_get_path('module', 'quicktabs') . '/js/quicktabs_bbq.js', 'weight' => JS_DEFAULT);
     }

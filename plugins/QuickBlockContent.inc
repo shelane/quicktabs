@@ -5,7 +5,7 @@
  * content.
  */
 class QuickBlockContent extends QuickContent {
-  
+
   public static function getType() {
     return 'block';
   }
@@ -43,7 +43,7 @@ class QuickBlockContent extends QuickContent {
       $break = TRUE;
       $quicktabs = quicktabs_load($qt_name);
       // Ensure AJAX is enabled for the quicktabs block.
-      if (!empty($quicktabs) && $quicktabs->ajax == 1) {
+      if (!empty($quicktabs) && $quicktabs->options['ajax'] == 1) {
         // Ensure the requested tab has been added to the quicktabs block.
         foreach ($quicktabs->tabs as $quicktab) {
           if (isset($quicktab['bid']) && ($quicktab['bid'] == $item['bid'])) {
@@ -65,10 +65,10 @@ class QuickBlockContent extends QuickContent {
         $pos = strpos($item['bid'], '_delta_');
         $module = drupal_substr($item['bid'], 0, $pos);
         $delta = drupal_substr($item['bid'], $pos + 7);
-  
+
         $block = block_load($module, $delta);
         $block->region = 'quicktabs_tabpage';
-  
+
         if ($block_arr = _block_render_blocks(array($block))) {
           if ($item['hide_title']) {
             $block_arr["{$block->module}_{$block->delta}"]->subject = FALSE;

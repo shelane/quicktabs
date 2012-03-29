@@ -21,8 +21,10 @@ Drupal.quicktabs.prepare = function(el) {
   // el.id format: "quicktabs-$name"
   var qt_name = Drupal.quicktabs.getQTName(el);
   var options = {};
+  var bbq = false;
   if (Drupal.settings.quicktabs['qt_' + qt_name].options.history) {
     options.event = 'change';
+    bbq = true;
   }
   var $ul = $(el).find('ul.quicktabs-tabs:first');
   $ul.find('li a').each(function(i, element){
@@ -36,7 +38,9 @@ Drupal.quicktabs.prepare = function(el) {
     var event = options.event || 'click';
     $(element).once(function() {$(this).bind(event, {tab: tab}, Drupal.quicktabs.clickHandler);});
   });
-  Drupal.quicktabsBbq($(el), 'ul.quicktabs-tabs li a');
+  if (bbq) {
+    Drupal.quicktabsBbq($(el), 'ul.quicktabs-tabs li a');
+  }
 }
 
 Drupal.quicktabs.clickHandler = function(event) {

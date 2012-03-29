@@ -88,7 +88,7 @@ function quicktabs_form($form, $form_state, $formtype, $qt = NULL) {
     $qt->tabs[] = array();
   }
   $form_state['num_tabs'] = count($qt->tabs);
-  
+
   // If the "Remove" button was clicked for a tab, we need to remove that tab
   // from the form.
   if (isset($form_state['to_remove'])) {
@@ -130,7 +130,7 @@ function _quicktabs_admin_main_form($form_state, &$qt) {
   if (isset($form_state['values']['title'])) {
     $qt = _quicktabs_convert_form_to_quicktabs($form_state);
   }
-  
+
   $form['title'] = array(
     '#title' => t('Title'),
     '#description' => t('This will appear as the block title.'),
@@ -139,7 +139,7 @@ function _quicktabs_admin_main_form($form_state, &$qt) {
     '#weight' => -9,
     '#required' => TRUE,
   );
-  
+
   $form['machine_name'] = array(
     '#type' => 'machine_name',
     '#maxlength' => 32,
@@ -265,13 +265,13 @@ function _quicktabs_admin_main_form($form_state, &$qt) {
 
 /*
  * Build one row (one tabpage) on the QT admin form.
- * 
+ *
  * @param array $tab
  *  An array containing the details of this particular tabpage.
- * 
+ *
  * @param object $qt
  *  An object representing the Quicktabs instance that the tabs are
- *  being built for. 
+ *  being built for.
  */
 function _quicktabs_form(array $tab, $qt) {
   $form['#tree'] = TRUE;
@@ -638,8 +638,6 @@ function _quicktabs_convert_form_to_quicktabs($form_state) {
   $qt->default_tab = isset($form_state['values']['default_tab']) ? $form_state['values']['default_tab'] : 0;
   $qt->hide_empty_tabs = $form_state['values']['hide_empty_tabs'];
   $qt->renderer = $renderer;
-  $qt->ajax = 0;
-  $qt->style = 'nostyle';
   $qt->tabs = $formvalues_tabs;
   $qt->options = isset($form_state['values']['options']) ? $form_state['values']['options'] : array();
 

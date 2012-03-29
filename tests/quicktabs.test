@@ -42,7 +42,6 @@ class QuicktabsAdminTestCase extends DrupalWebTestCase {
     $edit = array(
       'machine_name' => strtolower($this->randomName()),
       'title' => $this->randomName(),
-      'ajax' => 0,
       'hide_empty_tabs' => FALSE,
       'renderer' => 'quicktabs',
     );
@@ -87,7 +86,6 @@ class QuicktabsAdminTestCase extends DrupalWebTestCase {
     // Edit the Quicktabs instance through the UI.
     $edit = array(
       'title' => $this->randomName(),
-      'ajax' => 1,
       'hide_empty_tabs' => TRUE,
       'renderer' => 'ui_tabs',
       'default_tab' => 1,
