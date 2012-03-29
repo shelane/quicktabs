@@ -30,13 +30,6 @@ function quicktabs_schema() {
         'length' => 255,
         'not null' => TRUE,
       ),
-      'ajax' => array(
-        'description' => 'Whether this is an ajax views block.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-      ),
       'hide_empty_tabs' => array(
         'description' => 'Whether this tabset hides empty tabs.',
         'type' => 'int',
@@ -71,12 +64,6 @@ function quicktabs_schema() {
         'length' => 255,
         'not null' => TRUE,
       ),
-      'style' => array(
-        'description' => 'The tab style.',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-      ),
       'options' => array(
         'description' => 'A serialized array of the options for this qt instance.',
         'type' => 'text',
@@ -102,7 +89,7 @@ function quicktabs_update_7300() {
     if (!db_query("DELETE FROM {quicktabs}")) {
       throw new DrupalUpdateException(t('Could not complete the update.'));
     }
-  
+
     db_drop_field('quicktabs', 'qtid');
     $name_field = array(
       'description' => 'The primary identifier for a qt block.',
@@ -112,7 +99,7 @@ function quicktabs_update_7300() {
     );
     db_add_field('quicktabs', 'machine_name', $name_field);
     db_add_primary_key('quicktabs', array('machine_name'));
-  
+
     $output = $used = array();
     foreach ($result as $qt) {
       $row = (array)$qt;
@@ -134,7 +121,7 @@ function quicktabs_update_7300() {
       }
       $tokens = implode(', ', array_keys($values));
       db_query("INSERT INTO {quicktabs} ($placeholders) VALUES($tokens)", $values);
-  
+
       $output[] = "Converted quicktab {$row['machine_name']}.";
     }
   }
@@ -150,7 +137,7 @@ function quicktabs_update_7300() {
   db_add_field('quicktabs', 'renderer', $renderer_field);
   $output[] = "Added the renderer field";
 
-  
+
   return implode('<br />', $output);
 }
 
@@ -174,4 +161,31 @@ function quicktabs_update_7301() {
  */
 function quicktabs_update_7302() {
   registry_rebuild();
+}
+
+/**
+ * Refactor the options storage so that 'ajax' and 'style' are just options
+ * rather than having dedicated fields in the db table.
+ */
+function quicktabs_update_7303() {
+  // Grab the ajax and style settings for all existing Quicktabs instances and
+  // add them to the serialized options array in each case.
+  $result = db_query("SELECT machine_name, ajax, style, options FROM {quicktabs}");
+  db_drop_field('quicktabs', 'ajax');
+  db_drop_field('quicktabs', 'style');
+  $output[] = "Dropped 'ajax' and 'style' columns from the Quicktabs db table.";
+  foreach ($result as $qt) {
+    $row = (array)$qt;
+    $options = unserialize($row['options']);
+    $options['ajax'] = $row['ajax'];
+    $options['style'] = $row['style'];
+    db_update('quicktabs')
+      ->condition('machine_name', $row['machine_name'])
+      ->fields(array('options' => serialize($options)))
+      ->execute();
+
+    $output[] = "Updated quicktabs instance {$row['machine_name']}.";
+  }
+
+  return implode('<br />', $output);
 }
