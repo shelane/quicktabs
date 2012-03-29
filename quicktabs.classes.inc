@@ -116,7 +116,7 @@ class QuickSet {
       'title' => '<none>',
       'hide_empty_tabs' => 0,
       'default_tab' => 0,
-      'options' => array(),
+      'options' => array('ajax' => 0, 'style' => 'nostyle', 'history' => 0),
     );
   }
 
@@ -133,8 +133,10 @@ class QuickSet {
       }
     }
     $default_settings = self::getDefaultSettings();
+    // array_merge_recursive won't help us here :-/
+    $options = $default_settings['options'];
     $this->settings = array_merge($default_settings, $settings);
-
+    $this->settings['options'] = array_merge($options, $this->settings['options']);
     $this->prepareContents();
     // Set the default style if necessary.
     if ($this->settings['options']['style'] == 'default') {
