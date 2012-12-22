@@ -495,6 +495,9 @@ function theme_quicktabs_tab_access_denied($variables) {
   return t('You are not authorized to access this content.');
 }
 
+/**
+ * Returns an array of available tab styles for use in the style dropdown.
+ */
 function quicktabs_get_style_options() {
   $styles = module_invoke_all('quicktabs_tabstyles');
   $style_options = array();
@@ -546,7 +549,7 @@ function _quicktabs_get_style_css($style) {
 /**
  * Helper function to get the definitions of renderer features.
  *
- * TODO: make this hookable.
+ * @todo Make this hookable.
  */
 function quicktabs_get_renderer_features() {
   return array(
