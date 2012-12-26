@@ -576,7 +576,15 @@ function quicktabs_get_renderer_features() {
         '#states' => array('visible' => array(':input[name="renderer"]' => array('value' => 'quicktabs'))),
         '#weight' => -6,
       )
-    )
+    ),
+    'history' => array(
+      'form_element' => array(
+        '#type' => 'checkbox',
+        '#title' => 'History',
+        '#description' => t('Store tab state in the URL allowing for browser back / forward and bookmarks.'),
+        '#default_value' => 0,
+      ),
+    ),
   );
 }
 

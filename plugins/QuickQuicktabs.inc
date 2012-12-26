@@ -6,17 +6,9 @@
  */
 class QuickQuicktabs extends QuickRenderer {
 
-  public static function optionsForm($qt) {
-    $form = array();
-    $form['history'] = array(
-      '#type' => 'checkbox',
-      '#title' => 'History',
-      '#description' => t('Store tab state in the URL allowing for browser back / forward and bookmarks.'),
-      '#default_value' => (isset($qt->renderer) && isset($qt->options['history']) && $qt->options['history']),
-    );
-    return $form;
-  }
-
+  /**
+   * Overrides QuickRenderer::supportsFeature().
+   */
   public static function supportsFeature($feature) {
     $features = drupal_map_assoc(array(
       'ajax',
@@ -26,6 +18,9 @@ class QuickQuicktabs extends QuickRenderer {
     return isset($features[$feature]);
   }
 
+  /**
+   * Implements QuickRenderer::render().
+   */
   public function render() {
     $quickset = $this->quickset;
 
