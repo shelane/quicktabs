@@ -151,7 +151,7 @@ function quicktabs_clone($quicktab) {
 /**
  * Build the quicktab creation and edit form.
  */
-function quicktabs_form($form, $form_state, $formtype, $quicktab = NULL) {
+function quicktabs_form($form, &$form_state, $formtype, $quicktab = NULL) {
   if (!isset($quicktab)) {
     $quicktab = new stdClass;
   }
