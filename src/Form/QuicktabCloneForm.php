@@ -31,6 +31,12 @@ class QuicktabCloneForm extends EntityForm {
      * @var \Drupal\quicktabs\Entity\QuickSet $entity
      */
     $entity = $this->entity;
+
+    /**
+     * @var \Drupal\quicktabs\Entity\QuickSet $entity2
+     */
+    $entity2;
+
     $form['title'] = array(
         '#title' => $this->t('Title'),
         '#description' => $this->t('This will appear as the block title.'),
@@ -185,14 +191,15 @@ class QuicktabCloneForm extends EntityForm {
     $renderer = $form_state->getValue('renderer');
     $ajax = $form_state->getValue('ajax');
     $hide_empty_tabs = $form_state->getValue('hide_empty_tabs');
-    $entity = $this->entity;
-    $entity->set('title',$title);
-    $entity->set('id',$id);
-    $entity->set('renderer',$renderer);
-    $entity->set('ajax',$ajax);
-    $entity->set('hide_empty_tabs',$hide_empty_tabs);
-    $status = $entity->save();
-    if($status==SAVED_UPDATED) {
+
+    $this->entity = $this->entity->createDuplicate();
+    $this->entity->set('title',$title);
+    $this->entity->set('id',$id);
+    $this->entity->set('renderer',$renderer);
+    $this->entity->set('ajax',$ajax);
+    $this->entity->set('hide_empty_tabs',$hide_empty_tabs);
+    $status = $this->entity->save();
+    if($status==SAVED_NEW) {
       $form_state->setRedirect('quicktabs.list_tabs');
       drupal_set_message($this->t('Settings have been updated!'));
     }
