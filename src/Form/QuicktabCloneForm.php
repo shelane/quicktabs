@@ -201,7 +201,7 @@ class QuicktabCloneForm extends EntityForm {
     $status = $this->entity->save();
     if($status==SAVED_NEW) {
       $form_state->setRedirect('quicktabs.list_tabs');
-      drupal_set_message($this->t('Settings have been updated!'));
+      drupal_set_message($this->t('Settings have been copied to new quicktabs!'));
     }
   }
 
