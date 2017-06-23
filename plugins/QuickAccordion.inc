@@ -63,8 +63,11 @@ class QuickAccordion extends QuickRenderer {
    */
   protected function add_attached() {
     $settings = $this->quickset->getSettings();
+    // Setting heightStyle option so accordions don't auto height with newer versions of jQuery UI
+    if (!isset($settings['options']['jquery_ui']['autoheight'])) {
+      $settings['options']['jquery_ui']['heightStyle'] = 'content';
+    }
     $options = $settings['options'];
-
     $attached = array(
       'library' => array(
         array('system', 'ui.accordion'),
