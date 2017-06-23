@@ -63,8 +63,13 @@ class QuickUiTabs extends QuickRenderer {
 	// If we use l() here or a render array of type 'link', the '#' symbol will
 	// be escaped. Sad panda is sad.
 	$href = '#qt-'. $qt_name .'-ui-tabs' . ($i+1);
+        $quickset = $this->quickset;
+        $attributes = array();
+        $attributes['class'][] = drupal_html_class($tab->getTitle());
+        drupal_alter('quicktabs_tablinks_attributes',$attributes,$quickset,$i);
+        $attributes['href'] = $href;
 	$tablink = array(
-	  '#markup' => '<a href="'. $href .'">'. check_plain($this->quickset->translateString($tab->getTitle(), 'tab', $i)) .'</a>',
+	  '#markup' => '<a '. drupal_attributes($attributes) .'>'. check_plain($this->quickset->translateString($tab->getTitle(), 'tab', $i)) .'</a>',
 	);
 	$tabs[$i] = $tablink;
       }

@@ -642,6 +642,7 @@ function theme_qt_quicktabs_tabset($vars) {
       if ($key == $vars['tabset']['#options']['active']) {
         $item['class'] = array('active');
       }
+      $item['class'][] = drupal_html_class($tab['#title']);
       $item['data'] = drupal_render($tab);
       $variables['items'][] = $item;
     }

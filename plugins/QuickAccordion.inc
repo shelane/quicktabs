@@ -48,8 +48,12 @@ class QuickAccordion extends QuickRenderer {
     // Render all tab content.
     foreach ($quickset->getContents() as $key => $item) {
       if (!empty($item)) {
+        $attributes = array();
+        $attributes['class'][] = drupal_html_class($item->getTitle());
+        drupal_alter('quicktabs_tablinks_attributes',$attributes,$quickset,$key);
+        $attributes['href'] = '#'. $qsid . '_' . $key ;
         $render_array['content']['divs'][] = array(
-          '#prefix' => '<h3><a href= "#'. $qsid . '_' . $key .'">'. check_plain($quickset->translateString($item->getTitle(), 'tab', $key)) .'</a></h3><div>',
+          '#prefix' => '<h3><a '. drupal_attributes($attributes) .'>'. check_plain($quickset->translateString($item->getTitle(), 'tab', $key)) .'</a></h3><div>',
           '#suffix' => '</div>',
           'content' => $item->render(),
         );
