@@ -28,7 +28,6 @@ function template_preprocess_quicktabs_view_quicktabs(&$variables) {
   $quicktab_id = str_replace('_', '-', $view->id());
   $variables['quicktab_id'] = $quicktab_id;
   foreach ($rows as $id => $row) {
-    $entity = $row['#row']->_entity;
     $variables['rows'][$id] = array();
     $variables['rows'][$id]['content'] = $row;
 
