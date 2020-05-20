@@ -78,6 +78,4 @@ function template_preprocess_quicktabs_view_quicktabs(&$variables) {
     $variables['rows_with_page_starts'] = $rows_with_page_starts;
     $variables['rows_with_page_endings'] = $rows_with_page_endings;
   }
-
-  $variables['pages_prefix'] = $pages_prefix;
 }
