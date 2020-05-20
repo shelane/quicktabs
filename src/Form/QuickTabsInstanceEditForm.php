@@ -14,13 +14,43 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\AppendCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\quicktabs\Entity\QuickTabsInstance;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class QuickTabsInstanceEditForm
  *
  */
 class QuickTabsInstanceEditForm extends EntityForm {
+
+   /**
+   * The Messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+   protected $messenger;
+
+   /**
+   * Constructs the QuickTabsInstanceEditForm object.
+   *
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager.
+   */
+  public function __construct(MessengerInterface $messenger) {
+    $this->messenger = $messenger;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('messenger')
+    );
+  }
+
 
   /**
    * {@inheritdoc}
@@ -258,7 +288,7 @@ class QuickTabsInstanceEditForm extends EntityForm {
     if($status==SAVED_NEW) {
       $form_state->setRedirect('quicktabs.admin');
     }
-    drupal_set_message($this->t('Your changes have been saved.'));
+    $this->messenger->addStatus($this->t('Your changes have been saved.'));
   }
 
   private function getConfigurationDataForm($qt) {
