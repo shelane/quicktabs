@@ -80,7 +80,7 @@ class QuickTabs extends TabRendererBase {
           $render = $object->render($tab);
         }
         else {
-          $render = array('#markup' => 'Loading content ...');
+          $render = array('#markup' => t('Loading content ...'));
         }
       }
       else {
