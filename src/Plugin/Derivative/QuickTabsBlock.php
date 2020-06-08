@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\quicktabs\Plugin\Derivative\QuickTabsBlock.
- */
-
 namespace Drupal\quicktabs\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
@@ -15,6 +10,7 @@ use Drupal\Component\Plugin\Derivative\DeriverBase;
  * @see \Drupal\mymodule\Plugin\Block\QuickTabsBlock
  */
 class QuickTabsBlock extends DeriverBase {
+
   /**
    * {@inheritdoc}
    */
@@ -26,4 +22,5 @@ class QuickTabsBlock extends DeriverBase {
 
     return parent::getDerivativeDefinitions($base_plugin_definition);
   }
+
 }

@@ -1,24 +1,18 @@
 <?php
 
-/**
- * @file
- * Definition of Drupal\quicktabs\tests\QuickTabsAdminTest.
- */
-
 namespace Drupal\quicktabs\Tests;
 
-use Drupal\simpletest\WebTestBase;
-use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\Component\Utility\Unicode;
-use Drupal\Core\Language\LanguageInterface;
-use Drupal\quicktabs\Entity\QuickTabsInstance;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests creating and saving a QuickTabs instance..
  *
  * @group quicktabs
  */
-class QuickTabsAdminTest extends WebTestBase {
+class QuickTabsAdminTest extends BrowserTestBase {
+
+  use StringTranslationTrait;
 
   /**
    * A user with permission to access the administrative toolbar.
@@ -27,14 +21,21 @@ class QuickTabsAdminTest extends WebTestBase {
    */
   protected $adminUser;
 
-  protected $strictConfigSchema = FALSE;
-  
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = array('node', 'block', 'menu_ui', 'user', 'taxonomy', 'toolbar', 'quicktabs', 'views');
+  public static $modules = [
+    'node',
+    'block',
+    'menu_ui',
+    'user',
+    'taxonomy',
+    'toolbar',
+    'quicktabs',
+    'views',
+  ];
 
   /**
    * {@inheritdoc}
@@ -42,7 +43,7 @@ class QuickTabsAdminTest extends WebTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $perms = array(
+    $perms = [
       'access toolbar',
       'access administration pages',
       'administer site configuration',
@@ -58,23 +59,23 @@ class QuickTabsAdminTest extends WebTestBase {
       'access user profiles',
       'administer taxonomy',
       'administer quicktabs',
-    );
+    ];
 
     // Create an administrative user and log it in.
     $this->adminUser = $this->drupalCreateUser($perms);
 
     $this->drupalLogin($this->adminUser);
 
-    // Create an article content type
-    $this->drupalCreateContentType(array(
+    // Create an article content type.
+    $this->drupalCreateContentType([
       'type' => 'article',
-    ));
+    ]);
   }
 
   /**
    * Test all vocabularies appear on admin page.
    */
-  function testQuickTabsAdmin() {
+  public function testQuickTabsAdmin() {
     $this->drupalGet('admin/structure/quicktabs');
     $this->assertResponse(200);
     $this->assertRaw('Quick Tabs');
@@ -88,14 +89,14 @@ class QuickTabsAdminTest extends WebTestBase {
     $this->assertRaw('Add tab');
     $this->assertRaw('Save');
 
-    $node1 = $this->drupalCreateNode(array(
-      'title' => t('Node 1'),
+    $node1 = $this->drupalCreateNode([
+      'title' => $this->t('Node 1'),
       'type' => 'article',
-    ));
-    $node2 = $this->drupalCreateNode(array(
-      'title' => t('Node 2'),
+    ]);
+    $node2 = $this->drupalCreateNode([
+      'title' => $this->t('Node 2'),
       'type' => 'article',
-    ));
+    ]);
 
     $edit = [
       'label' => $this->randomMachineName(),
@@ -116,9 +117,9 @@ class QuickTabsAdminTest extends WebTestBase {
       'configuration_data[1][content][node_content][options][hide_title]' => 1,
     ];
 
-    $this->drupalPostForm('admin/structure/quicktabs/add', $edit, t('Save'));
+    $this->drupalPostForm('admin/structure/quicktabs/add', $edit, $this->t('Save'));
 
-    $qt = \Drupal::service('entity.manager')->getStorage('quicktabs_instance')->load($edit['id']);
+    $qt = \Drupal::service('entity_type.manager')->getStorage('quicktabs_instance')->load($edit['id']);
 
     $this->assertEqual('Drupal\quicktabs\Entity\QuickTabsInstance', get_class($qt));
     $this->assertEqual($qt->id(), $edit['id']);
@@ -139,9 +140,10 @@ class QuickTabsAdminTest extends WebTestBase {
     $this->assertEqual($configurationData[0]['content']['node_content']['options']['hide_title'], $edit['configuration_data[0][content][node_content][options][hide_title]']);
     $this->assertEqual($configurationData[1]['content']['node_content']['options']['hide_title'], $edit['configuration_data[1][content][node_content][options][hide_title]']);
 
-    $this->drupalPostForm('admin/structure/quicktabs/' . $qt->id() . '/delete', [], t('Delete'));
+    $this->drupalPostForm('admin/structure/quicktabs/' . $qt->id() . '/delete', [], $this->t('Delete'));
 
-    $qt = \Drupal::service('entity.manager')->getStorage('quicktabs_instance')->load($edit['id']);
-    $this->assertNull($qt, t('QuickTabs instance not found in database'));
+    $qt = \Drupal::service('entity_type.manager')->getStorage('quicktabs_instance')->load($edit['id']);
+    $this->assertNull($qt, $this->t('QuickTabs instance not found in database'));
   }
+
 }

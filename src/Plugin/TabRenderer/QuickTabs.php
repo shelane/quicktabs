@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Plugin\TabRenderer\QuickTabs.
- */
 
 namespace Drupal\quicktabs\Plugin\TabRenderer;
 
@@ -10,7 +6,7 @@ use Drupal\quicktabs\TabRendererBase;
 use Drupal\quicktabs\Entity\QuickTabsInstance;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\Core\Template\Attribute;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
@@ -22,57 +18,60 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  * )
  */
 class QuickTabs extends TabRendererBase {
-  
+
+  use StringTranslationTrait;
+
   /**
    * {@inheritdoc}
    */
   public function optionsForm(QuickTabsInstance $instance) {
     $options = $instance->getOptions()['quick_tabs'];
     $form = [];
-    $form['ajax'] = array(
+    $form['ajax'] = [
       '#type' => 'radios',
-      '#title' => t('Ajax'),
-      '#options' => array(
-        TRUE => t('Yes') . ': ' . t('Load only the first tab on page view'),
-        FALSE => t('No') . ': ' . t('Load all tabs on page view.'),
-      ),
+      '#title' => $this->t('Ajax'),
+      '#options' => [
+        TRUE => $this->t('Yes: Load only the first tab on page view'),
+        FALSE => $this->t('No: Load all tabs on page view.'),
+      ],
       '#default_value' => ($instance->getRenderer() == 'quick_tabs' && $options['ajax'] !== NULL) ? $options['ajax'] : 0,
-      '#description' => t('Choose how the content of tabs should be loaded.<p>By choosing "Yes", only the first tab will be loaded when the page first viewed. Content for other tabs will be loaded only when the user clicks the other tab. This will provide faster initial page loading, but subsequent tab clicks will be slower. This can place less load on a server.</p><p>By choosing "No", all tabs will be loaded when the page is first viewed. This will provide slower initial page loading, and more server load, but subsequent tab clicks will be faster for the user. Use with care if you have heavy views.</p><p>Warning: if you enable Ajax, any block you add to this quicktabs block will be accessible to anonymous users, even if you place role restrictions on the quicktabs block. Do not enable Ajax if the quicktabs block includes any blocks with potentially sensitive information.</p>'),
+      '#description' => $this->t('Choose how the content of tabs should be loaded.<p>By choosing "Yes", only the first tab will be loaded when the page first viewed. Content for other tabs will be loaded only when the user clicks the other tab. This will provide faster initial page loading, but subsequent tab clicks will be slower. This can place less load on a server.</p><p>By choosing "No", all tabs will be loaded when the page is first viewed. This will provide slower initial page loading, and more server load, but subsequent tab clicks will be faster for the user. Use with care if you have heavy views.</p><p>Warning: if you enable Ajax, any block you add to this quicktabs block will be accessible to anonymous users, even if you place role restrictions on the quicktabs block. Do not enable Ajax if the quicktabs block includes any blocks with potentially sensitive information.</p>'),
       '#weight' => -6,
-    );
+    ];
     return $form;
   }
 
   /**
    * Returns a render array to be used in a block or page.
    *
-   * @return array a render array
+   * @return array
+   *   A render array.
    */
   public function render(QuickTabsInstance $instance) {
     $qt_id = $instance->id();
     $type = \Drupal::service('plugin.manager.tab_type');
 
-    // The render array used to build the block
+    // The render array used to build the block.
     $build = [];
     $build['pages'] = [];
-    $build['pages']['#theme_wrappers'] = array(
-      'container' => array(
-        '#attributes' => array(
-          'class' => array('quicktabs-main'),
+    $build['pages']['#theme_wrappers'] = [
+      'container' => [
+        '#attributes' => [
+          'class' => ['quicktabs-main'],
           'id' => 'quicktabs-container-' . $qt_id,
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
 
-    // Pages of content that will be shown or hidden
+    // Pages of content that will be shown or hidden.
     $tab_pages = [];
 
-    // Tabs used to show/hide content
+    // Tabs used to show/hide content.
     $titles = [];
 
     $is_ajax = $instance->getOptions()['quick_tabs']['ajax'];
     foreach ($instance->getConfigurationData() as $index => $tab) {
-      // Build the pages //////////////////////////////////////
+      // Build the pages //////////////////////////////////////.
       $default_tab = $instance->getDefaultTab() == 9999 ? 0 : $instance->getDefaultTab();
       if ($is_ajax) {
         if ($default_tab == $index) {
@@ -80,7 +79,7 @@ class QuickTabs extends TabRendererBase {
           $render = $object->render($tab);
         }
         else {
-          $render = array('#markup' => t('Loading content ...'));
+          $render = ['#markup' => $this->t('Loading content ...')];
         }
       }
       else {
@@ -89,12 +88,12 @@ class QuickTabs extends TabRendererBase {
       }
 
       // If user wants to hide empty tabs and there is no content
-      // then skip to next tab
+      // then skip to next tab.
       if ($instance->getHideEmptyTabs() && empty($render)) {
         continue;
       }
 
-      $classes = array('quicktabs-tabpage');
+      $classes = ['quicktabs-tabpage'];
 
       if ($default_tab != $index) {
         $classes[] = 'quicktabs-hide';
@@ -112,15 +111,10 @@ class QuickTabs extends TabRendererBase {
       $build['pages'][$index]['#id'] = $block_id;
       $build['pages'][$index]['#theme'] = 'quicktabs_block_content';
 
-      // Build the tabs ///////////////////////////////
-      $options = array(
-        'query' => array('qt-quicktabs' => $index),
-        'fragment' => 'qt-quicktabs',
-        'attributes' => array('id' => 'quicktabs-tab-' . $qt_id . '-' . $index),
-      );
+      // Build the tabs ///////////////////////////////.
       $wrapper_attributes = [];
       if ($default_tab == $index) {
-        $wrapper_attributes['class'] = array('active');
+        $wrapper_attributes['class'] = ['active'];
       }
 
       $link_classes = [];
@@ -135,64 +129,65 @@ class QuickTabs extends TabRendererBase {
         $link_classes[] = 'quicktabs-loaded';
       }
 
-      $titles[] = array(
+      $titles[] = [
         '0' => Link::fromTextAndUrl(
           new TranslatableMarkup($tab['title']),
           Url::fromRoute(
             'quicktabs.ajax_content',
-            array(
+            [
               'js' => 'nojs',
               'instance' => $qt_id,
-              'tab' => $index
-            ),
-            array(
-              'attributes' => array(
+              'tab' => $index,
+            ],
+            [
+              'attributes' => [
                 'class' => $link_classes,
-              ),
-            )
+              ],
+            ]
           )
         )->toRenderable(),
         '#wrapper_attributes' => $wrapper_attributes,
-      );
+      ];
 
-      // Array of tab pages to pass as settings ////////////
+      // Array of tab pages to pass as settings ////////////.
       $tab['tab_page'] = $index;
       $tab_pages[] = $tab;
     }
 
-    $tabs = array(
+    $tabs = [
       '#theme' => 'item_list',
       '#items' => $titles,
-      '#attributes' => array(
-        'class' => array('quicktabs-tabs'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['quicktabs-tabs'],
+      ],
+    ];
 
-    // Add tabs to the build
+    // Add tabs to the build.
     array_unshift($build, $tabs);
 
-    // Attach js
-    $build['#attached'] = array(
-      'library' => array('quicktabs/quicktabs'),
-      'drupalSettings' => array(
-        'quicktabs' => array(
-          'qt_' . $qt_id => array(
+    // Attach js.
+    $build['#attached'] = [
+      'library' => ['quicktabs/quicktabs'],
+      'drupalSettings' => [
+        'quicktabs' => [
+          'qt_' . $qt_id => [
             'tabs' => $tab_pages,
-          ),
-        ),
-      ),
-    );
+          ],
+        ],
+      ],
+    ];
 
-    // Add a wrapper
-    $build['#theme_wrappers'] = array(
-      'container' => array(
-        '#attributes' => array(
-          'class' => array('quicktabs-wrapper'),
+    // Add a wrapper.
+    $build['#theme_wrappers'] = [
+      'container' => [
+        '#attributes' => [
+          'class' => ['quicktabs-wrapper'],
           'id' => 'quicktabs-' . $qt_id,
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
 
     return $build;
   }
+
 }

@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Annotation\TabRenderer.
- */
 
 namespace Drupal\quicktabs\Annotation;
 
@@ -11,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a tab renderer item annotation object.
  *
- * Plugin Namespace: Plugin\quicktabs\TabRenderer
+ * Plugin Namespace: Plugin\quicktabs\TabRenderer.
  *
  * @see \Drupal\quicktabs\Plugin\TabRendererManager
  * @see plugin_api

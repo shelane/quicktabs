@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Annotation\TabType.
- */
 
 namespace Drupal\quicktabs\Annotation;
 
@@ -11,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a tab type item annotation object.
  *
- * Plugin Namespace: Plugin\quicktabs\TabType
+ * Plugin Namespace: Plugin\quicktabs\TabType.
  *
  * @see \Drupal\quicktabs\Plugin\TabTypeManager
  * @see plugin_api

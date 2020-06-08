@@ -1,14 +1,11 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Plugin\TabType\ViewContent.
- */
 
 namespace Drupal\quicktabs\Plugin\TabType;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\quicktabs\TabTypeBase;
 use Drupal\views\Views;
 
@@ -22,6 +19,8 @@ use Drupal\views\Views;
  */
 class ViewContent extends TabTypeBase {
 
+  use StringTranslationTrait;
+
   /**
    * {@inheritdoc}
    */
@@ -32,41 +31,41 @@ class ViewContent extends TabTypeBase {
     $selected_view = (isset($tab['content'][$plugin_id]['options']['vid']) ? $tab['content'][$plugin_id]['options']['vid'] : (isset($views_keys[0]) ? $views_keys[0] : ''));
 
     $form = [];
-    $form['vid'] = array(
+    $form['vid'] = [
       '#type' => 'select',
       '#options' => $views,
       '#default_value' => $selected_view,
-      '#title' => t('Select a view'),
-      '#ajax' => array(
+      '#title' => $this->t('Select a view'),
+      '#ajax' => [
         'callback' => 'Drupal\quicktabs\Plugin\TabType\ViewContent::viewsDisplaysAjaxCallback',
         'event' => 'change',
-        'progress' => array(
+        'progress' => [
           'type' => 'throbber',
           'message' => 'Please wait...',
-        ), 
+        ],
         'effect' => 'fade',
-      ),
-    );
-    $form['display'] = array(
+      ],
+    ];
+    $form['display'] = [
       '#type' => 'select',
       '#title' => 'display',
       '#options' => ViewContent::getViewDisplays($selected_view),
       '#default_value' => isset($tab['content'][$plugin_id]['options']['display']) ? $tab['content'][$plugin_id]['options']['display'] : '',
       '#prefix' => '<div id="view-display-dropdown-' . $tab['delta'] . '">',
-      '#suffix' => '</div>'
-    );
-    $form['args'] = array(
+      '#suffix' => '</div>',
+    ];
+    $form['args'] = [
       '#type' => 'textfield',
       '#title' => 'arguments',
       '#size' => '40',
       '#required' => FALSE,
       '#default_value' => isset($tab['content'][$plugin_id]['options']['args']) ? $tab['content'][$plugin_id]['options']['args'] : '',
-      '#description' => t('Additional arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You may use %0, %1, ..., %N to grab arguments from the URL.'),
-    );
-    
+      '#description' => $this->t('Additional arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You may use %0, %1, ..., %N to grab arguments from the URL.'),
+    ];
+
     return $form;
   }
-  
+
   /**
    * {@inheritdoc}
    */
@@ -97,6 +96,9 @@ class ViewContent extends TabTypeBase {
     return $ajax_response;
   }
 
+  /**
+   * Get list of enabled views.
+   */
   private function getViews() {
     $views = [];
     foreach (Views::getEnabledViews() as $view_name => $view) {
@@ -120,10 +122,11 @@ class ViewContent extends TabTypeBase {
     foreach ($view->get('display') as $id => $display) {
       $enabled = !empty($display['display_options']['enabled']) || !array_key_exists('enabled', $display['display_options']);
       if ($enabled) {
-        $displays[$id] = $id .': '. $display['display_title'];
+        $displays[$id] = $id . ': ' . $display['display_title'];
       }
     }
 
     return $displays;
   }
+
 }

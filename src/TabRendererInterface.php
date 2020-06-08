@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\TabRendererInterface.
- */
 
 namespace Drupal\quicktabs;
 
@@ -18,13 +14,16 @@ interface TabRendererInterface extends PluginInspectionInterface {
    * Return form elements used on the edit/add from.
    *
    * @return array
+   *   The options used for displaying tabs.
    */
   public function optionsForm(QuickTabsInstance $instance);
-  
+
   /**
    * Return a render array for the whole Quick Tabs instance.
    *
    * @return array
+   *   A render array.
    */
   public function render(QuickTabsInstance $instance);
+
 }

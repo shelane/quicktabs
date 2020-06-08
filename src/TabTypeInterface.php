@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\TabTypeInterface.
- */
 
 namespace Drupal\quicktabs;
 
@@ -14,19 +10,22 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 interface TabTypeInterface extends PluginInspectionInterface {
 
   /**
-   * Return form elemets used on the edit/add from.
+   * Return form elements used on the edit/add from.
    *
-   * @param $tab - array
+   * @param array $tab
+   *   The array tab for display.
    *
    * @return array
+   *   The options used for displaying tabs.
    */
   public function optionsForm(array $tab);
-  
+
   /**
    * Return a render array for an individual tab tat the theme layer to process.
    *
    * @return string
+   *   TODO: test if changing type to array works
    */
   public function render(array $tab);
-  
+
 }

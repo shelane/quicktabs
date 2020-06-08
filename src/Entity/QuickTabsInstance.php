@@ -1,16 +1,8 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Entity\QuickTabsInstance.
- */
 
 namespace Drupal\quicktabs\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-
-use Drupal\Core\Link;
-use Drupal\Core\Url;
-use Drupal\Core\Template\Attribute;
 
 /**
  * Defines the QuickTabsInstance entity.
@@ -54,7 +46,7 @@ use Drupal\Core\Template\Attribute;
  * )
  */
 class QuickTabsInstance extends ConfigEntityBase implements QuickTabsInstanceInterface {
-  
+
   const QUICKTABS_DELTA_NONE = '9999';
 
   /**
@@ -86,21 +78,21 @@ class QuickTabsInstance extends ConfigEntityBase implements QuickTabsInstanceInt
   protected $options;
 
   /**
-   * whether or not to hide empty tabs.
+   * Whether or not to hide empty tabs.
    *
    * @var bool
    */
   protected $hide_empty_tabs;
 
   /**
-   * whether or not to hide empty tabs.
+   * Whether or not to hide empty tabs.
    *
    * @var bool
    */
   protected $default_tab;
 
   /**
-   * required to render this instance.
+   * Required to render this instance.
    *
    * @var array
    */
@@ -133,7 +125,7 @@ class QuickTabsInstance extends ConfigEntityBase implements QuickTabsInstanceInt
   public function getHideEmptyTabs() {
     return $this->hide_empty_tabs;
   }
-  
+
   /**
    * {@inheritdoc}
    */
@@ -158,7 +150,8 @@ class QuickTabsInstance extends ConfigEntityBase implements QuickTabsInstanceInt
   /**
    * Returns a render array to be used in a block or page.
    *
-   * @return array a render array
+   * @return array
+   *   A render array.
    */
   public function getRenderArray() {
     $type = \Drupal::service('plugin.manager.tab_renderer');
@@ -179,7 +172,8 @@ class QuickTabsInstance extends ConfigEntityBase implements QuickTabsInstanceInt
    *   The loaded entity.
    */
   public static function getQuickTabsInstance($id) {
-    $qt = \Drupal::service('entity.manager')->getStorage('quicktabs_instance')->load($id);
+    $qt = \Drupal::service('entity_type.manager')->getStorage('quicktabs_instance')->load($id);
     return $qt;
   }
+
 }

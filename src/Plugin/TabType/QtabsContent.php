@@ -1,11 +1,8 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Plugin\TabType\QtabsContent.
- */
 
 namespace Drupal\quicktabs\Plugin\TabType;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\quicktabs\TabTypeBase;
 
 /**
@@ -17,6 +14,8 @@ use Drupal\quicktabs\TabTypeBase;
  * )
  */
 class QtabsContent extends TabTypeBase {
+
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
@@ -31,23 +30,24 @@ class QtabsContent extends TabTypeBase {
         $tab_options[$machine_name] = $entity->label();
       }
     }
-    $form['machine_name'] = array(
+    $form['machine_name'] = [
       '#type' => 'select',
-      '#title' => t('QuickTabs instance'),
-      '#description' => t('The QuickTabs instance to put inside this tab.'),
+      '#title' => $this->t('QuickTabs instance'),
+      '#description' => $this->t('The QuickTabs instance to put inside this tab.'),
       '#options' => $tab_options,
       '#default_value' => isset($tab['content'][$plugin_id]['options']['machine_name']) ? $tab['content'][$plugin_id]['options']['machine_name'] : '',
-    );
+    ];
     return $form;
   }
-  
+
   /**
    * {@inheritdoc}
    */
   public function render(array $tab) {
     $options = $tab['content'][$tab['type']]['options'];
-    $qt = \Drupal::service('entity.manager')->getStorage('quicktabs_instance')->load($options['machine_name']);
+    $qt = \Drupal::service('entity_type.manager')->getStorage('quicktabs_instance')->load($options['machine_name']);
 
     return $qt->getRenderArray();
   }
+
 }

@@ -1,7 +1,5 @@
 <?php
 
-use Drupal\Core\Template\Attribute;
-
 /**
  * @file
  * Theme for quicktabs views.
@@ -15,9 +13,9 @@ use Drupal\Core\Template\Attribute;
  * Create a tabbed view
  *
  * @param array $variables
- *   An associative array
+ *   An associative array.
  */
-function template_preprocess_quicktabs_view_quicktabs(&$variables) {
+function template_preprocess_quicktabs_view_quicktabs(array &$variables) {
   $view = $variables['view'];
   $rows = $variables['rows'];
   $style = $view->style_plugin;
@@ -28,7 +26,7 @@ function template_preprocess_quicktabs_view_quicktabs(&$variables) {
   $quicktab_id = str_replace('_', '-', $view->id());
   $variables['quicktab_id'] = $quicktab_id;
   foreach ($rows as $id => $row) {
-    $variables['rows'][$id] = array();
+    $variables['rows'][$id] = [];
     $variables['rows'][$id]['content'] = $row;
 
     $attributes = [];
@@ -59,7 +57,7 @@ function template_preprocess_quicktabs_view_quicktabs(&$variables) {
       $rows_with_page_starts[] = reset($row_numbers);
       $rows_with_page_endings[] = array_pop($row_numbers);
 
-      // Add each tab to the js settings
+      // Add each tab to the js settings.
       $object = new stdClass();
       $object->tab_page = $current_set;
       $object->title = $index;
@@ -67,11 +65,11 @@ function template_preprocess_quicktabs_view_quicktabs(&$variables) {
       $current_set++;
     }
 
-    // The tab is effectively the title
+    // The tab is effectively the title.
     unset($variables['title']);
 
     // Use these in the template to determine
-    // where to insert quicktabs markup
+    // where to insert quicktabs markup.
     $rows_with_tabs = [0];
     $variables['tabs'] = $style->getTabs();
     $variables['rows_with_tabs'] = $rows_with_tabs;

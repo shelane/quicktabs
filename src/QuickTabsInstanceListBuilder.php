@@ -37,22 +37,23 @@ class QuickTabsInstanceListBuilder extends EntityListBuilder {
     $operations = parent::getDefaultOperations($entity);
 
     if ($entity->hasLinkTemplate('edit')) {
-      $operations['edit'] = array(
-        'title' => t('Edit Quick Tab'),
+      $operations['edit'] = [
+        'title' => $this->t('Edit Quick Tab'),
         'weight' => 10,
         'url' => $entity->toUrl('edit'),
-      );
-      $operations['delete'] = array(
-        'title' => t('Delete Quick Tab'),
+      ];
+      $operations['delete'] = [
+        'title' => $this->t('Delete Quick Tab'),
         'weight' => 20,
         'url' => $entity->toUrl('delete'),
-      );
-      $operations['duplicate'] = array(
-        'title' => t('Duplicate Quick Tab'),
+      ];
+      $operations['duplicate'] = [
+        'title' => $this->t('Duplicate Quick Tab'),
         'weight' => 40,
         'url' => $entity->toUrl('duplicate'),
-      );
+      ];
     }
     return $operations;
   }
+
 }

@@ -1,11 +1,8 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Plugin\TabType\NodeContent.
- */
 
 namespace Drupal\quicktabs\Plugin\TabType;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\quicktabs\TabTypeBase;
 
 /**
@@ -18,6 +15,8 @@ use Drupal\quicktabs\TabTypeBase;
  */
 class NodeContent extends TabTypeBase {
 
+  use StringTranslationTrait;
+
   /**
    * {@inheritdoc}
    */
@@ -25,34 +24,34 @@ class NodeContent extends TabTypeBase {
     $plugin_id = $this->getPluginDefinition()['id'];
 
     $form = [];
-    $form['nid'] = array(
+    $form['nid'] = [
       '#type' => 'textfield',
-      '#title' => t('Node'),
-      '#description' => t('The node ID of the node.'),
+      '#title' => $this->t('Node'),
+      '#description' => $this->t('The node ID of the node.'),
       '#maxlength' => 10,
       '#size' => 20,
       '#default_value' => isset($tab['content'][$plugin_id]['options']['nid']) ? $tab['content'][$plugin_id]['options']['nid'] : '',
-    );
+    ];
     $display_repository = \Drupal::service('entity_display.repository');
     $view_modes = $display_repository->getViewModes('node');
     $options = [];
     foreach ($view_modes as $view_mode_name => $view_mode) {
       $options[$view_mode_name] = $view_mode['label'];
     }
-    $form['view_mode'] = array(
+    $form['view_mode'] = [
       '#type' => 'select',
-      '#title' => t('View mode'),
+      '#title' => $this->t('View mode'),
       '#options' => $options,
       '#default_value' => isset($tab['content'][$plugin_id]['options']['view_mode']) ? $tab['content'][$plugin_id]['options']['view_mode'] : 'full',
-     );
-     $form['hide_title'] = array(
+    ];
+    $form['hide_title'] = [
       '#type' => 'checkbox',
-      '#title' => t('Hide the title of this node'),
+      '#title' => $this->t('Hide the title of this node'),
       '#default_value' => isset($tab['content'][$plugin_id]['options']['hide_title']) ? $tab['content'][$plugin_id]['options']['hide_title'] : 1,
-    );
+    ];
     return $form;
   }
-  
+
   /**
    * {@inheritdoc}
    */
@@ -74,4 +73,5 @@ class NodeContent extends TabTypeBase {
 
     return $build;
   }
+
 }

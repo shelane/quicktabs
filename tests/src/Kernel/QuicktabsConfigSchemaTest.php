@@ -134,4 +134,5 @@ class QuicktabsConfigSchemaTest extends KernelTestBase {
       $this->assertConfigSchema($this->typedConfig, $config->getName(), $config->get());
     }
   }
+
 }

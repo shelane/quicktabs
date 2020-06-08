@@ -1,15 +1,12 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Form\QuickTabsInstanceDuplicateForm.php
- */
+
 namespace Drupal\quicktabs\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityForm;
 
 /**
- * Class QuickTabsInstanceDuplicateForm
+ * Class QuickTabsInstanceDuplicateForm.
  */
 class QuickTabsInstanceDuplicateForm extends EntityForm {
 
@@ -26,27 +23,27 @@ class QuickTabsInstanceDuplicateForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     parent::form($form, $form_state);
 
-    $form['#title'] = $this->t('Duplicate of @label', array('@label' => $this->entity->label()));
+    $form['#title'] = $this->t('Duplicate of @label', ['@label' => $this->entity->label()]);
 
-    $form['label'] = array(
+    $form['label'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Name'),
       '#required' => TRUE,
       '#size' => 32,
       '#maxlength' => 255,
-      '#default_value' => $this->t('Duplicate of @label', array('@label' => $this->entity->label())),
-    );
-    $form['id'] = array(
+      '#default_value' => $this->t('Duplicate of @label', ['@label' => $this->entity->label()]),
+    ];
+    $form['id'] = [
       '#type' => 'machine_name',
       '#maxlength' => 32,
       '#default_value' => '',
-      '#machine_name' => array(
+      '#machine_name' => [
         'exists' => 'quicktabs_machine_name_exists',
-      ),
+      ],
       '#description' => $this->t('A unique machine-readable name for this QuickTabs instance. It must only contain lowercase letters, numbers, and underscores. The machine name will be used internally by QuickTabs and will be used in the CSS ID of your QuickTabs block.'),
       '#weight' => -8,
-    );
-    
+    ];
+
     return $form;
   }
 
@@ -54,10 +51,10 @@ class QuickTabsInstanceDuplicateForm extends EntityForm {
    * {@inheritdoc}
    */
   protected function actions(array $form, FormStateInterface $form_state) {
-    $actions['submit'] = array(
+    $actions['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Duplicate'),
-    );
+    ];
     return $actions;
   }
 

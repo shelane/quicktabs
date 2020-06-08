@@ -20,7 +20,6 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *   theme = "quicktabs_view_quicktabs",
  *   display_types = { "normal" }
  * )
- *
  */
 class Quicktabs extends StylePluginBase {
 
@@ -60,11 +59,11 @@ class Quicktabs extends StylePluginBase {
   protected $tabs = [];
 
   /**
-   * Set default options
+   * Set default options.
    */
   protected function defineOptions() {
     $options = parent::defineOptions();
-    $options['path'] = array('default' => 'quicktabs');
+    $options['path'] = ['default' => 'quicktabs'];
     return $options;
   }
 
@@ -109,13 +108,13 @@ class Quicktabs extends StylePluginBase {
         $field['rendered']['#access'] = FALSE;
         $field['rendered_strip']['#access'] = FALSE;
       }
-      // Only allow 1 level of grouping
-      else if ($index > 0) {
+      // Only allow 1 level of grouping.
+      elseif ($index > 0) {
         unset($form['grouping'][$index]);
       }
 
       $current_value = $field['field']['#description']->getUntranslatedString();
-      $field['field']['#description'] = t('You must specify a field by which to group the records. This field will be used for the title of each tab.', array('@current_value' => $current_value));
+      $field['field']['#description'] = $this->t('You must specify a field by which to group the records. This field will be used for the title of each tab.', ['@current_value' => $current_value]);
     }
   }
 
@@ -123,7 +122,7 @@ class Quicktabs extends StylePluginBase {
    * {@inheritdoc}
    */
   public function renderGroupingSets($sets, $level = 0) {
-    $output = array();
+    $output = [];
     $theme_functions = $this->view->buildThemeFunctions($this->groupingTheme);
     $tab_titles = [];
     $link_classes = ['loaded'];
@@ -135,7 +134,7 @@ class Quicktabs extends StylePluginBase {
       $wrapper_attributes = [];
 
       if ($set_count === 0) {
-        $wrapper_attributes['class'] = array('active');
+        $wrapper_attributes['class'] = ['active'];
       }
 
       $tab_titles[] = [
@@ -145,9 +144,9 @@ class Quicktabs extends StylePluginBase {
             '<current>',
             [],
             [
-              'attributes' => array(
+              'attributes' => [
                 'class' => $link_classes,
-              ),
+              ],
             ]
           )
         )->toRenderable(),
@@ -158,12 +157,12 @@ class Quicktabs extends StylePluginBase {
       $row = reset($set['rows']);
       // Render as a grouping set.
       if (is_array($row) && isset($row['group'])) {
-        $single_output = array(
+        $single_output = [
           '#theme' => $theme_functions,
           '#view' => $this->view,
           '#grouping' => $this->options['grouping'][$level],
           '#rows' => $set['rows'],
-        );
+        ];
       }
       // Render as a record set.
       else {
@@ -181,10 +180,10 @@ class Quicktabs extends StylePluginBase {
       $single_output['#title'] = $set['group'];
 
       // Create a mapping of which rows belong in which set
-      // This can then be used in the theme function to wrap each tab page
+      // This can then be used in the theme function to wrap each tab page.
       if (!empty($this->options['grouping'])) {
         $set_mapping = [];
-        foreach($sets as $set_index => $set) {
+        foreach ($sets as $set_index => $set) {
           foreach ($set['rows'] as $row_index => $row) {
             $set_mapping[$set_index][] = $row_index;
           }
@@ -198,7 +197,7 @@ class Quicktabs extends StylePluginBase {
     $this->setSetMapping($set_mapping);
     unset($this->view->row_index);
 
-    // Create the tabs for rendering
+    // Create the tabs for rendering.
     $tabs = [
       '#theme' => 'item_list',
       '#items' => $tab_titles,
@@ -209,7 +208,7 @@ class Quicktabs extends StylePluginBase {
 
     $this->setTabs($tabs);
 
-    // Add quicktabs wrapper to all the output
+    // Add quicktabs wrapper to all the output.
     $output['#theme_wrappers'] = [
       'container' => [
         '#attributes' => [
@@ -221,4 +220,5 @@ class Quicktabs extends StylePluginBase {
 
     return $output;
   }
+
 }

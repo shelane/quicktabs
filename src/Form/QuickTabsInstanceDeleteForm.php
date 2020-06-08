@@ -1,8 +1,5 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Form\QuickTabsInstanceDeleteForm.php
- */
+
 namespace Drupal\quicktabs\Form;
 
 use Drupal\Core\Entity\EntityConfirmFormBase;
@@ -10,8 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
 /**
- * Class QuickTabsInstanceDeleteForm
- *
+ * Class QuickTabsInstanceDeleteForm.
  */
 class QuickTabsInstanceDeleteForm extends EntityConfirmFormBase {
 
@@ -20,7 +16,7 @@ class QuickTabsInstanceDeleteForm extends EntityConfirmFormBase {
    */
   public function getQuestion() {
     $entity = $this->entity;
-    return $this->t('Are you sure you want to delete this quicktabs instance with name %name?',array('%name' => $entity->getLabel()));
+    return $this->t('Are you sure you want to delete this quicktabs instance with name %name?', ['%name' => $entity->getLabel()]);
   }
 
   /**
@@ -40,8 +36,9 @@ class QuickTabsInstanceDeleteForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state){
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->delete();
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
+
 }

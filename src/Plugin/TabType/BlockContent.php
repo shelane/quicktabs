@@ -1,16 +1,12 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\Plugin\TabType\BlockContent.
- */
 
 namespace Drupal\quicktabs\Plugin\TabType;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\quicktabs\TabTypeBase;
-use Drupal\block\BlockListBuilder;
 
 /**
  * Provides a 'block content' tab type.
@@ -21,40 +17,42 @@ use Drupal\block\BlockListBuilder;
  * )
  */
 class BlockContent extends TabTypeBase {
-  
+
+  use StringTranslationTrait;
+
   /**
    * {@inheritdoc}
    */
   public function optionsForm(array $tab) {
     $plugin_id = $this->getPluginDefinition()['id'];
     $form = [];
-    $form['bid'] = array(
+    $form['bid'] = [
       '#type' => 'select',
       '#options' => $this->getBlockOptions(),
       '#default_value' => isset($tab['content'][$plugin_id]['options']['bid']) ? $tab['content'][$plugin_id]['options']['bid'] : '',
-      '#title' => t('Select a block'),
-      '#ajax' => array(
+      '#title' => $this->t('Select a block'),
+      '#ajax' => [
         'callback' => 'Drupal\quicktabs\Plugin\TabType\BlockContent::blockTitleAjaxCallback',
         'event' => 'change',
-        'progress' => array(
+        'progress' => [
           'type' => 'throbber',
           'message' => 'Please wait...',
-        ),
+        ],
         'effect' => 'fade',
-      ),
-    );
-    $form['block_title'] = array(
+      ],
+    ];
+    $form['block_title'] = [
       '#type' => 'textfield',
       '#default_value' => isset($tab['content'][$plugin_id]['options']['block_title']) ? $tab['content'][$plugin_id]['options']['block_title'] : '',
-      '#title' => t('Block Title'),
+      '#title' => $this->t('Block Title'),
       '#prefix' => '<div id="block-title-textfield-' . $tab['delta'] . '">',
-      '#suffix' => '</div>'
-    );
-    $form['display_title'] = array(
+      '#suffix' => '</div>',
+    ];
+    $form['display_title'] = [
       '#type' => 'checkbox',
-      '#title' => t('Display block title'),
+      '#title' => $this->t('Display block title'),
       '#default_value' => isset($tab['content'][$plugin_id]['options']['display_title']) ? $tab['content'][$plugin_id]['options']['display_title'] : 0,
-    );
+    ];
     return $form;
   }
 
@@ -66,9 +64,9 @@ class BlockContent extends TabTypeBase {
 
     if (strpos($options['bid'], 'block_content') !== FALSE) {
       $parts = explode(':', $options['bid']);
-      $entity_manager = \Drupal::service('entity.manager');
+      $entity_manager = \Drupal::service('entity_type.manager');
       $block = $entity_manager->loadEntityByUuid($parts[0], $parts[1]);
-      $block_content = \Drupal\block_content\Entity\BlockContent::load($block->id());
+      $block_content = BlockContent::load($block->id());
       $render = \Drupal::entityTypeManager()->getViewBuilder('block_content')->view($block_content);
     }
     else {
@@ -90,6 +88,9 @@ class BlockContent extends TabTypeBase {
     return $render;
   }
 
+  /**
+   * Get options for the block.
+   */
   private function getBlockOptions() {
     $block_manager = \Drupal::service('plugin.manager.block');
     $context_repository = \Drupal::service('context.repository');
@@ -103,7 +104,7 @@ class BlockContent extends TabTypeBase {
     foreach ($definitions as $block_id => $definition) {
       $blocks[$block_id] = $definition['admin_label'] . ' (' . $definition['provider'] . ')';
     }
-    
+
     return $blocks;
   }
 
@@ -119,13 +120,13 @@ class BlockContent extends TabTypeBase {
     $context_repository = \Drupal::service('context.repository');
     $definitions = $block_manager->getDefinitionsForContexts($context_repository->getAvailableContexts());
 
-    $form['block_title'] = array(
+    $form['block_title'] = [
       '#type' => 'textfield',
       '#value' => $definitions[$selected_block]['admin_label'],
-      '#title' => t('Block Title'),
+      '#title' => $this->t('Block Title'),
       '#prefix' => '<div id="block-title-textfield-' . $tab_index . '">',
-      '#suffix' => '</div>'
-    );
+      '#suffix' => '</div>',
+    ];
 
     $form_state->setRebuild(TRUE);
     $ajax_response = new AjaxResponse();
@@ -133,4 +134,5 @@ class BlockContent extends TabTypeBase {
 
     return $ajax_response;
   }
+
 }

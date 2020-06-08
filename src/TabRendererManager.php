@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\quicktabs\TabRendererManager.
- */
 
 namespace Drupal\quicktabs;
 
@@ -12,19 +8,20 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Component\Plugin\Factory\DefaultFactory;
 
 /**
- * Quick Tabs renderer plugin manager
+ * Quick Tabs renderer plugin manager.
  */
 class TabRendererManager extends DefaultPluginManager {
 
   /**
-   * Constructa a TabRendererManager object
+   * Construct a TabRendererManager object.
+   *
    * @param \Traversable $namespaces
-   *    An object that implements \Traversable which contains the root paths
-   *    keyed by the corresponding namespace to look for plugin implementations,
+   *   An object that implements \Traversable which contains the root paths
+   *    keyed by the corresponding namespace to look for plugin implementations.
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
-   *    Cache backend instance to use
+   *   Cache backend instance to use.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *    The module handler to invoke the later hook with
+   *   The module handler to invoke the later hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct('Plugin/TabRenderer', $namespaces, $module_handler, 'Drupal\quicktabs\TabRendererInterface', 'Drupal\quicktabs\Annotation\TabRenderer');
@@ -33,5 +30,5 @@ class TabRendererManager extends DefaultPluginManager {
     $this->setCacheBackend($cache_backend, 'quicktabs_tab_renderers');
     $this->factory = new DefaultFactory($this->getDiscovery());
   }
-  
+
 }
