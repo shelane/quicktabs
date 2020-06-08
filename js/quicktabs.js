@@ -1,5 +1,5 @@
 (function ($, Drupal, drupalSettings) {
-  
+
 'use strict';
 
 Drupal.quicktabs = Drupal.quicktabs || {};
@@ -45,7 +45,7 @@ Drupal.quicktabs.clickHandler = function(event) {
 
   // Hide all tabpages.
   tab.container.children().addClass('quicktabs-hide');
-  
+
   if (!tab.tabpage.hasClass("quicktabs-tabpage")) {
     tab = new Drupal.quicktabs.tab(element);
   }
@@ -63,7 +63,7 @@ Drupal.quicktabs.tab = function (el) {
   for (var i = 0; i < drupalSettings.quicktabs[qtKey].tabs.length; i++) {
     if (i == this.tabIndex) {
       this.tabObj = drupalSettings.quicktabs[qtKey].tabs[i];
-      this.tabKey = i;
+      this.tabKey = typeof el.dataset.quicktabsTabIndex !== 'undefined' ? el.dataset.quicktabsTabIndex : i;
     }
   }
   this.tabpage_id = 'quicktabs-tabpage-' + el.qt_name + '-' + this.tabKey;

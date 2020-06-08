@@ -142,6 +142,7 @@ class QuickTabs extends TabRendererBase {
             [
               'attributes' => [
                 'class' => $link_classes,
+                'data-quicktabs-tab-index' => $index,
               ],
             ]
           )
