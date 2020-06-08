@@ -71,19 +71,58 @@ Drupal.quicktabs.tab = function (el) {
   this.tabpage = this.container.find('#' + this.tabpage_id);
 }
 
+// Enable tab memory.
+// Relies on the jQuery Cookie plugin.
+// @see http://plugins.jquery.com/cookie
+  Drupal.behaviors.quicktabsmemory = {
+    attach: function (context, settings) {
+      // The .each() is in case there is more than one quicktab on a page.
+      $(context).find('div.quicktabs-wrapper').once('form-group').each(function () {
+        var el = $(this);
+
+        // el.id format: "quicktabs-$name"
+        var qt_name = Drupal.quicktabs.getQTName(el);
+        var $ul = $(el).find('ul.quicktabs-tabs:first');
+
+        // Default cookie options.
+        var cookieOptions = {path: '/'};
+        var cookieName = 'Drupal-quicktabs-active-tab-id-' + qt_name;
+
+        $ul.find('li a').each(function (i, element) {
+          var $link = $(element);
+          $link.data('myTabIndex', i);
+
+          // Click the tab ID if a cookie exists.
+          var $cookieValue = $.cookie(cookieName);
+          if ($cookieValue !== '' && $link.data('myTabIndex') == $cookieValue) {
+            $(element).click();
+          }
+
+          // Set the click handler for all tabs, this updates the cookie on
+          // every tab click.
+          $link.on('click', function () {
+            var $linkdata = $(this);
+            var tabIndex = $linkdata.data('myTabIndex');
+            $.cookie(cookieName, tabIndex, cookieOptions);
+          });
+        });
+      });
+    }
+  };
+
 
 if (Drupal.Ajax) {
 
   /**
    * Handle an event that triggers an AJAX response.
    *
-   * We unfortunately need to override this function, which originally comes from
-   * misc/ajax.js, in order to be able to cache loaded tabs, i.e. once a tab
-   * content has loaded it should not need to be loaded again.
+   * We unfortunately need to override this function, which originally comes
+   * from misc/ajax.js, in order to be able to cache loaded tabs, i.e., once a
+   * tab content has loaded it should not need to be loaded again.
    *
-   * I have removed all comments that were in the original core function, so that
-   * the only comments inside this function relate to the Quicktabs modification
-   * of it.
+   * I have removed all comments that were in the original core function, so
+   * that the only comments inside this function relate to the Quicktabs
+   * modification of it.
    */
   Drupal.Ajax.prototype.eventResponse = function (element, event) {
     event.preventDefault();

@@ -11,6 +11,7 @@ quicktabs:
     - core/drupal
     - core/drupal.ajax
     - core/drupalSettings
+    - core/jquery.cookie
 
 quicktabs.form:
   version: VERSION
