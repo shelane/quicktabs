@@ -125,6 +125,9 @@ class ViewContent extends TabTypeBase {
     }
 
     $view = \Drupal::entityTypeManager()->getStorage('view')->load($view_name);
+    if (!$view) {
+      return $displays;
+    }
     foreach ($view->get('display') as $id => $display) {
       $enabled = !empty($display['display_options']['enabled']) || !array_key_exists('enabled', $display['display_options']);
       if ($enabled) {
