@@ -81,6 +81,12 @@ class ViewContent extends TabTypeBase {
 
     $render = $view->buildRenderable($options['display'], $args);
 
+    // Set additional cache keys that depend on the arguments provided for this
+    // view.
+    // Until this is fixed in core:
+    // https://www.drupal.org/project/drupal/issues/2823914
+    $render['#cache']['keys'] = array_merge($render['#cache']['keys'], $args);
+
     return $render;
   }
 
