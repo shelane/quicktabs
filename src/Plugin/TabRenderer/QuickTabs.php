@@ -156,7 +156,7 @@ class QuickTabs extends TabRendererBase {
     }
 
     $tabs = [
-      '#theme' => 'item_list',
+      '#theme' => 'item_list__' . 'quicktabs__' . $qt_id,
       '#items' => $titles,
       '#attributes' => [
         'class' => ['quicktabs-tabs'],
