@@ -6,7 +6,7 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 // Store quicktabs preprocess theme functions in a separate .inc file.
 \Drupal::moduleHandler()->loadInclude('quicktabs', 'inc', 'quicktabs.theme');
@@ -17,8 +17,8 @@ use Drupal\Core\Link;
 function quicktabs_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'quicktabs.admin':
-      $link = Link::createFromRoute(t('blocks administration page'), 'block.admin_display')->toRenderable();
-      return '<p>' . t('Each QuickTabs instance has a corresponding block that is managed on the :link.', [':link' => $link]) . '</p>';
+      return '<p>' . t('Each QuickTabs instance has a corresponding block that is managed on the <a href=":link">blocks administration page</a>.',
+          [':link' => Url::fromRoute('block.admin_display')->setAbsolute()->toString()]) . '</p>';
   }
 }
 
