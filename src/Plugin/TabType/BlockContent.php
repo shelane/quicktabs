@@ -32,7 +32,7 @@ class BlockContent extends TabTypeBase {
       '#default_value' => isset($tab['content'][$plugin_id]['options']['bid']) ? $tab['content'][$plugin_id]['options']['bid'] : '',
       '#title' => $this->t('Select a block'),
       '#ajax' => [
-        'callback' => 'Drupal\quicktabs\Plugin\TabType\BlockContent::blockTitleAjaxCallback',
+        'callback' => [$this, 'blockTitleAjaxCallback'],
         'event' => 'change',
         'progress' => [
           'type' => 'throbber',
