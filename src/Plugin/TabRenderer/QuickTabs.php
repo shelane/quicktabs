@@ -106,7 +106,7 @@ class QuickTabs extends TabRendererBase {
       if (!empty($tab['content'][$tab['type']]['options']['display_title']) && !empty($tab['content'][$tab['type']]['options']['block_title'])) {
         $build['pages'][$index]['#title'] = $tab['content'][$tab['type']]['options']['block_title'];
       }
-      $build['pages'][$index]['#block'] = render($render);
+      $build['pages'][$index]['#block'] = $render;
       $build['pages'][$index]['#classes'] = implode(' ', $classes);
       $build['pages'][$index]['#id'] = $block_id;
       $build['pages'][$index]['#theme'] = 'quicktabs_block_content';

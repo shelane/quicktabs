@@ -51,7 +51,7 @@ class UiTabs extends TabRendererBase {
         $build['pages'][$index]['#title'] = $tab['content'][$tab['type']]['options']['block_title'];
       }
 
-      $build['pages'][$index]['#block'] = render($render);
+      $build['pages'][$index]['#block'] = $render;
       $build['pages'][$index]['#prefix'] = '<div ' . $attributes . '>';
       $build['pages'][$index]['#suffix'] = '</div>';
       $build['pages'][$index]['#theme'] = 'quicktabs_block_content';

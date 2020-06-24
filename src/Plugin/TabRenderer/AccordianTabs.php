@@ -83,7 +83,7 @@ class AccordianTabs extends TabRendererBase {
       if (!empty($tab['content'][$tab['type']]['options']['display_title']) && !empty($tab['content'][$tab['type']]['options']['block_title'])) {
         $build['pages'][$index]['#title'] = $tab['content'][$tab['type']]['options']['block_title'];
       }
-      $build['pages'][$index]['#block'] = render($render);
+      $build['pages'][$index]['#block'] = $render;
       $build['pages'][$index]['#prefix'] = '<h3><a href= "#' . $qsid . '_' . $index . '">' . new TranslatableMarkup($tab['title']) . '</a></h3><div>';
       $build['pages'][$index]['#suffix'] = '</div>';
       $build['pages'][$index]['#theme'] = 'quicktabs_block_content';
