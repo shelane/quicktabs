@@ -143,7 +143,7 @@ class QuickTabsInstance extends ConfigEntityBase implements QuickTabsInstanceInt
   /**
    * {@inheritdoc}
    */
-  public function setConfigurationData($configuration_data) {
+  public function setConfigurationData(array $configuration_data) {
     $this->configuration_data = $configuration_data;
   }
 
