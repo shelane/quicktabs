@@ -7,6 +7,8 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\quicktabs\TabTypeBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'block content' tab type.
@@ -19,6 +21,43 @@ use Drupal\quicktabs\TabTypeBase;
 class BlockContent extends TabTypeBase {
 
   use StringTranslationTrait;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Creates a BlockComponentRenderArray object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity_type.manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -64,10 +103,9 @@ class BlockContent extends TabTypeBase {
 
     if (strpos($options['bid'], 'block_content') !== FALSE) {
       $parts = explode(':', $options['bid']);
-      $entity_manager = \Drupal::service('entity_type.manager');
-      $block = $entity_manager->loadEntityByUuid($parts[0], $parts[1]);
+      $block = $this->entityTypeManager->loadEntityByUuid($parts[0], $parts[1]);
       $block_content = BlockContent::load($block->id());
-      $render = \Drupal::entityTypeManager()->getViewBuilder('block_content')->view($block_content);
+      $render = $this->entityTypeManager->getViewBuilder('block_content')->view($block_content);
     }
     else {
       $block_manager = \Drupal::service('plugin.manager.block');
