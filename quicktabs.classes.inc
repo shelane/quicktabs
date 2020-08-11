@@ -188,7 +188,20 @@ class QuickSet {
       $renderable_contents = 0;
       foreach ($this->contents as $key => $tab) {
         $contents = $tab->render(TRUE);
-        if (empty($contents)) {
+        reset($contents);
+        if (!empty($contents)) {
+          // If it's block type quicktab, #markup will be on level lower.
+          if (!isset($contents['#markup'])) {
+            $contents = reset($contents);
+          }
+          $string = strip_tags($contents['#markup']);
+          // If string contains only whitespaces it will be removed.
+          $string = trim($string);
+        }
+        else {
+          $string = $contents;
+        }
+        if (!$string) {
           // Rather than removing the item, we set it to NULL. This way we retain
           // the same indices across tabs, so that permanent links to particular
           // tabs can be relied upon.
