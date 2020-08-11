@@ -163,7 +163,7 @@ class QuickSet {
   public function translateString($string, $type = 'tab', $index = 0) {
     switch ($type) {
       case 'tab':
-        $name = "tab:{$this->name}-{$index}:title";
+        $name = "tab:{$this->name}:title:" . md5($string);
         break;
       case 'title':
         $name = "title:{$this->name}";

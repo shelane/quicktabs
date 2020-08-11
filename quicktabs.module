@@ -391,7 +391,7 @@ function quicktabs_i18n_update_strings($names = array()) {
   foreach ($qts as $name => $quicktabs) {
     i18n_string_update("quicktabs:title:$name", $quicktabs->title);
     foreach ($quicktabs->tabs as $tabkey => $tab) {
-      i18n_string_update("quicktabs:tab:$name-$tabkey:title", $tab['title']);
+      i18n_string_update("quicktabs:tab:{$name}:title:" . md5($tab['title']), $tab['title']);
     }
   }
 }
